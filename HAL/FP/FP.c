@@ -35,7 +35,7 @@ static uint16_t FP_Rx_Packect_Len = 0;
 static FP_Mode_t FP_Curr_Mode = FP_SEARCH_MODE;
 static uint16_t FP_NextPage = 1;
 
-QueueHandle_t FP_Search_Q_Buff;
+static QueueHandle_t FP_Search_Q_Buff;
 /******************************************************************************************
  *                                  FP_Init()
  *
@@ -71,13 +71,12 @@ FP_Err_St_t FP_Init(void)
 
 	if(fp_err_st == FP_InitSuccess)
 	{
-		FP_Search_Q_Buff = xQueueCreate(10 , sizeof(FP_Search_Data_t));
+		FP_Search_Q_Buff = xQueueCreate(10, sizeof(FP_Search_Data_t));
 
 		if(FP_Search_Q_Buff == NULL)
 		{
 			fp_err_st = FP_InitFailed;
 		}
-
 	}
 
 	return fp_err_st;
@@ -385,7 +384,9 @@ void FP_Rx_Cyclic(void)
 
 void FP_SetMode(FP_Mode_t mode)
 {
+
 	FP_Curr_Mode = mode;
+
 	FP_Enroll_St = FP_E_Idle;
 
 	if(mode == FP_ENROLL_MODE)
@@ -430,6 +431,7 @@ FP_Err_St_t FP_CheckPacket(void)
 
 void FP_Enroll_SM(void)
 {
+	static uint8_t err_c = 0;
 	switch (FP_Enroll_St)
 	{
 	case FP_E_Idle:
@@ -449,6 +451,7 @@ void FP_Enroll_SM(void)
 		/* Send generation image command to collect user finger */
 		FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
 		FP_Enroll_St = FP_E_WAIT_GET_IMG_1_CMD;
+
 		break;
 	}
 
@@ -465,6 +468,14 @@ void FP_Enroll_SM(void)
 			else
 			{
 				FP_Enroll_St = FP_E_SEND_GET_IMG_1_CMD;
+			}
+		}
+		else{
+			err_c++;
+			if(err_c > 5)
+			{
+				FP_Enroll_St = FP_E_SEND_GET_IMG_1_CMD;
+				err_c = 0;
 			}
 		}
 		break;
@@ -652,18 +663,21 @@ FP_GetEnroll_Instruction_t FP_GetEnroll_Instruction(void)
 	/* Place Your finger */
 	case FP_E_SEND_GET_IMG_1_CMD:
 	case FP_E_WAIT_GET_IMG_1_CMD:
+
 		return FP_E_Inst_Place_Finger;
 		break;
 
 		/*Lift the finger*/
 	case FP_E_SEND_LIFT_CHECK_CMD:
 	case FP_E_WAIT_LIFT_CHECK_CMD:
+
 		return FP_E_Inst_Lift_Finger;
 		break;
 
 		/* Place the finger again*/
 	case FP_E_SEND_GET_IMG_2_CMD:
 	case FP_E_WAIT_GET_IMG_2_CMD:
+
 		return FP_E_Inst_Place_Finger_Again;
 		break;
 
@@ -676,6 +690,7 @@ FP_GetEnroll_Instruction_t FP_GetEnroll_Instruction(void)
 	case FP_E_WAIT_MERGE_CMD:
 	case FP_E_SEND_STORE_CMD:
 	case FP_E_WAIT_STORE_CMD:
+
 		return FP_E_Inst_Processing;
 		break;
 
@@ -691,6 +706,7 @@ FP_GetEnroll_Instruction_t FP_GetEnroll_Instruction(void)
 
 	}
 }
+
 
 void FP_SEARCH_SM(void)
 {
@@ -839,22 +855,22 @@ void FP_SEARCH_SM(void)
 
 void FP_MainFunction_Cyclic(void)
 {
-	FP_Rx_Cyclic();
+    FP_Rx_Cyclic();
 
-	switch(FP_Curr_Mode)
-	{
-	case FP_ENROLL_MODE:
-	{
-		FP_Enroll_SM();
-		break;
-	}
-	case FP_SEARCH_MODE:
-	{
-		FP_SEARCH_SM();
-		break;
-	}
+    switch (FP_Curr_Mode)
+    {
+        case FP_ENROLL_MODE:
+        {
+            FP_Enroll_SM();
+            break;
+        }
 
-	}
+        case FP_SEARCH_MODE:
+        {
+            FP_SEARCH_SM();
+            break;
+        }
+    }
 }
 
 

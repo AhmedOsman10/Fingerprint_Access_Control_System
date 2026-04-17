@@ -211,7 +211,7 @@ extern const USART_Config_t     USART_Config[USART_MAX_NUM];
  *  - RX_INT = ENABLE,  TX_INT = ENABLE:
  *      Fully interrupt-driven. Cyclic functions are not required.
  */
-#define USART_RX_INT ENABLE
+#define USART_RX_INT  ENABLE
 #define USART_TX_INT  ENABLE
 
 #endif /* USART_USART_CFG_H_ */

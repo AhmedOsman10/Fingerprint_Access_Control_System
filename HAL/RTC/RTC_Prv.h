@@ -18,7 +18,7 @@
 
 #define RTC_SLAVE_ADDR                  (  0x68 << 1)
 #define RTC_I2C_DEVICE_READY_TRIAL          3
-#define RTC_I2C_TIMEOUT                     100
+#define RTC_I2C_TIMEOUT                     3000
 
 #define DecToBCD(val)    (  ((val / 10) << 4)  | (val % 10) )
 #define BCDToDec(val)    (  ((val >> 4) * 10)  + (val & 0x0f) )

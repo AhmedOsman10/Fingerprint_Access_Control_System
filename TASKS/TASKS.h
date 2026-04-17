@@ -21,5 +21,9 @@ void FP_Test(void *pram);
 void FP_Main_Cyclic(void *pram);
 void FP_Simple_Search_Task(void *argument);
 void FP_System_Task(void *argument);
+
+void TASKS_APP_Cyclic(void *pram);
+
+
 #endif /* TASKS_H_ */
 

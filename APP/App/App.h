@@ -14,10 +14,16 @@
 typedef enum APP_Err_St_e
 {
 	APP_Init_Success,
-	APP_Init_Failed
+	APP_Init_Failed,
+
+	APP_Rx_Full_Packet_Nok,
+	APP_Rx_Full_Packet_ok,
 }APP_Err_St_t;
 
+
+
 APP_Err_St_t APP_Init(void );
+void APP_Cylic(void);
 
 
 #endif /* APP_APP_H_ */

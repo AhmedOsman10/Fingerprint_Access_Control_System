@@ -1,0 +1,7 @@
+../HAL/RTC/RTC.c:25:14:RTC_Init	16	static
+../HAL/RTC/RTC.c:46:14:RTC_SetTime	40	static
+../HAL/RTC/RTC.c:69:14:RTC_SetDate	40	static
+../HAL/RTC/RTC.c:93:14:RTC_GetTime	40	static
+../HAL/RTC/RTC.c:115:14:RTC_GetDate	40	static
+../HAL/RTC/RTC.c:143:13:MX_I2C3_Init	8	static
+../HAL/RTC/RTC.c:178:6:HAL_I2C_MspInit	48	static

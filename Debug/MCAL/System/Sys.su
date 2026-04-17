@@ -1,0 +1,4 @@
+../MCAL/System/Sys.c:12:6:Sys_Init	8	static
+../MCAL/System/Sys.c:26:6:SystemClock_Config	88	static
+../MCAL/System/Sys.c:71:7:MX_GPIO_Init	48	static
+../MCAL/System/Sys.c:117:6:Error_Handler	4	static,ignoring_inline_asm

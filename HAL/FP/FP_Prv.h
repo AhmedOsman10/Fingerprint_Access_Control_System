@@ -108,7 +108,10 @@ typedef enum FP_Search_St_e
 }FP_Search_St_t;
 
 
-
 FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payload_len);
+void FP_Enroll_SM(void);
+void FP_SEARCH_SM(void);
+FP_Err_St_t FP_CheckPacket(void);
+
 
 #endif /* FP_FP_PRV_H_ */

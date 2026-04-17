@@ -32,7 +32,6 @@ typedef struct FP_Search_Data_s
 }FP_Search_Data_t;
 
 
-
 typedef enum FP_GetEnroll_Instruction_e{
 	FP_E_Inst_Idle,
 	FP_E_Inst_Place_Finger,
@@ -46,6 +45,10 @@ typedef enum FP_GetEnroll_Instruction_e{
 typedef uint8_t FP_Mode_t;
 #define FP_SEARCH_MODE  0
 #define FP_ENROLL_MODE  1
+
+
+
+
 #define FP_MATCH_ST      1
 #define FP_NOT_MATCH_ST  0
 
@@ -54,9 +57,11 @@ FP_Err_St_t FP_Init(void);
 void FP_SimpleTesT(void);
 FP_Err_St_t FP_Get_User(uint8_t *match_st , uint16_t *user_id);
 void FP_MainFunction_Cyclic(void);
+
 void FP_SetMode(FP_Mode_t mode);
 FP_Mode_t FP_GetMode(void);
 
-
 FP_GetEnroll_Instruction_t FP_GetEnroll_Instruction(void);
+
+
 #endif /* FP_FP_H_ */

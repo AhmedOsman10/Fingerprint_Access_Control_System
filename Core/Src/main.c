@@ -35,14 +35,17 @@ int main(void)
 	TASKS_Init();
 	BaseType_t ret_st;
 
-	ret_st = xTaskCreate(FP_Main_Cyclic, "FP_Main_Cyclic", 400, NULL, 2, NULL);
+	ret_st = xTaskCreate(FP_Main_Cyclic, "FP_Main_Cyclic", 100, NULL, 2, NULL);
 	configASSERT(ret_st == pdPASS);
-//
-	ret_st = xTaskCreate(FP_Test, "FP Test", 400, NULL, 2, NULL);
+	//
+	ret_st = xTaskCreate(TASKS_APP_Cyclic, "TASKS_APP_Cyclic", 400, NULL, 2, NULL);
 	configASSERT(ret_st == pdPASS);
+	//
+	//	ret_st = xTaskCreate(FP_Test, "FP_Test", 400, NULL, 2, NULL);
+	//	configASSERT(ret_st == pdPASS);
 
-//	ret_st = xTaskCreate(FP_Simple_Search_Task, "FP_Simple_Search_Task", 500, NULL, 2, NULL);
-//	configASSERT(ret_st == pdPASS);
+	//	ret_st = xTaskCreate(FP_Simple_Search_Task, "FP_Simple_Search_Task", 500, NULL, 2, NULL);
+	//	configASSERT(ret_st == pdPASS);
 
 	vTaskStartScheduler();
 

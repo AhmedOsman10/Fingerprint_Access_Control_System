@@ -1,0 +1,6 @@
+../TASKS/TASKS.c:24:6:TASKS_Init	8	static
+../TASKS/TASKS.c:30:6:TASKS_USART_30ms	24	static
+../TASKS/TASKS.c:42:6:TASKS_USART_Tx_Cyclic	24	static
+../TASKS/TASKS.c:54:6:FP_Test	32	static
+../TASKS/TASKS.c:89:6:FP_Main_Cyclic	24	static
+../TASKS/TASKS.c:102:6:TASKS_APP_Cyclic	24	static

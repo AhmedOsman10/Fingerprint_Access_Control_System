@@ -106,7 +106,7 @@ const USART_Pin_Config_t USART_Pin_Config[USART_MAX_NUM] =
 	 * TODO: Fill with your actual board mapping if used.
 	 * Example placeholders (set to safe/unused until defined):
 	 */
-	{ .Tx_Port = NULL, .Tx_Pin = 0, .Rx_Port = NULL, .Rx_Pin = 0 },
+	{ .Tx_Port = USART_PORT_B, .Tx_Pin = USART_PIN_10, .Rx_Port = USART_PORT_B, .Rx_Pin = USART_PIN_11 },
 
 	/* ===================================== UART_4 =======================================
 	 * TODO: Fill with your actual board mapping if used.

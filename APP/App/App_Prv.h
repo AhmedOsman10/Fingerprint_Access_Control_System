@@ -24,8 +24,25 @@ typedef enum APP_CMD_e{
 	APP_Enroll_Req = 0x10, // PC(GUI) ===> STM  ==> Set Enroll mode
  	APP_Enroll_St  = 0x11, // STM ==> PC (GUI)  == Enroll mode status
 	APP_Log_Access = 0x12 // STM ==> PC(GUI) user denied or grated with the time ==> Search mode
-
 }APP_CMD_t;
+
+typedef enum App_Rx_St_e{
+	APP_Rx_Wait_Sof,
+	APP_Rx_Get_Cmd,
+	APP_Rx_Get_Len,
+	APP_Rx_Get_Data,
+	APP_Rx_Get_Cs,
+	APP_Rx_Complete_Frame,
+}App_Rx_St_t;
+
+
+
+typedef struct APP_RxFrame_s{
+
+	uint8_t cmd;
+	uint8_t len;
+	uint8_t data[20];
+}APP_RxFrame_t;
 
 #define APP_LOG_ACCESS_DATA_LEN  10
 
