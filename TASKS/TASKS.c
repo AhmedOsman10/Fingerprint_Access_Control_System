@@ -16,7 +16,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "TASKS.h"
-
+#include "RELAY.h"
 #include "FP.h"
 
 #include "App.h"
@@ -105,11 +105,19 @@ void TASKS_APP_Cyclic(void *pram)
 	//	FP_SetMode(FP_ENROLL_MODE);
 	while(1)
 	{
-		APP_Cylic();
+		APP_Cyclic();
 		vTaskDelayUntil(&last_wake , pdMS_TO_TICKS(400));
 	}
 }
 
 
-
-
+void TASKS_RELAY_Cyclic(void *pram)
+{
+	TickType_t last_wake = xTaskGetTickCount();
+	//	FP_SetMode(FP_ENROLL_MODE);
+	while(1)
+	{
+		RELAY_Time_Manager_Cyclic();
+		vTaskDelayUntil(&last_wake , pdMS_TO_TICKS(1));
+	}
+}

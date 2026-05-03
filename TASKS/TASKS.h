@@ -24,6 +24,6 @@ void FP_System_Task(void *argument);
 
 void TASKS_APP_Cyclic(void *pram);
 
-
+void TASKS_RELAY_Cyclic(void *pram);
 #endif /* TASKS_H_ */
 

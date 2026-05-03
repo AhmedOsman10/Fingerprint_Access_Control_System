@@ -40,12 +40,11 @@ int main(void)
 	//
 	ret_st = xTaskCreate(TASKS_APP_Cyclic, "TASKS_APP_Cyclic", 400, NULL, 2, NULL);
 	configASSERT(ret_st == pdPASS);
-	//
-	//	ret_st = xTaskCreate(FP_Test, "FP_Test", 400, NULL, 2, NULL);
-	//	configASSERT(ret_st == pdPASS);
 
-	//	ret_st = xTaskCreate(FP_Simple_Search_Task, "FP_Simple_Search_Task", 500, NULL, 2, NULL);
-	//	configASSERT(ret_st == pdPASS);
+	ret_st = xTaskCreate(TASKS_RELAY_Cyclic, "TASKS_RELAY_Cyclic", 400, NULL,2, NULL);
+	configASSERT(ret_st == pdPASS);
+
+
 
 	vTaskStartScheduler();
 

@@ -43,7 +43,9 @@ TASKS/TASKS.o: ../TASKS/TASKS.c \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/mpu_wrappers.h \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/task.h \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/list.h \
- ../TASKS/TASKS.h E:/Learning_WorkSpace\ -\ 2/Fingerprint/HAL/FP/FP.h \
+ ../TASKS/TASKS.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/HAL/RELAY/RELAY.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/HAL/FP/FP.h \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint/APP/App/App.h
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h:
@@ -90,5 +92,6 @@ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/mpu_
 E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/task.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/list.h:
 ../TASKS/TASKS.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/HAL/RELAY/RELAY.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint/HAL/FP/FP.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint/APP/App/App.h:

@@ -100,6 +100,7 @@
 "./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.o"
 "./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.o"
 "./HAL/FP/FP.o"
+"./HAL/RELAY/RELAY.o"
 "./HAL/RTC/RTC.o"
 "./MCAL/System/Sys.o"
 "./MCAL/USART/USART.o"

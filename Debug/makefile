@@ -20,6 +20,7 @@ RM := rm -rf
 -include MCAL/USART/subdir.mk
 -include MCAL/System/subdir.mk
 -include HAL/RTC/subdir.mk
+-include HAL/RELAY/subdir.mk
 -include HAL/FP/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/Legacy/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
