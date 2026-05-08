@@ -13,6 +13,7 @@
  *        - USART
  *        - RTC
  *        - Fingerprint driver
+ *        - Relay driver
  *    - building and sending response frames to the GUI
  *    - managing high-level system behavior such as:
  *        - enrollment request handling
@@ -80,11 +81,13 @@ static APP_RxFrame_t APP_RxFrame;
  *        - USART driver for GUI communication
  *        - RTC driver for time/date logging
  *        - Fingerprint driver for access control operations
+ *        - Relay driver for door control
  *
  *  Initialization Order:
  *    1. USART
  *    2. RTC
  *    3. Fingerprint driver
+ *    4. Relay driver
  *
  *  Application Impact:
  *    - The application is considered ready only if all required modules
@@ -140,6 +143,7 @@ APP_Err_St_t APP_Init(void )
 		return APP_Init_Failed;
 	}
 
+	/* Initialize the Relay driver to manage the locking mechanism. */
 	RELAY_Init(RELAY_NUM_1);
 
 	/* All required modules initialized successfully */
@@ -444,6 +448,7 @@ static APP_Err_St_t APP_Check_Response(void)
  *         - check for fingerprint result
  *         - collect date/time
  *         - send access log to GUI
+ *         - trigger relay on match
  *    4. If in enroll mode:
  *         - read current enrollment instruction
  *         - send status update to GUI when changed
@@ -560,11 +565,15 @@ void APP_Cyclic(void)
 			/* Send access log to GUI */
 			APP_Send_Cmd(APP_Log_Access, user_payload, APP_LOG_ACCESS_DATA_LEN);
 
-			// Relay On
+			/* Relay Control:
+			 * If the fingerprint matches an authorized user, activate the relay
+			 * to grant physical access. The relay stays active for 5000ms.
+			 */
 			if(match_st == FP_MATCH_ST)
 			{
 				RELAY_On_With_Time(RELAY_NUM_1, 5000);
 			}
+
 			/* Reset previous enrollment instruction.
 			 *
 			 * This ensures that if the system enters enrollment mode later,

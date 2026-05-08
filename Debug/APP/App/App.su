@@ -1,5 +1,0 @@
-../APP/App/App.c:97:14:APP_Init	16	static
-../APP/App/App.c:187:21:APP_Send_Cmd	56	static
-../APP/App/App.c:270:13:APP_Check_RxFrame	16	static
-../APP/App/App.c:411:21:APP_Check_Response	16	static
-../APP/App/App.c:461:6:APP_Cyclic	48	static

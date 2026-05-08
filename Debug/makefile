@@ -19,6 +19,7 @@ RM := rm -rf
 -include Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/subdir.mk
 -include MCAL/USART/subdir.mk
 -include MCAL/System/subdir.mk
+-include MCAL/I2C/subdir.mk
 -include HAL/RTC/subdir.mk
 -include HAL/RELAY/subdir.mk
 -include HAL/FP/subdir.mk

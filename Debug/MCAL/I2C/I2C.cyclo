@@ -1,0 +1,6 @@
+../MCAL/I2C/I2C.c:20:14:I2C_Init	3
+../MCAL/I2C/I2C.c:53:14:I2C_IsDeviceReady	3
+../MCAL/I2C/I2C.c:75:14:I2C_MemWrite	5
+../MCAL/I2C/I2C.c:104:14:I2C_MemRead	5
+../MCAL/I2C/I2C.c:133:13:I2C_EnableClock	10
+../MCAL/I2C/I2C.c:168:13:I2C_GPIO_Init	1

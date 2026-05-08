@@ -45,9 +45,7 @@ int main(void)
 	configASSERT(ret_st == pdPASS);
 
 
-
 	vTaskStartScheduler();
-
 
 
 	/* USER CODE BEGIN WHILE */

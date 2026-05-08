@@ -1,6 +1,4 @@
-HAL/RTC/RTC.o: ../HAL/RTC/RTC.c ../HAL/RTC/RTC_Prv.h ../HAL/RTC/RTC.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/MCAL/I2C/I2C.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/MCAL/I2C/I2C_Cfg.h \
+MCAL/I2C/I2C.o: ../MCAL/I2C/I2C.c ../MCAL/I2C/I2C.h ../MCAL/I2C/I2C_Cfg.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -33,11 +31,10 @@ HAL/RTC/RTC.o: ../HAL/RTC/RTC.c ../HAL/RTC/RTC_Prv.h ../HAL/RTC/RTC.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_usart.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h
-../HAL/RTC/RTC_Prv.h:
-../HAL/RTC/RTC.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/MCAL/I2C/I2C.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/MCAL/I2C/I2C_Cfg.h:
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
+ ../MCAL/I2C/I2C_Prv.h
+../MCAL/I2C/I2C.h:
+../MCAL/I2C/I2C_Cfg.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
@@ -71,3 +68,4 @@ E:/Learning_WorkSpace\ -\ 2/Fingerprint/MCAL/I2C/I2C_Cfg.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_usart.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
+../MCAL/I2C/I2C_Prv.h:
