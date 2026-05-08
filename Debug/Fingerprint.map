@@ -9574,6 +9574,160 @@ Discarded input sections
  .debug_frame   0x00000000      0x3a0 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.o
  .ARM.attributes
                 0x00000000       0x34 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .group         0x00000000        0xc ./HAL/EEPROM/EEPROM.o
+ .text          0x00000000        0x0 ./HAL/EEPROM/EEPROM.o
+ .data          0x00000000        0x0 ./HAL/EEPROM/EEPROM.o
+ .bss           0x00000000        0x0 ./HAL/EEPROM/EEPROM.o
+ .text.EEPROM_Init
+                0x00000000       0x40 ./HAL/EEPROM/EEPROM.o
+ .text.EEPROM_Write_Byte
+                0x00000000       0x4c ./HAL/EEPROM/EEPROM.o
+ .text.EEPROM_Read_Byte
+                0x00000000       0x48 ./HAL/EEPROM/EEPROM.o
+ .debug_info    0x00000000      0x7b8 ./HAL/EEPROM/EEPROM.o
+ .debug_abbrev  0x00000000      0x1ad ./HAL/EEPROM/EEPROM.o
+ .debug_aranges
+                0x00000000       0x30 ./HAL/EEPROM/EEPROM.o
+ .debug_rnglists
+                0x00000000       0x1f ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x30a ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0xaf6 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x22 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x5b ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x2a ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x94 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x43 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x34 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x16 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x57 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x9e ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x364 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x112 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x10 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x16 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x4a ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x34 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x10 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x58 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x8e ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x1c ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x17e ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x16 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x16 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x146 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x103 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x6a ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x1df ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x22 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x28 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x2f ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x1c ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x22 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0xfb ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000     0x1011 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x11f ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000    0x15ea5 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x6d ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x2ad ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000     0x3693 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x56 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x980 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x9e9 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x115 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x13e ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0xa5 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x174 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x287 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x5f ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x236 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x12c ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x21e ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x2e ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x1b5 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0xd6 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x127 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x7e ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x89 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x8ed ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x4d ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x2aa ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x217 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x293 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x98 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000      0x12d ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x28 ./HAL/EEPROM/EEPROM.o
+ .debug_macro   0x00000000       0x1c ./HAL/EEPROM/EEPROM.o
+ .debug_line    0x00000000      0x992 ./HAL/EEPROM/EEPROM.o
+ .debug_str     0x00000000    0xcbe28 ./HAL/EEPROM/EEPROM.o
+ .comment       0x00000000       0x44 ./HAL/EEPROM/EEPROM.o
+ .debug_frame   0x00000000       0x7c ./HAL/EEPROM/EEPROM.o
+ .ARM.attributes
+                0x00000000       0x34 ./HAL/EEPROM/EEPROM.o
  .group         0x00000000        0xc ./HAL/FP/FP.o
  .group         0x00000000        0xc ./HAL/FP/FP.o
  .group         0x00000000        0xc ./HAL/FP/FP.o
@@ -9705,6 +9859,7 @@ Discarded input sections
  .debug_macro   0x00000000    0x15ea5 ./HAL/FP/FP.o
  .debug_macro   0x00000000       0x6d ./HAL/FP/FP.o
  .debug_macro   0x00000000     0x3693 ./HAL/FP/FP.o
+ .debug_macro   0x00000000       0x56 ./HAL/FP/FP.o
  .debug_macro   0x00000000      0x980 ./HAL/FP/FP.o
  .debug_macro   0x00000000      0x9e9 ./HAL/FP/FP.o
  .debug_macro   0x00000000      0x115 ./HAL/FP/FP.o
@@ -9833,6 +9988,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./HAL/RELAY/RELAY.o
  .debug_macro   0x00000000       0x16 ./HAL/RELAY/RELAY.o
  .debug_macro   0x00000000      0x146 ./HAL/RELAY/RELAY.o
+ .debug_macro   0x00000000       0x22 ./HAL/RELAY/RELAY.o
  .debug_macro   0x00000000       0x28 ./HAL/RELAY/RELAY.o
  .debug_macro   0x00000000       0x2f ./HAL/RELAY/RELAY.o
  .debug_macro   0x00000000       0x1c ./HAL/RELAY/RELAY.o
@@ -13057,6 +13213,7 @@ LOAD ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.o
 LOAD ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usart.o
 LOAD ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.o
 LOAD ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_utils.o
+LOAD ./HAL/EEPROM/EEPROM.o
 LOAD ./HAL/FP/FP.o
 LOAD ./HAL/RELAY/RELAY.o
 LOAD ./HAL/RTC/RTC.o
@@ -14813,7 +14970,7 @@ LOAD C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .debug_rnglists
                 0x0000162b       0x13 ./USB_HOST/Target/usbh_platform.o
 
-.debug_macro    0x00000000    0x27e7d
+.debug_macro    0x00000000    0x27e05
  .debug_macro   0x00000000      0x17a ./APP/App/App.o
  .debug_macro   0x0000017a      0xaf6 ./APP/App/App.o
  .debug_macro   0x00000c70       0x22 ./APP/App/App.o
@@ -14921,46 +15078,44 @@ LOAD C:/ST/STM32CubeIDE_1.19.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .debug_macro   0x0002379d       0x80 ./HAL/FP/FP.o
  .debug_macro   0x0002381d       0x9a ./HAL/FP/FP.o
  .debug_macro   0x000238b7       0x10 ./HAL/FP/FP.o
- .debug_macro   0x000238c7       0x56 ./HAL/FP/FP.o
- .debug_macro   0x0002391d      0x379 ./HAL/RELAY/RELAY.o
- .debug_macro   0x00023c96       0x61 ./HAL/RELAY/RELAY.o
- .debug_macro   0x00023cf7       0x22 ./HAL/RELAY/RELAY.o
- .debug_macro   0x00023d19       0xa0 ./HAL/RELAY/RELAY.o
- .debug_macro   0x00023db9      0x301 ./HAL/RTC/RTC.o
- .debug_macro   0x000240ba       0x46 ./HAL/RTC/RTC.o
- .debug_macro   0x00024100      0x21e ./MCAL/System/Sys.o
- .debug_macro   0x0002431e       0xb2 ./MCAL/System/Sys.o
- .debug_macro   0x000243d0      0x385 ./MCAL/USART/USART.o
- .debug_macro   0x00024755      0x1ad ./MCAL/USART/USART.o
- .debug_macro   0x00024902       0x28 ./MCAL/USART/USART.o
- .debug_macro   0x0002492a      0x306 ./MCAL/USART/USART_Cfg.o
- .debug_macro   0x00024c30      0x3b6 ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
- .debug_macro   0x00024fe6       0x16 ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
- .debug_macro   0x00024ffc       0x20 ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
- .debug_macro   0x0002501c       0x73 ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
- .debug_macro   0x0002508f      0x23a ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
- .debug_macro   0x000252c9       0x2e ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
- .debug_macro   0x000252f7       0x2e ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
- .debug_macro   0x00025325       0x28 ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
- .debug_macro   0x0002534d      0x15b ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
- .debug_macro   0x000254a8      0x3b3 ./Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.o
- .debug_macro   0x0002585b      0x3ab ./Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.o
- .debug_macro   0x00025c06       0x28 ./Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.o
- .debug_macro   0x00025c2e      0x3a5 ./Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.o
- .debug_macro   0x00025fd3      0x3a5 ./Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.o
- .debug_macro   0x00026378      0x37c ./TASKS/TASKS.o
- .debug_macro   0x000266f4      0x198 ./Third_Party/FreeRtos/Source/list.o
- .debug_macro   0x0002688c      0x22f ./Third_Party/FreeRtos/Source/queue.o
- .debug_macro   0x00026abb      0x27e ./Third_Party/FreeRtos/Source/tasks.o
- .debug_macro   0x00026d39       0x17 ./Third_Party/FreeRtos/Source/tasks.o
- .debug_macro   0x00026d50      0x1e7 ./Third_Party/FreeRtos/Source/timers.o
- .debug_macro   0x00026f37       0x97 ./Third_Party/FreeRtos/Source/timers.o
- .debug_macro   0x00026fce      0x1a7 ./Third_Party/FreeRtos/Source/portable/GCC/ARM_CM4F/port.o
- .debug_macro   0x00027175      0x219 ./Third_Party/FreeRtos/Source/portable/MemMang/heap_4.o
- .debug_macro   0x0002738e      0x3ba ./USB_HOST/App/usb_host.o
- .debug_macro   0x00027748      0x161 ./USB_HOST/App/usb_host.o
- .debug_macro   0x000278a9      0x3b5 ./USB_HOST/Target/usbh_conf.o
- .debug_macro   0x00027c5e      0x21f ./USB_HOST/Target/usbh_platform.o
+ .debug_macro   0x000238c7      0x379 ./HAL/RELAY/RELAY.o
+ .debug_macro   0x00023c40       0x61 ./HAL/RELAY/RELAY.o
+ .debug_macro   0x00023ca1       0xa0 ./HAL/RELAY/RELAY.o
+ .debug_macro   0x00023d41      0x301 ./HAL/RTC/RTC.o
+ .debug_macro   0x00024042       0x46 ./HAL/RTC/RTC.o
+ .debug_macro   0x00024088      0x21e ./MCAL/System/Sys.o
+ .debug_macro   0x000242a6       0xb2 ./MCAL/System/Sys.o
+ .debug_macro   0x00024358      0x385 ./MCAL/USART/USART.o
+ .debug_macro   0x000246dd      0x1ad ./MCAL/USART/USART.o
+ .debug_macro   0x0002488a       0x28 ./MCAL/USART/USART.o
+ .debug_macro   0x000248b2      0x306 ./MCAL/USART/USART_Cfg.o
+ .debug_macro   0x00024bb8      0x3b6 ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
+ .debug_macro   0x00024f6e       0x16 ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
+ .debug_macro   0x00024f84       0x20 ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
+ .debug_macro   0x00024fa4       0x73 ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
+ .debug_macro   0x00025017      0x23a ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
+ .debug_macro   0x00025251       0x2e ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
+ .debug_macro   0x0002527f       0x2e ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
+ .debug_macro   0x000252ad       0x28 ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
+ .debug_macro   0x000252d5      0x15b ./Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o
+ .debug_macro   0x00025430      0x3b3 ./Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.o
+ .debug_macro   0x000257e3      0x3ab ./Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.o
+ .debug_macro   0x00025b8e       0x28 ./Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.o
+ .debug_macro   0x00025bb6      0x3a5 ./Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.o
+ .debug_macro   0x00025f5b      0x3a5 ./Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.o
+ .debug_macro   0x00026300      0x37c ./TASKS/TASKS.o
+ .debug_macro   0x0002667c      0x198 ./Third_Party/FreeRtos/Source/list.o
+ .debug_macro   0x00026814      0x22f ./Third_Party/FreeRtos/Source/queue.o
+ .debug_macro   0x00026a43      0x27e ./Third_Party/FreeRtos/Source/tasks.o
+ .debug_macro   0x00026cc1       0x17 ./Third_Party/FreeRtos/Source/tasks.o
+ .debug_macro   0x00026cd8      0x1e7 ./Third_Party/FreeRtos/Source/timers.o
+ .debug_macro   0x00026ebf       0x97 ./Third_Party/FreeRtos/Source/timers.o
+ .debug_macro   0x00026f56      0x1a7 ./Third_Party/FreeRtos/Source/portable/GCC/ARM_CM4F/port.o
+ .debug_macro   0x000270fd      0x219 ./Third_Party/FreeRtos/Source/portable/MemMang/heap_4.o
+ .debug_macro   0x00027316      0x3ba ./USB_HOST/App/usb_host.o
+ .debug_macro   0x000276d0      0x161 ./USB_HOST/App/usb_host.o
+ .debug_macro   0x00027831      0x3b5 ./USB_HOST/Target/usbh_conf.o
+ .debug_macro   0x00027be6      0x21f ./USB_HOST/Target/usbh_platform.o
 
 .debug_line     0x00000000    0x27ee8
  .debug_line    0x00000000      0x8a6 ./APP/App/App.o
