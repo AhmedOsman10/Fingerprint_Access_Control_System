@@ -23,6 +23,11 @@ typedef enum EEPROM_Err_St_e{
 
 	EEPROM_Erase_Success,
 	EEPROM_Erase_Failed,
+
+	EEPRROM_Invalid_Page_Num_Arg,
+	EEPRROM_Invalid_Mem_Addr_Arg,
+	EEPRROM_Invalid_Page_Len_Arg,
+	EEPRROM_Invalid_Data_Arg,
 }EEPROM_Err_St_t;
 
 

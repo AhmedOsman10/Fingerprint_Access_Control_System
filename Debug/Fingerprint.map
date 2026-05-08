@@ -9649,12 +9649,26 @@ Discarded input sections
                 0x00000000       0x4c ./HAL/EEPROM/EEPROM.o
  .text.EEPROM_Read_Byte
                 0x00000000       0x48 ./HAL/EEPROM/EEPROM.o
- .debug_info    0x00000000      0x7b8 ./HAL/EEPROM/EEPROM.o
- .debug_abbrev  0x00000000      0x1ad ./HAL/EEPROM/EEPROM.o
+ .text.EEPROM_Write_Page
+                0x00000000       0x70 ./HAL/EEPROM/EEPROM.o
+ .text.EEPROM_Write
+                0x00000000       0x78 ./HAL/EEPROM/EEPROM.o
+ .text.EEPROM_Read
+                0x00000000       0x78 ./HAL/EEPROM/EEPROM.o
+ .text.EEPROM_Read_Page
+                0x00000000       0x70 ./HAL/EEPROM/EEPROM.o
+ .text.EEPROM_Erase_Byte
+                0x00000000       0x36 ./HAL/EEPROM/EEPROM.o
+ .text.EEPROM_Erase_Page
+                0x00000000       0x6e ./HAL/EEPROM/EEPROM.o
+ .text.EEPROM_Erase_All
+                0x00000000       0x44 ./HAL/EEPROM/EEPROM.o
+ .debug_info    0x00000000      0xa4f ./HAL/EEPROM/EEPROM.o
+ .debug_abbrev  0x00000000      0x1d9 ./HAL/EEPROM/EEPROM.o
  .debug_aranges
-                0x00000000       0x30 ./HAL/EEPROM/EEPROM.o
+                0x00000000       0x68 ./HAL/EEPROM/EEPROM.o
  .debug_rnglists
-                0x00000000       0x1f ./HAL/EEPROM/EEPROM.o
+                0x00000000       0x49 ./HAL/EEPROM/EEPROM.o
  .debug_macro   0x00000000      0x30a ./HAL/EEPROM/EEPROM.o
  .debug_macro   0x00000000      0xaf6 ./HAL/EEPROM/EEPROM.o
  .debug_macro   0x00000000       0x22 ./HAL/EEPROM/EEPROM.o
@@ -9722,10 +9736,10 @@ Discarded input sections
  .debug_macro   0x00000000      0x12d ./HAL/EEPROM/EEPROM.o
  .debug_macro   0x00000000       0x28 ./HAL/EEPROM/EEPROM.o
  .debug_macro   0x00000000       0x1c ./HAL/EEPROM/EEPROM.o
- .debug_line    0x00000000      0x992 ./HAL/EEPROM/EEPROM.o
- .debug_str     0x00000000    0xcbe28 ./HAL/EEPROM/EEPROM.o
+ .debug_line    0x00000000      0xb68 ./HAL/EEPROM/EEPROM.o
+ .debug_str     0x00000000    0xcbf2d ./HAL/EEPROM/EEPROM.o
  .comment       0x00000000       0x44 ./HAL/EEPROM/EEPROM.o
- .debug_frame   0x00000000       0x7c ./HAL/EEPROM/EEPROM.o
+ .debug_frame   0x00000000      0x178 ./HAL/EEPROM/EEPROM.o
  .ARM.attributes
                 0x00000000       0x34 ./HAL/EEPROM/EEPROM.o
  .group         0x00000000        0xc ./HAL/FP/FP.o
