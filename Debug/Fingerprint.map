@@ -9652,9 +9652,9 @@ Discarded input sections
  .text.EEPROM_Write_Page
                 0x00000000       0x70 ./HAL/EEPROM/EEPROM.o
  .text.EEPROM_Write
-                0x00000000       0x78 ./HAL/EEPROM/EEPROM.o
+                0x00000000       0x74 ./HAL/EEPROM/EEPROM.o
  .text.EEPROM_Read
-                0x00000000       0x78 ./HAL/EEPROM/EEPROM.o
+                0x00000000       0x74 ./HAL/EEPROM/EEPROM.o
  .text.EEPROM_Read_Page
                 0x00000000       0x70 ./HAL/EEPROM/EEPROM.o
  .text.EEPROM_Erase_Byte
@@ -9736,8 +9736,8 @@ Discarded input sections
  .debug_macro   0x00000000      0x12d ./HAL/EEPROM/EEPROM.o
  .debug_macro   0x00000000       0x28 ./HAL/EEPROM/EEPROM.o
  .debug_macro   0x00000000       0x1c ./HAL/EEPROM/EEPROM.o
- .debug_line    0x00000000      0xb68 ./HAL/EEPROM/EEPROM.o
- .debug_str     0x00000000    0xcbf2d ./HAL/EEPROM/EEPROM.o
+ .debug_line    0x00000000      0xb6a ./HAL/EEPROM/EEPROM.o
+ .debug_str     0x00000000    0xcbf29 ./HAL/EEPROM/EEPROM.o
  .comment       0x00000000       0x44 ./HAL/EEPROM/EEPROM.o
  .debug_frame   0x00000000      0x178 ./HAL/EEPROM/EEPROM.o
  .ARM.attributes

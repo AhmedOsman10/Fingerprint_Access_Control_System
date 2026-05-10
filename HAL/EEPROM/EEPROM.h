@@ -24,10 +24,10 @@ typedef enum EEPROM_Err_St_e{
 	EEPROM_Erase_Success,
 	EEPROM_Erase_Failed,
 
-	EEPRROM_Invalid_Page_Num_Arg,
-	EEPRROM_Invalid_Mem_Addr_Arg,
-	EEPRROM_Invalid_Page_Len_Arg,
-	EEPRROM_Invalid_Data_Arg,
+	EEPROM_Invalid_Page_Num_Arg,
+	EEPROM_Invalid_Mem_Addr_Arg,
+	EEPROM_Invalid_Page_Len_Arg,
+	EEPROM_Invalid_Data_Arg,
 }EEPROM_Err_St_t;
 
 
@@ -44,5 +44,7 @@ EEPROM_Err_St_t EEPROM_Erase_All(void);
 EEPROM_Err_St_t EEPROM_Erase_Page(uint16_t Page_Num);
 EEPROM_Err_St_t EEPROM_Erase_Byte(uint16_t EEPROM_Mem_Addr);
 
+EEPROM_Err_St_t EEPROM_Write(uint16_t EEPROM_Mem_Addr, uint8_t *data, uint8_t lenth);
+EEPROM_Err_St_t EEPROM_Read(uint16_t EEPROM_Mem_Addr, uint8_t *data, uint8_t lenth);
 
 #endif /* EEPROM_EEPROM_H_ */
