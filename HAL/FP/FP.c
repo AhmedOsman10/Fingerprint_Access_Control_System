@@ -37,7 +37,7 @@
 #include "FP_Prv.h"
 #include "FP_Cfg.h"
 #include "stm32f4xx_hal.h"
-
+#include "EEPROM.h"
 
 /* Enrollment state machine current state.
  *
@@ -140,6 +140,8 @@ FP_Err_St_t FP_Init(void)
 	/* Default return value is failure until all required steps succeed */
 	FP_Err_St_t fp_err_st = FP_InitFailed;
 
+	uint8_t next_page_h  = 0;
+	uint8_t next_page_l  = 0;
 	/* Default USART init state */
 	USART_Err_St_t usart_err_st = USART_InitFailed;
 
@@ -175,7 +177,30 @@ FP_Err_St_t FP_Init(void)
 		{
 			fp_err_st = FP_InitFailed;
 		}
+		else
+		{
+			EEPROM_Err_St_t  EEPROM_Err_St = EEPROM_Init();
+			if(EEPROM_Err_St == EEPROM_Init_Failed)
+			{
+				fp_err_st = FP_InitFailed;
+			}
+			else
+			{
+				EEPROM_Read_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, &next_page_h);
+				EEPROM_Read_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, &next_page_l);
+
+				FP_NextPage = (next_page_h << 8) | next_page_l ;
+
+				if(FP_NextPage == 0xFFFF)
+				{
+					FP_NextPage = 1;
+					EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, FP_NextPage >> 8);
+					EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, FP_NextPage & 0xFF);
+				}
+			}
+		}
 	}
+
 
 	return fp_err_st;
 }
@@ -378,175 +403,175 @@ void FP_Rx_Cyclic(void)
 	{
 		switch (FP_Rx_St)
 		{
-			case FP_Wait_Rx_Header_H:
+		case FP_Wait_Rx_Header_H:
+		{
+			/* Wait for the first header byte.
+			 *
+			 * Any byte that is not FP_HEADER_H is ignored.
+			 * This lets the parser resynchronize with the next valid packet.
+			 */
+			if (byte == FP_HEADER_H)
 			{
-				/* Wait for the first header byte.
+				FP_Rx_St = FP_Wait_Rx_Header_L;
+			}
+			break;
+		}
+
+		case FP_Wait_Rx_Header_L:
+		{
+			/* Wait for the second header byte.
+			 *
+			 * If it matches, packet synchronization is successful.
+			 * If not, restart from header high.
+			 */
+			if (byte == FP_HEADER_L)
+			{
+				FP_Rx_St = FP_Wait_Rx_ADDR;
+			}
+			else
+			{
+				FP_Rx_St = FP_Wait_Rx_Header_H;
+			}
+			break;
+		}
+
+		case FP_Wait_Rx_ADDR:
+		{
+			/* Receive the 4-byte module address.
+			 *
+			 * This driver currently does not validate or store the address bytes.
+			 * It only counts them to keep packet parsing aligned correctly.
+			 */
+			FP_Rx_Indx++;
+
+			/* After 4 address bytes, move to PID state */
+			if (FP_Rx_Indx == 4)
+			{
+				/* Reset index because it will be reused later for payload buffer */
+				FP_Rx_Indx = 0;
+				FP_Rx_St = FP_Wait_Rx_Pid;
+			}
+			break;
+		}
+
+		case FP_Wait_Rx_Pid:
+		{
+			/* Expect ACK packet identifier.
+			 *
+			 * This driver currently accepts only ACK packets.
+			 */
+			if (byte == FP_PID_ACK)
+			{
+				FP_Rx_St = FP_Wait_Rx_len_H;
+			}
+			else
+			{
+				/* Invalid packet type -> restart synchronization */
+				FP_Rx_St = FP_Wait_Rx_Header_H;
+			}
+			break;
+		}
+
+		case FP_Wait_Rx_len_H:
+		{
+			/* Store high byte of packet length */
+			FP_Rx_Packect_Len = (byte << 8);
+
+			/* Next, receive the low byte */
+			FP_Rx_St = FP_Wait_Rx_len_L;
+			break;
+		}
+
+		case FP_Wait_Rx_len_L:
+		{
+			/* Complete the 16-bit packet length */
+			FP_Rx_Packect_Len |= byte;
+
+			/* After length is known, the remaining bytes are:
+			 *   payload + checksum
+			 */
+			FP_Rx_St = FP_Wait_Rx_Data;
+			break;
+		}
+
+		case FP_Wait_Rx_Data:
+		{
+			/* Store bytes after Length field.
+			 *
+			 * These bytes are important because they include:
+			 *   - confirmation code
+			 *   - returned payload data
+			 *   - checksum bytes
+			 */
+			FP_Rx_Buff[FP_Rx_Indx] = byte;
+			FP_Rx_Indx++;
+
+			/* Once all payload + checksum bytes are received,
+			 * calculate and verify checksum.
+			 */
+			if (FP_Rx_Indx == FP_Rx_Packect_Len)
+			{
+				/* Checksum calculation according to protocol:
+				 *   PID + Length + Payload
 				 *
-				 * Any byte that is not FP_HEADER_H is ignored.
-				 * This lets the parser resynchronize with the next valid packet.
-				 */
-				if (byte == FP_HEADER_H)
-				{
-					FP_Rx_St = FP_Wait_Rx_Header_L;
-				}
-				break;
-			}
-
-			case FP_Wait_Rx_Header_L:
-			{
-				/* Wait for the second header byte.
+				 * Here:
+				 *   - PID is FP_PID_ACK
+				 *   - Length is FP_Rx_Packect_Len
+				 *   - Payload bytes are stored in FP_Rx_Buff[0 .. len-3]
 				 *
-				 * If it matches, packet synchronization is successful.
-				 * If not, restart from header high.
+				 * The last 2 bytes of FP_Rx_Buff are checksum bytes,
+				 * so they are excluded from local checksum calculation.
 				 */
-				if (byte == FP_HEADER_L)
+				calc_sum = FP_PID_ACK + FP_Rx_Packect_Len;
+
+				for (uint8_t i = 0; i < FP_Rx_Packect_Len - 2; i++)
 				{
-					FP_Rx_St = FP_Wait_Rx_ADDR;
+					calc_sum += FP_Rx_Buff[i];
 				}
-				else
+
+				/* Reconstruct received checksum from the last two bytes */
+				rec_sum = (FP_Rx_Buff[FP_Rx_Packect_Len - 2] << 8) | FP_Rx_Buff[FP_Rx_Packect_Len - 1];
+
+				/* Compare locally calculated checksum with received checksum */
+				if (calc_sum == rec_sum)
 				{
-					FP_Rx_St = FP_Wait_Rx_Header_H;
-				}
-				break;
-			}
-
-			case FP_Wait_Rx_ADDR:
-			{
-				/* Receive the 4-byte module address.
-				 *
-				 * This driver currently does not validate or store the address bytes.
-				 * It only counts them to keep packet parsing aligned correctly.
-				 */
-				FP_Rx_Indx++;
-
-				/* After 4 address bytes, move to PID state */
-				if (FP_Rx_Indx == 4)
-				{
-					/* Reset index because it will be reused later for payload buffer */
-					FP_Rx_Indx = 0;
-					FP_Rx_St = FP_Wait_Rx_Pid;
-				}
-				break;
-			}
-
-			case FP_Wait_Rx_Pid:
-			{
-				/* Expect ACK packet identifier.
-				 *
-				 * This driver currently accepts only ACK packets.
-				 */
-				if (byte == FP_PID_ACK)
-				{
-					FP_Rx_St = FP_Wait_Rx_len_H;
-				}
-				else
-				{
-					/* Invalid packet type -> restart synchronization */
-					FP_Rx_St = FP_Wait_Rx_Header_H;
-				}
-				break;
-			}
-
-			case FP_Wait_Rx_len_H:
-			{
-				/* Store high byte of packet length */
-				FP_Rx_Packect_Len = (byte << 8);
-
-				/* Next, receive the low byte */
-				FP_Rx_St = FP_Wait_Rx_len_L;
-				break;
-			}
-
-			case FP_Wait_Rx_len_L:
-			{
-				/* Complete the 16-bit packet length */
-				FP_Rx_Packect_Len |= byte;
-
-				/* After length is known, the remaining bytes are:
-				 *   payload + checksum
-				 */
-				FP_Rx_St = FP_Wait_Rx_Data;
-				break;
-			}
-
-			case FP_Wait_Rx_Data:
-			{
-				/* Store bytes after Length field.
-				 *
-				 * These bytes are important because they include:
-				 *   - confirmation code
-				 *   - returned payload data
-				 *   - checksum bytes
-				 */
-				FP_Rx_Buff[FP_Rx_Indx] = byte;
-				FP_Rx_Indx++;
-
-				/* Once all payload + checksum bytes are received,
-				 * calculate and verify checksum.
-				 */
-				if (FP_Rx_Indx == FP_Rx_Packect_Len)
-				{
-					/* Checksum calculation according to protocol:
-					 *   PID + Length + Payload
+					/* Packet is valid and passed integrity check.
 					 *
-					 * Here:
-					 *   - PID is FP_PID_ACK
-					 *   - Length is FP_Rx_Packect_Len
-					 *   - Payload bytes are stored in FP_Rx_Buff[0 .. len-3]
+					 * At this point:
+					 *  - Full frame has been received
+					 *  - Checksum is correct
+					 *  - FP_Rx_Buff[] contains valid payload + checksum
 					 *
-					 * The last 2 bytes of FP_Rx_Buff are checksum bytes,
-					 * so they are excluded from local checksum calculation.
+					 * The frame is now ready for higher-level processing.
 					 */
-					calc_sum = FP_PID_ACK + FP_Rx_Packect_Len;
 
-					for (uint8_t i = 0; i < FP_Rx_Packect_Len - 2; i++)
-					{
-						calc_sum += FP_Rx_Buff[i];
-					}
+					/* Reset index to prepare for next incoming frame */
+					FP_Rx_Indx = 0;
 
-					/* Reconstruct received checksum from the last two bytes */
-					rec_sum = (FP_Rx_Buff[FP_Rx_Packect_Len - 2] << 8) | FP_Rx_Buff[FP_Rx_Packect_Len - 1];
+					/* Restart RX state machine to look for next packet.
+					 *
+					 * We do NOT stay in "Frame Complete" state because
+					 * packet availability is handled using a flag mechanism.
+					 */
+					FP_Rx_St = FP_Wait_Rx_Header_H;
 
-					/* Compare locally calculated checksum with received checksum */
-					if (calc_sum == rec_sum)
-					{
-						/* Packet is valid and passed integrity check.
-						 *
-						 * At this point:
-						 *  - Full frame has been received
-						 *  - Checksum is correct
-						 *  - FP_Rx_Buff[] contains valid payload + checksum
-						 *
-						 * The frame is now ready for higher-level processing.
-						 */
-
-						/* Reset index to prepare for next incoming frame */
-						FP_Rx_Indx = 0;
-
-						/* Restart RX state machine to look for next packet.
-						 *
-						 * We do NOT stay in "Frame Complete" state because
-						 * packet availability is handled using a flag mechanism.
-						 */
-						FP_Rx_St = FP_Wait_Rx_Header_H;
-
-						/* Signal to application layer that a full valid frame is ready.
-						 *
-						 * This flag will be read and cleared by FP_CheckPacket().
-						 */
-						FP_Rx_Frame_Ready_Flag = FRAME_COMPLETED;
-					}
-					else
-					{
-						/* Invalid checksum means packet corruption or bad alignment.
-						 * Discard current frame and restart synchronization.
-						 */
-						FP_Rx_Indx = 0;
-						FP_Rx_St = FP_Wait_Rx_Header_H;
-					}
+					/* Signal to application layer that a full valid frame is ready.
+					 *
+					 * This flag will be read and cleared by FP_CheckPacket().
+					 */
+					FP_Rx_Frame_Ready_Flag = FRAME_COMPLETED;
 				}
-				break;
+				else
+				{
+					/* Invalid checksum means packet corruption or bad alignment.
+					 * Discard current frame and restart synchronization.
+					 */
+					FP_Rx_Indx = 0;
+					FP_Rx_St = FP_Wait_Rx_Header_H;
+				}
 			}
+			break;
+		}
 		}
 	}
 }
@@ -697,267 +722,270 @@ FP_Err_St_t FP_CheckPacket(void)
  ******************************************************************************************/
 void FP_Enroll_SM(void)
 {
-    /* Retry counter used while waiting for the first image capture response.
-     *
-     * static is used so the counter value is preserved across cyclic calls.
-     */
-    static uint8_t err_c = 0;
+	/* Retry counter used while waiting for the first image capture response.
+	 *
+	 * static is used so the counter value is preserved across cyclic calls.
+	 */
+	static uint8_t err_c = 0;
 
-    switch (FP_Enroll_St)
-    {
-        case FP_E_Idle:
-        {
-            /* No active enrollment operation */
-            break;
-        }
+	switch (FP_Enroll_St)
+	{
+	case FP_E_Idle:
+	{
+		/* No active enrollment operation */
+		break;
+	}
 
-        case FP_E_Start:
-        {
-            /* Enrollment entry point:
-             * move directly to first image capture command
-             */
-            FP_Enroll_St = FP_E_SEND_GET_IMG_1_CMD;
-            break;
-        }
+	case FP_E_Start:
+	{
+		/* Enrollment entry point:
+		 * move directly to first image capture command
+		 */
+		FP_Enroll_St = FP_E_SEND_GET_IMG_1_CMD;
+		break;
+	}
 
-        case FP_E_SEND_GET_IMG_1_CMD:
-        {
-            /* Request the module to capture the first fingerprint image */
-            FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
+	case FP_E_SEND_GET_IMG_1_CMD:
+	{
+		/* Request the module to capture the first fingerprint image */
+		FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
 
-            /* After sending, wait for response */
-            FP_Enroll_St = FP_E_WAIT_GET_IMG_1_CMD;
-            break;
-        }
+		/* After sending, wait for response */
+		FP_Enroll_St = FP_E_WAIT_GET_IMG_1_CMD;
+		break;
+	}
 
-        case FP_E_WAIT_GET_IMG_1_CMD:
-        {
-            /* Wait for first image capture response */
-            if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
-            {
-                /* Check confirmation code */
-                if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
-                {
-                    /* First fingerprint image captured successfully */
-                    FP_Enroll_St = FP_E_SEND_GEN_CHAR_1_CMD;
-                }
-                else
-                {
-                    /* Finger not captured correctly -> retry first image capture */
-                    FP_Enroll_St = FP_E_SEND_GET_IMG_1_CMD;
-                }
-            }
-            else
-            {
-                /* No valid packet yet -> count wait cycles */
-                err_c++;
+	case FP_E_WAIT_GET_IMG_1_CMD:
+	{
+		/* Wait for first image capture response */
+		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		{
+			/* Check confirmation code */
+			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
+			{
+				/* First fingerprint image captured successfully */
+				FP_Enroll_St = FP_E_SEND_GEN_CHAR_1_CMD;
+			}
+			else
+			{
+				/* Finger not captured correctly -> retry first image capture */
+				FP_Enroll_St = FP_E_SEND_GET_IMG_1_CMD;
+			}
+		}
+		else
+		{
+			/* No valid packet yet -> count wait cycles */
+			err_c++;
 
-                /* If waiting too long, retry command */
-                if (err_c > 5)
-                {
-                    FP_Enroll_St = FP_E_SEND_GET_IMG_1_CMD;
-                    err_c = 0;
-                }
-            }
-            break;
-        }
+			/* If waiting too long, retry command */
+			if (err_c > 5)
+			{
+				FP_Enroll_St = FP_E_SEND_GET_IMG_1_CMD;
+				err_c = 0;
+			}
+		}
+		break;
+	}
 
-        case FP_E_SEND_GEN_CHAR_1_CMD:
-        {
-            /* Convert first captured image into character file 1 */
-            uint8_t FP_Buff_1 = FP_CHAR_FILE_1;
-            FP_SendCommand(FP_GEN_FILE_CHAR_CMD, &FP_Buff_1, 1);
+	case FP_E_SEND_GEN_CHAR_1_CMD:
+	{
+		/* Convert first captured image into character file 1 */
+		uint8_t FP_Buff_1 = FP_CHAR_FILE_1;
+		FP_SendCommand(FP_GEN_FILE_CHAR_CMD, &FP_Buff_1, 1);
 
-            /* Wait for response */
-            FP_Enroll_St = FP_E_WAIT_GEN_CHAR_1_CMD;
-            break;
-        }
+		/* Wait for response */
+		FP_Enroll_St = FP_E_WAIT_GEN_CHAR_1_CMD;
+		break;
+	}
 
-        case FP_E_WAIT_GEN_CHAR_1_CMD:
-        {
-            /* Wait for character-file generation response */
-            if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
-            {
-                if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
-                {
-                    /* First character file generated successfully.
-                     * Next step is to ensure user lifts finger before second scan.
-                     */
-                    FP_Enroll_St = FP_E_SEND_LIFT_CHECK_CMD;
-                }
-                else
-                {
-                    /* Character generation failed -> restart from first image capture */
-                    FP_Enroll_St = FP_E_SEND_GET_IMG_1_CMD;
-                }
-            }
-            break;
-        }
+	case FP_E_WAIT_GEN_CHAR_1_CMD:
+	{
+		/* Wait for character-file generation response */
+		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		{
+			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
+			{
+				/* First character file generated successfully.
+				 * Next step is to ensure user lifts finger before second scan.
+				 */
+				FP_Enroll_St = FP_E_SEND_LIFT_CHECK_CMD;
+			}
+			else
+			{
+				/* Character generation failed -> restart from first image capture */
+				FP_Enroll_St = FP_E_SEND_GET_IMG_1_CMD;
+			}
+		}
+		break;
+	}
 
-        case FP_E_SEND_LIFT_CHECK_CMD:
-        {
-            /* Reuse image capture command to detect if finger was removed.
-             *
-             * The module will return "no finger" when the user lifts finger.
-             */
-            FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
-            FP_Enroll_St = FP_E_WAIT_LIFT_CHECK_CMD;
-            break;
-        }
+	case FP_E_SEND_LIFT_CHECK_CMD:
+	{
+		/* Reuse image capture command to detect if finger was removed.
+		 *
+		 * The module will return "no finger" when the user lifts finger.
+		 */
+		FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
+		FP_Enroll_St = FP_E_WAIT_LIFT_CHECK_CMD;
+		break;
+	}
 
-        case FP_E_WAIT_LIFT_CHECK_CMD:
-        {
-            /* Wait until module confirms no finger on sensor */
-            if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
-            {
-                if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_NO_FINGER)
-                {
-                    /* Finger successfully lifted -> proceed to second capture */
-                    FP_Enroll_St = FP_E_SEND_GET_IMG_2_CMD;
-                }
-                else
-                {
-                    /* Finger still present -> keep checking */
-                    FP_Enroll_St = FP_E_SEND_LIFT_CHECK_CMD;
-                }
-            }
-            break;
-        }
+	case FP_E_WAIT_LIFT_CHECK_CMD:
+	{
+		/* Wait until module confirms no finger on sensor */
+		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		{
+			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_NO_FINGER)
+			{
+				/* Finger successfully lifted -> proceed to second capture */
+				FP_Enroll_St = FP_E_SEND_GET_IMG_2_CMD;
+			}
+			else
+			{
+				/* Finger still present -> keep checking */
+				FP_Enroll_St = FP_E_SEND_LIFT_CHECK_CMD;
+			}
+		}
+		break;
+	}
 
-        case FP_E_SEND_GET_IMG_2_CMD:
-        {
-            /* Capture second fingerprint image */
-            FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
-            FP_Enroll_St = FP_E_WAIT_GET_IMG_2_CMD;
-            break;
-        }
+	case FP_E_SEND_GET_IMG_2_CMD:
+	{
+		/* Capture second fingerprint image */
+		FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
+		FP_Enroll_St = FP_E_WAIT_GET_IMG_2_CMD;
+		break;
+	}
 
-        case FP_E_WAIT_GET_IMG_2_CMD:
-        {
-            /* Wait for second image capture response */
-            if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
-            {
-                if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
-                {
-                    /* Second image captured successfully */
-                    FP_Enroll_St = FP_E_SEND_GEN_CHAR_2_CMD;
-                }
-                else
-                {
-                    /* Retry second capture */
-                    FP_Enroll_St = FP_E_SEND_GET_IMG_2_CMD;
-                }
-            }
-            break;
-        }
+	case FP_E_WAIT_GET_IMG_2_CMD:
+	{
+		/* Wait for second image capture response */
+		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		{
+			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
+			{
+				/* Second image captured successfully */
+				FP_Enroll_St = FP_E_SEND_GEN_CHAR_2_CMD;
+			}
+			else
+			{
+				/* Retry second capture */
+				FP_Enroll_St = FP_E_SEND_GET_IMG_2_CMD;
+			}
+		}
+		break;
+	}
 
-        case FP_E_SEND_GEN_CHAR_2_CMD:
-        {
-            /* Convert second captured image into character file 2 */
-            uint8_t FP_Buff_2 = FP_CHAR_FILE_2;
-            FP_SendCommand(FP_GEN_FILE_CHAR_CMD, &FP_Buff_2, 1);
-            FP_Enroll_St = FP_E_WAIT_GEN_CHAR_2_CMD;
-            break;
-        }
+	case FP_E_SEND_GEN_CHAR_2_CMD:
+	{
+		/* Convert second captured image into character file 2 */
+		uint8_t FP_Buff_2 = FP_CHAR_FILE_2;
+		FP_SendCommand(FP_GEN_FILE_CHAR_CMD, &FP_Buff_2, 1);
+		FP_Enroll_St = FP_E_WAIT_GEN_CHAR_2_CMD;
+		break;
+	}
 
-        case FP_E_WAIT_GEN_CHAR_2_CMD:
-        {
-            /* Wait for second character-file generation response */
-            if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
-            {
-                if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
-                {
-                    /* Both character files are ready -> merge them */
-                    FP_Enroll_St = FP_E_SEND_MERGE_CMD;
-                }
-                else
-                {
-                    /* Retry second capture flow */
-                    FP_Enroll_St = FP_E_SEND_GET_IMG_2_CMD;
-                }
-            }
-            break;
-        }
+	case FP_E_WAIT_GEN_CHAR_2_CMD:
+	{
+		/* Wait for second character-file generation response */
+		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		{
+			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
+			{
+				/* Both character files are ready -> merge them */
+				FP_Enroll_St = FP_E_SEND_MERGE_CMD;
+			}
+			else
+			{
+				/* Retry second capture flow */
+				FP_Enroll_St = FP_E_SEND_GET_IMG_2_CMD;
+			}
+		}
+		break;
+	}
 
-        case FP_E_SEND_MERGE_CMD:
-        {
-            /* Merge character file 1 and character file 2 into one template */
-            FP_SendCommand(FP_MERGE_TWO_IMG_CMD, NULL, 0);
-            FP_Enroll_St = FP_E_WAIT_MERGE_CMD;
-            break;
-        }
+	case FP_E_SEND_MERGE_CMD:
+	{
+		/* Merge character file 1 and character file 2 into one template */
+		FP_SendCommand(FP_MERGE_TWO_IMG_CMD, NULL, 0);
+		FP_Enroll_St = FP_E_WAIT_MERGE_CMD;
+		break;
+	}
 
-        case FP_E_WAIT_MERGE_CMD:
-        {
-            /* Wait for merge response */
-            if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
-            {
-                if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_MERGE_SUCCESS)
-                {
-                    /* Template created successfully -> store in flash */
-                    FP_Enroll_St = FP_E_SEND_STORE_CMD;
-                }
-                else
-                {
-                    /* Retry merge if required */
-                    FP_Enroll_St = FP_E_SEND_MERGE_CMD;
-                }
-            }
-            break;
-        }
+	case FP_E_WAIT_MERGE_CMD:
+	{
+		/* Wait for merge response */
+		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		{
+			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_MERGE_SUCCESS)
+			{
+				/* Template created successfully -> store in flash */
+				FP_Enroll_St = FP_E_SEND_STORE_CMD;
+			}
+			else
+			{
+				/* Retry merge if required */
+				FP_Enroll_St = FP_E_SEND_MERGE_CMD;
+			}
+		}
+		break;
+	}
 
-        case FP_E_SEND_STORE_CMD:
-        {
-            /* Store merged template in flash at FP_NextPage
-             *
-             * Payload format:
-             *   [0] Character buffer number
-             *   [1] Page ID high byte
-             *   [2] Page ID low byte
-             */
-            uint8_t FP_Store_Payload[3] = {FP_CHAR_FILE_1, (FP_NextPage >> 8), (FP_NextPage & 0xFF)};
+	case FP_E_SEND_STORE_CMD:
+	{
+		/* Store merged template in flash at FP_NextPage
+		 *
+		 * Payload format:
+		 *   [0] Character buffer number
+		 *   [1] Page ID high byte
+		 *   [2] Page ID low byte
+		 */
 
-            FP_SendCommand(FP_STORE_IMG_CMD, FP_Store_Payload, 3);
-            FP_Enroll_St = FP_E_WAIT_STORE_CMD;
-            break;
-        }
+		uint8_t FP_Store_Payload[3] = {FP_CHAR_FILE_1, (FP_NextPage >> 8), (FP_NextPage & 0xFF)};
 
-        case FP_E_WAIT_STORE_CMD:
-        {
-            /* Wait for store response */
-            if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
-            {
-                if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_STORE_SUCCESS)
-                {
-                    /* Enrollment completed successfully */
-                    FP_Enroll_St = FP_E_Success;
-                }
-                else
-                {
-                    /* Store operation failed */
-                    FP_Enroll_St = FP_E_Failed;
-                }
-            }
-            break;
-        }
+		FP_SendCommand(FP_STORE_IMG_CMD, FP_Store_Payload, 3);
+		FP_Enroll_St = FP_E_WAIT_STORE_CMD;
+		break;
+	}
 
-        case FP_E_Success:
-        {
-            /* Increment page only on successful enrollment */
-            FP_NextPage++;
+	case FP_E_WAIT_STORE_CMD:
+	{
+		/* Wait for store response */
+		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		{
+			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_STORE_SUCCESS)
+			{
+				/* Enrollment completed successfully */
+				FP_Enroll_St = FP_E_Success;
+			}
+			else
+			{
+				/* Store operation failed */
+				FP_Enroll_St = FP_E_Failed;
+			}
+		}
+		break;
+	}
 
-            /* Return driver back to normal search mode */
-            FP_SetMode(FP_SEARCH_MODE);
-            break;
-        }
+	case FP_E_Success:
+	{
+		/* Increment page only on successful enrollment */
+		FP_NextPage++;
 
-        case FP_E_Failed:
-        {
-            /* Return driver back to normal search mode after failure */
-            FP_SetMode(FP_SEARCH_MODE);
-            break;
-        }
-    }
+		EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, FP_NextPage >> 8);
+		EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, FP_NextPage & 0xFF);
+		/* Return driver back to normal search mode */
+		FP_SetMode(FP_SEARCH_MODE);
+		break;
+	}
+
+	case FP_E_Failed:
+	{
+		/* Return driver back to normal search mode after failure */
+		FP_SetMode(FP_SEARCH_MODE);
+		break;
+	}
+	}
 }
 
 
@@ -982,62 +1010,62 @@ void FP_Enroll_SM(void)
  ******************************************************************************************/
 FP_GetEnroll_Instruction_t FP_GetEnroll_Instruction(void)
 {
-    /* If driver is not in enrollment mode, no enrollment instruction is active */
-    if (FP_Curr_Mode != FP_ENROLL_MODE)
-    {
-        return FP_E_Inst_Idle;
-    }
+	/* If driver is not in enrollment mode, no enrollment instruction is active */
+	if (FP_Curr_Mode != FP_ENROLL_MODE)
+	{
+		return FP_E_Inst_Idle;
+	}
 
-    /* Map internal enrollment states into user-facing instructions */
-    switch (FP_Enroll_St)
-    {
-        case FP_E_SEND_GET_IMG_1_CMD:
-        case FP_E_WAIT_GET_IMG_1_CMD:
-        {
-            /* User should place finger for first scan */
-            return FP_E_Inst_Place_Finger;
-        }
+	/* Map internal enrollment states into user-facing instructions */
+	switch (FP_Enroll_St)
+	{
+	case FP_E_SEND_GET_IMG_1_CMD:
+	case FP_E_WAIT_GET_IMG_1_CMD:
+	{
+		/* User should place finger for first scan */
+		return FP_E_Inst_Place_Finger;
+	}
 
-        case FP_E_SEND_LIFT_CHECK_CMD:
-        case FP_E_WAIT_LIFT_CHECK_CMD:
-        {
-            /* User should lift finger */
-            return FP_E_Inst_Lift_Finger;
-        }
+	case FP_E_SEND_LIFT_CHECK_CMD:
+	case FP_E_WAIT_LIFT_CHECK_CMD:
+	{
+		/* User should lift finger */
+		return FP_E_Inst_Lift_Finger;
+	}
 
-        case FP_E_SEND_GET_IMG_2_CMD:
-        case FP_E_WAIT_GET_IMG_2_CMD:
-        {
-            /* User should place finger again for second scan */
-            return FP_E_Inst_Place_Finger_Again;
-        }
+	case FP_E_SEND_GET_IMG_2_CMD:
+	case FP_E_WAIT_GET_IMG_2_CMD:
+	{
+		/* User should place finger again for second scan */
+		return FP_E_Inst_Place_Finger_Again;
+	}
 
-        case FP_E_SEND_GEN_CHAR_1_CMD:
-        case FP_E_WAIT_GEN_CHAR_1_CMD:
-        case FP_E_SEND_GEN_CHAR_2_CMD:
-        case FP_E_WAIT_GEN_CHAR_2_CMD:
-        case FP_E_SEND_MERGE_CMD:
-        case FP_E_WAIT_MERGE_CMD:
-        case FP_E_SEND_STORE_CMD:
-        case FP_E_WAIT_STORE_CMD:
-        {
-            /* Internal processing step */
-            return FP_E_Inst_Processing;
-        }
+	case FP_E_SEND_GEN_CHAR_1_CMD:
+	case FP_E_WAIT_GEN_CHAR_1_CMD:
+	case FP_E_SEND_GEN_CHAR_2_CMD:
+	case FP_E_WAIT_GEN_CHAR_2_CMD:
+	case FP_E_SEND_MERGE_CMD:
+	case FP_E_WAIT_MERGE_CMD:
+	case FP_E_SEND_STORE_CMD:
+	case FP_E_WAIT_STORE_CMD:
+	{
+		/* Internal processing step */
+		return FP_E_Inst_Processing;
+	}
 
-        case FP_E_Success:
-        {
-            return FP_E_Inst_Success;
-        }
+	case FP_E_Success:
+	{
+		return FP_E_Inst_Success;
+	}
 
-        case FP_E_Failed:
-        {
-            return FP_E_Inst_Failed;
-        }
-    }
+	case FP_E_Failed:
+	{
+		return FP_E_Inst_Failed;
+	}
+	}
 
-    /* Safety fallback */
-    return FP_E_Inst_Idle;
+	/* Safety fallback */
+	return FP_E_Inst_Idle;
 }
 
 
@@ -1073,174 +1101,174 @@ FP_GetEnroll_Instruction_t FP_GetEnroll_Instruction(void)
  ******************************************************************************************/
 void FP_SEARCH_SM(void)
 {
-    /* Search state machine current state */
-    static FP_Search_St_t FP_Search_St = FP_S_SEND_GET_IMG_CMD;
+	/* Search state machine current state */
+	static FP_Search_St_t FP_Search_St = FP_S_SEND_GET_IMG_CMD;
 
-    /* Holds matched user/page ID returned by sensor on successful match */
-    static uint16_t user_id = 0;
+	/* Holds matched user/page ID returned by sensor on successful match */
+	static uint16_t user_id = 0;
 
-    /* Timestamp used for timeout checks in WAIT states */
-    static uint32_t start = 0;
+	/* Timestamp used for timeout checks in WAIT states */
+	static uint32_t start = 0;
 
-    switch (FP_Search_St)
-    {
-        case FP_S_SEND_GET_IMG_CMD:
-        {
-            /* Capture fingerprint image */
-            FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
+	switch (FP_Search_St)
+	{
+	case FP_S_SEND_GET_IMG_CMD:
+	{
+		/* Capture fingerprint image */
+		FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
 
-            /* Save start time for timeout supervision */
-            start = HAL_GetTick();
+		/* Save start time for timeout supervision */
+		start = HAL_GetTick();
 
-            /* Move to response wait state */
-            FP_Search_St = FP_S_WAIT_GET_IMG_CMD;
-            break;
-        }
+		/* Move to response wait state */
+		FP_Search_St = FP_S_WAIT_GET_IMG_CMD;
+		break;
+	}
 
-        case FP_S_WAIT_GET_IMG_CMD:
-        {
-            /* Wait for image capture response */
-            if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
-            {
-                if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
-                {
-                    /* Image captured successfully -> convert to character file */
-                    FP_Search_St = FP_S_SEND_GEN_CHAR_1_CMD;
-                }
-                else
-                {
-                    /* Capture failed or no valid finger -> retry */
-                    FP_Search_St = FP_S_SEND_GET_IMG_CMD;
-                }
-            }
-            else
-            {
-                /* If response takes too long, restart search flow */
-                if (HAL_GetTick() - start > 2000)
-                {
-                    FP_Search_St = FP_S_SEND_GET_IMG_CMD;
-                }
-            }
-            break;
-        }
+	case FP_S_WAIT_GET_IMG_CMD:
+	{
+		/* Wait for image capture response */
+		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		{
+			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
+			{
+				/* Image captured successfully -> convert to character file */
+				FP_Search_St = FP_S_SEND_GEN_CHAR_1_CMD;
+			}
+			else
+			{
+				/* Capture failed or no valid finger -> retry */
+				FP_Search_St = FP_S_SEND_GET_IMG_CMD;
+			}
+		}
+		else
+		{
+			/* If response takes too long, restart search flow */
+			if (HAL_GetTick() - start > 2000)
+			{
+				FP_Search_St = FP_S_SEND_GET_IMG_CMD;
+			}
+		}
+		break;
+	}
 
-        case FP_S_SEND_GEN_CHAR_1_CMD:
-        {
-            /* Convert captured image into character file 1 */
-            uint8_t FP_Buff_1 = FP_CHAR_FILE_1;
-            FP_SendCommand(FP_GEN_FILE_CHAR_CMD, &FP_Buff_1, 1);
+	case FP_S_SEND_GEN_CHAR_1_CMD:
+	{
+		/* Convert captured image into character file 1 */
+		uint8_t FP_Buff_1 = FP_CHAR_FILE_1;
+		FP_SendCommand(FP_GEN_FILE_CHAR_CMD, &FP_Buff_1, 1);
 
-            /* Restart timeout supervision */
-            start = HAL_GetTick();
-            FP_Search_St = FP_S_WAIT_GEN_CHAR_1_CMD;
-            break;
-        }
+		/* Restart timeout supervision */
+		start = HAL_GetTick();
+		FP_Search_St = FP_S_WAIT_GEN_CHAR_1_CMD;
+		break;
+	}
 
-        case FP_S_WAIT_GEN_CHAR_1_CMD:
-        {
-            /* Wait for character generation response */
-            if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
-            {
-                if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
-                {
-                    /* Character file ready -> search database */
-                    FP_Search_St = FP_S_SEND_SEARCH_CMD;
-                }
-                else
-                {
-                    /* Character generation failed -> restart flow */
-                    FP_Search_St = FP_S_SEND_GET_IMG_CMD;
-                }
-            }
-            else
-            {
-                if (HAL_GetTick() - start > 2000)
-                {
-                    FP_Search_St = FP_S_SEND_GET_IMG_CMD;
-                }
-            }
-            break;
-        }
+	case FP_S_WAIT_GEN_CHAR_1_CMD:
+	{
+		/* Wait for character generation response */
+		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		{
+			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
+			{
+				/* Character file ready -> search database */
+				FP_Search_St = FP_S_SEND_SEARCH_CMD;
+			}
+			else
+			{
+				/* Character generation failed -> restart flow */
+				FP_Search_St = FP_S_SEND_GET_IMG_CMD;
+			}
+		}
+		else
+		{
+			if (HAL_GetTick() - start > 2000)
+			{
+				FP_Search_St = FP_S_SEND_GET_IMG_CMD;
+			}
+		}
+		break;
+	}
 
-        case FP_S_SEND_SEARCH_CMD:
-        {
-            /* Search payload:
-             * [0] Character buffer
-             * [1] Start page high
-             * [2] Start page low
-             * [3] Page count high
-             * [4] Page count low
-             *
-             * Current configuration:
-             *   search from page 0
-             *   across 100 pages
-             */
-            uint8_t search_payload[5] = {FP_CHAR_FILE_1, 0x00, 0x00, 0x00, 0x64};
-            FP_SendCommand(FP_SEARCH_CMD, search_payload, 5);
+	case FP_S_SEND_SEARCH_CMD:
+	{
+		/* Search payload:
+		 * [0] Character buffer
+		 * [1] Start page high
+		 * [2] Start page low
+		 * [3] Page count high
+		 * [4] Page count low
+		 *
+		 * Current configuration:
+		 *   search from page 0
+		 *   across 100 pages
+		 */
+		uint8_t search_payload[5] = {FP_CHAR_FILE_1, 0x00, 0x00, 0x00, 0x64};
+		FP_SendCommand(FP_SEARCH_CMD, search_payload, 5);
 
-            /* Restart timeout supervision */
-            start = HAL_GetTick();
-            FP_Search_St = FP_S_WAIT_SEARCH_CMD;
-            break;
-        }
+		/* Restart timeout supervision */
+		start = HAL_GetTick();
+		FP_Search_St = FP_S_WAIT_SEARCH_CMD;
+		break;
+	}
 
-        case FP_S_WAIT_SEARCH_CMD:
-        {
-            /* Wait for search response */
-            if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
-            {
-                if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_MATCH)
-                {
-                    /* Extract matched user/page ID from payload bytes [1] and [2] */
-                    user_id = ((FP_Rx_Buff[1] << 8) | FP_Rx_Buff[2]);
-                    FP_Search_St = FP_S_MATCH;
-                }
-                else if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_NOT_MATCH)
-                {
-                    FP_Search_St = FP_S_NOT_MATCH;
-                }
-            }
-            else
-            {
-                /* Timeout -> restart search flow */
-                if (HAL_GetTick() - start > 2000)
-                {
-                    FP_Search_St = FP_S_SEND_GET_IMG_CMD;
-                }
-            }
-            break;
-        }
+	case FP_S_WAIT_SEARCH_CMD:
+	{
+		/* Wait for search response */
+		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		{
+			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_MATCH)
+			{
+				/* Extract matched user/page ID from payload bytes [1] and [2] */
+				user_id = ((FP_Rx_Buff[1] << 8) | FP_Rx_Buff[2]);
+				FP_Search_St = FP_S_MATCH;
+			}
+			else if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_NOT_MATCH)
+			{
+				FP_Search_St = FP_S_NOT_MATCH;
+			}
+		}
+		else
+		{
+			/* Timeout -> restart search flow */
+			if (HAL_GetTick() - start > 2000)
+			{
+				FP_Search_St = FP_S_SEND_GET_IMG_CMD;
+			}
+		}
+		break;
+	}
 
-        case FP_S_MATCH:
-        {
-            /* Prepare queue item for successful match */
-            FP_Search_Data_t FP_Search_Data;
-            FP_Search_Data.match_st = FP_MATCH_ST;
-            FP_Search_Data.user_id = user_id;
+	case FP_S_MATCH:
+	{
+		/* Prepare queue item for successful match */
+		FP_Search_Data_t FP_Search_Data;
+		FP_Search_Data.match_st = FP_MATCH_ST;
+		FP_Search_Data.user_id = user_id;
 
-            /* Send result to queue without blocking */
-            xQueueSend(FP_Search_Q_Buff, &FP_Search_Data, 0);
+		/* Send result to queue without blocking */
+		xQueueSend(FP_Search_Q_Buff, &FP_Search_Data, 0);
 
-            /* Restart search flow for next fingerprint */
-            FP_Search_St = FP_S_SEND_GET_IMG_CMD;
-            break;
-        }
+		/* Restart search flow for next fingerprint */
+		FP_Search_St = FP_S_SEND_GET_IMG_CMD;
+		break;
+	}
 
-        case FP_S_NOT_MATCH:
-        {
-            /* Prepare queue item for no-match result */
-            FP_Search_Data_t FP_Search_Data;
-            FP_Search_Data.match_st = FP_NOT_MATCH_ST;
-            FP_Search_Data.user_id = 0;
+	case FP_S_NOT_MATCH:
+	{
+		/* Prepare queue item for no-match result */
+		FP_Search_Data_t FP_Search_Data;
+		FP_Search_Data.match_st = FP_NOT_MATCH_ST;
+		FP_Search_Data.user_id = 0;
 
-            /* Send result to queue without blocking */
-            xQueueSend(FP_Search_Q_Buff, &FP_Search_Data, 0);
+		/* Send result to queue without blocking */
+		xQueueSend(FP_Search_Q_Buff, &FP_Search_Data, 0);
 
-            /* Restart search flow for next fingerprint */
-            FP_Search_St = FP_S_SEND_GET_IMG_CMD;
-            break;
-        }
-    }
+		/* Restart search flow for next fingerprint */
+		FP_Search_St = FP_S_SEND_GET_IMG_CMD;
+		break;
+	}
+	}
 }
 
 /******************************************************************************************

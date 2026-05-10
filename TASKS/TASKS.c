@@ -27,72 +27,12 @@ void TASKS_Init(void)
 }
 
 
-void TASKS_USART_30ms(void *pram)
-{
-	TickType_t last_wake = xTaskGetTickCount();
-	while(1)
-	{
-		USART_RxCyclic();
-		vTaskDelayUntil(&last_wake , pdMS_TO_TICKS(1));
-	}
-}
-
-
-
-void TASKS_USART_Tx_Cyclic(void *pram)
-{
-	TickType_t last_wake = xTaskGetTickCount();
-	while(1)
-	{
-		USART_TxCyclic();
-		vTaskDelayUntil(&last_wake , pdMS_TO_TICKS(1));
-	}
-}
-
-
-
-void FP_Test(void *pram)
-{
-	TickType_t last_wake = xTaskGetTickCount();
-	uint8_t match_st;
-	uint16_t user_id;
-	uint8_t enroll_flag = 0 ;
-	while(1)
-	{
-
-		//		if(enroll_flag == 0)
-		//		{
-		//			FP_SetMode(FP_ENROLL_MODE);
-		//			enroll_flag = 1;
-		//		}
-		//		else
-		//		{
-
-		if(FP_Get_User(&match_st,&user_id) == FP_GetUser_Ok)
-		{
-			if(match_st == FP_MATCH_ST)
-			{
-				printf("Access granted: user id %d\n" , user_id);
-
-			}
-			else
-			{
-				printf("Access Denied\n");
-
-			}
-		}
-		//		}
-		vTaskDelayUntil(&last_wake , pdMS_TO_TICKS(50));
-	}
-}
-
 void FP_Main_Cyclic(void *pram)
 {
 	TickType_t last_wake = xTaskGetTickCount();
 	//	FP_SetMode(FP_ENROLL_MODE);
 	while(1)
 	{
-
 		FP_MainFunction_Cyclic();
 		vTaskDelayUntil(&last_wake , pdMS_TO_TICKS(400));
 	}

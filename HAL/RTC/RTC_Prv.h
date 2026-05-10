@@ -118,7 +118,7 @@
  *  Returns:
  *    None.
  ******************************************************************************************/
-static void MX_I2C3_Init(void);
+ void MX_I2C3_Init(void);
 
 
 #endif /* RTC_RTC_PRV_H_ */

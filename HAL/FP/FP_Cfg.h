@@ -51,5 +51,7 @@
  ******************************************************************************************/
 #define FP_USART_NUM_     USART_NUM_2
 
+#define FP_EEPROM_NEXT_PAGE_H_MEM_ADDR 0x00
+#define FP_EEPROM_NEXT_PAGE_L_MEM_ADDR 0x01
 
 #endif /* FP_FP_CFG_H_ */

@@ -392,7 +392,7 @@ RTC_Err_St_t RTC_GetDate(RTC_Date_t *date)
  *  Returns:
  *    None.
  ******************************************************************************************/
-static void MX_I2C3_Init(void)
+  void MX_I2C3_Init(void)
 {
 	/* Configure I2C3 instance */
 	hi2c3.Instance = I2C3;

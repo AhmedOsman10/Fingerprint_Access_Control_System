@@ -8,7 +8,7 @@
 #ifndef EEPROM_EEPROM_PRV_H_
 #define EEPROM_EEPROM_PRV_H_
 
-#define EEPROM_MAX_ADDR   0x4000
+#define EEPROM_MAX_ADDR   0x3FFF
 
 
 #define EEPROM_PAGE_SIZE    64

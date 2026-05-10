@@ -50,7 +50,7 @@ EEPROM_Err_St_t EEPROM_Init(void)
 	return EEPROM_Err_St;
 }
 
-EEPROM_Err_St_t EEPROM_Write_Byte(uint16_t EEPROM_Mem_Addr , uint8_t byte_val)
+EEPROM_Err_St_t EEPROM_Write_Byte(uint16_t EEPROM_Mem_Addr, uint8_t byte_val)
 {
 
 	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Write_Success;
@@ -116,7 +116,7 @@ EEPROM_Err_St_t EEPROM_Write(uint16_t EEPROM_Mem_Addr ,uint8_t *data , uint8_t l
 
 	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Write_Success;
 
-	if(EEPROM_Mem_Addr >= EEPROM_MAX_ADDR)  return EEPROM_Invalid_Mem_Addr_Arg;
+	if(EEPROM_Mem_Addr > EEPROM_MAX_ADDR)  return EEPROM_Invalid_Mem_Addr_Arg;
 	if((EEPROM_Mem_Addr  + lenth) > EEPROM_MAX_ADDR) return EEPROM_Invalid_Page_Len_Arg;
 	if(data == NULL) return EEPROM_Invalid_Data_Arg;
 
@@ -131,6 +131,8 @@ EEPROM_Err_St_t EEPROM_Write(uint16_t EEPROM_Mem_Addr ,uint8_t *data , uint8_t l
 
 	return EEPROM_Err_St;
 }
+
+
 EEPROM_Err_St_t EEPROM_Read(uint16_t EEPROM_Mem_Addr , uint8_t *data , uint8_t lenth)
 {
 
@@ -154,7 +156,7 @@ EEPROM_Err_St_t EEPROM_Read(uint16_t EEPROM_Mem_Addr , uint8_t *data , uint8_t l
 }
 
 
-EEPROM_Err_St_t EEPROM_Read_Page(uint16_t Page_Num , uint8_t *data , uint8_t lenth)
+EEPROM_Err_St_t EEPROM_Read_Page(uint16_t Page_Num, uint8_t *data , uint8_t lenth)
 {
 
 	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Read_Success;
