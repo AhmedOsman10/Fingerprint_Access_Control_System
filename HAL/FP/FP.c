@@ -86,8 +86,14 @@ static FP_Mode_t FP_Curr_Mode = FP_SEARCH_MODE;
 
 /* Next fingerprint page used during enrollment.
  *
- * When enrollment succeeds, the fingerprint template is stored at this page.
- * Then this value is incremented so the next enrolled fingerprint uses a new page.
+ * This value represents the next storage location inside the fingerprint sensor database where a new fingerprint template will be saved.
+ *
+ * When enrollment succeeds:
+ *   - the template is stored at FP_NextPage
+ *   - then FP_NextPage is incremented
+ *   - the updated value is saved into EEPROM
+ *
+ * EEPROM storage allows the system to remember the next available page even after reset or power loss.
  */
 static uint16_t FP_NextPage = 1;
 
@@ -122,10 +128,20 @@ static QueueHandle_t FP_Search_Q_Buff;
  *      fingerprint module.
  *    - Creates the internal FreeRTOS queue used to transfer search results
  *      from the driver layer to the application layer.
+ *    - Initializes EEPROM used for persistent fingerprint page storage.
+ *    - Restores the last stored fingerprint page after power-up/reset.
  *
  *  Internal Behavior:
  *    - Calls USART_Init() for the configured USART instance.
  *    - Creates a queue of type FP_Search_Data_t.
+ *    - Initializes EEPROM driver.
+ *    - Reads FP_NextPage from EEPROM memory.
+ *    - Initializes EEPROM page value if EEPROM is blank.
+ *
+ *  EEPROM Persistence:
+ *    - FP_NextPage is stored in EEPROM so fingerprint IDs are preserved
+ *      between resets and power cycles.
+ *    - This prevents overwriting previously enrolled fingerprints.
  *
  *  Application Impact:
  *    - This function must be called once before using any driver API.
@@ -133,15 +149,19 @@ static QueueHandle_t FP_Search_Q_Buff;
  *
  *  Returns:
  *    FP_InitSuccess: Driver initialized successfully.
- *    FP_InitFailed:  Initialization failed (USART or queue creation error).
+ *    FP_InitFailed:  Initialization failed (USART, queue, or EEPROM error).
  ******************************************************************************************/
 FP_Err_St_t FP_Init(void)
 {
 	/* Default return value is failure until all required steps succeed */
 	FP_Err_St_t fp_err_st = FP_InitFailed;
 
-	uint8_t next_page_h  = 0;
-	uint8_t next_page_l  = 0;
+	/* Temporary variables used to reconstruct stored fingerprint page ID
+	 * from EEPROM high and low bytes
+	 */
+	uint8_t next_page_h = 0;
+	uint8_t next_page_l = 0;
+
 	/* Default USART init state */
 	USART_Err_St_t usart_err_st = USART_InitFailed;
 
@@ -179,28 +199,48 @@ FP_Err_St_t FP_Init(void)
 		}
 		else
 		{
-			EEPROM_Err_St_t  EEPROM_Err_St = EEPROM_Init();
+			/* Initialize EEPROM driver used for persistent storage */
+			EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Init();
+
+			/* If EEPROM initialization fails,
+			 * fingerprint page persistence cannot be guaranteed
+			 */
 			if(EEPROM_Err_St == EEPROM_Init_Failed)
 			{
 				fp_err_st = FP_InitFailed;
 			}
 			else
 			{
+				/* Read previously stored next fingerprint page number
+				 * from EEPROM memory after power-up/reset
+				 */
 				EEPROM_Read_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, &next_page_h);
+
+				/* Read low byte of stored page number */
 				EEPROM_Read_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, &next_page_l);
 
-				FP_NextPage = (next_page_h << 8) | next_page_l ;
+				/* Reconstruct full 16-bit page ID from EEPROM bytes */
+				FP_NextPage = (next_page_h << 8) | next_page_l;
 
+				/* Fresh EEPROM devices commonly contain 0xFF in all bytes.
+				 * If both EEPROM bytes are still 0xFF,
+				 * the reconstructed page becomes 0xFFFF,
+				 * which indicates no valid page has been stored yet.
+				 */
 				if(FP_NextPage == 0xFFFF)
 				{
+					/* Start fingerprint storage from page 1 */
 					FP_NextPage = 1;
+
+					/* Store initialized page value into EEPROM */
 					EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, FP_NextPage >> 8);
+
+					/* Store low byte of initialized page value */
 					EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, FP_NextPage & 0xFF);
 				}
 			}
 		}
 	}
-
 
 	return fp_err_st;
 }
@@ -234,7 +274,7 @@ FP_Err_St_t FP_Init(void)
  *    - This function does not wait for a response.
  *    - Response handling is performed by the RX state machine.
  ******************************************************************************************/
-FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payload_len)
+FP_Err_St_t FP_SendCommand(uint8_t inst_code, uint8_t *payload, uint8_t payload_len)
 {
 	/* Default return assumes transmission will succeed */
 	FP_Err_St_t FP_Err_St = FP_SendCmd_Success;
@@ -286,7 +326,7 @@ FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payloa
 	 * Payload is optional.
 	 * If payload pointer is NULL, no copy is performed.
 	 */
-	for(uint8_t i = 0 ; i < payload_len ; i++)
+	for(uint8_t i = 0; i < payload_len; i++)
 	{
 		if(payload != NULL)
 		{
@@ -304,7 +344,7 @@ FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payloa
 	 *
 	 * Header and address are NOT included in checksum.
 	 */
-	for(uint8_t i = 6 ; i < (10 + payload_len) ; i++)
+	for(uint8_t i = 6; i < (10 + payload_len); i++)
 	{
 		sum += tx[i];
 	}
@@ -327,7 +367,7 @@ FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payloa
 	 *
 	 * The driver sends one byte at a time because USART is inherently byte-oriented.
 	 */
-	for(uint8_t i = 0 ; i < frame_len ; i++)
+	for(uint8_t i = 0; i < frame_len; i++)
 	{
 		/* If any byte fails to send, stop immediately and report failure */
 		if(USART_SendByte(FP_USART_NUM_, tx[i]) != USART_Tx_Ok)
@@ -399,9 +439,9 @@ void FP_Rx_Cyclic(void)
 	 * This allows the cyclic function to consume all pending UART bytes
 	 * each time it runs.
 	 */
-	while (USART_ReceiveByte(FP_USART_NUM_, &byte) == USART_Rx_Ok)
+	while(USART_ReceiveByte(FP_USART_NUM_, &byte) == USART_Rx_Ok)
 	{
-		switch (FP_Rx_St)
+		switch(FP_Rx_St)
 		{
 		case FP_Wait_Rx_Header_H:
 		{
@@ -410,7 +450,7 @@ void FP_Rx_Cyclic(void)
 			 * Any byte that is not FP_HEADER_H is ignored.
 			 * This lets the parser resynchronize with the next valid packet.
 			 */
-			if (byte == FP_HEADER_H)
+			if(byte == FP_HEADER_H)
 			{
 				FP_Rx_St = FP_Wait_Rx_Header_L;
 			}
@@ -424,7 +464,7 @@ void FP_Rx_Cyclic(void)
 			 * If it matches, packet synchronization is successful.
 			 * If not, restart from header high.
 			 */
-			if (byte == FP_HEADER_L)
+			if(byte == FP_HEADER_L)
 			{
 				FP_Rx_St = FP_Wait_Rx_ADDR;
 			}
@@ -445,7 +485,7 @@ void FP_Rx_Cyclic(void)
 			FP_Rx_Indx++;
 
 			/* After 4 address bytes, move to PID state */
-			if (FP_Rx_Indx == 4)
+			if(FP_Rx_Indx == 4)
 			{
 				/* Reset index because it will be reused later for payload buffer */
 				FP_Rx_Indx = 0;
@@ -460,7 +500,7 @@ void FP_Rx_Cyclic(void)
 			 *
 			 * This driver currently accepts only ACK packets.
 			 */
-			if (byte == FP_PID_ACK)
+			if(byte == FP_PID_ACK)
 			{
 				FP_Rx_St = FP_Wait_Rx_len_H;
 			}
@@ -509,7 +549,7 @@ void FP_Rx_Cyclic(void)
 			/* Once all payload + checksum bytes are received,
 			 * calculate and verify checksum.
 			 */
-			if (FP_Rx_Indx == FP_Rx_Packect_Len)
+			if(FP_Rx_Indx == FP_Rx_Packect_Len)
 			{
 				/* Checksum calculation according to protocol:
 				 *   PID + Length + Payload
@@ -524,7 +564,7 @@ void FP_Rx_Cyclic(void)
 				 */
 				calc_sum = FP_PID_ACK + FP_Rx_Packect_Len;
 
-				for (uint8_t i = 0; i < FP_Rx_Packect_Len - 2; i++)
+				for(uint8_t i = 0; i < FP_Rx_Packect_Len - 2; i++)
 				{
 					calc_sum += FP_Rx_Buff[i];
 				}
@@ -533,7 +573,7 @@ void FP_Rx_Cyclic(void)
 				rec_sum = (FP_Rx_Buff[FP_Rx_Packect_Len - 2] << 8) | FP_Rx_Buff[FP_Rx_Packect_Len - 1];
 
 				/* Compare locally calculated checksum with received checksum */
-				if (calc_sum == rec_sum)
+				if(calc_sum == rec_sum)
 				{
 					/* Packet is valid and passed integrity check.
 					 *
@@ -668,7 +708,7 @@ FP_Err_St_t FP_CheckPacket(void)
 	FP_Err_St_t FP_Err_St = FP_Rx_Full_Packet_Nok;
 
 	/* Check if RX state machine has completed a valid frame */
-	if (FP_Rx_Frame_Ready_Flag == FRAME_COMPLETED)
+	if(FP_Rx_Frame_Ready_Flag == FRAME_COMPLETED)
 	{
 		/* Notify caller that a valid packet is ready */
 		FP_Err_St = FP_Rx_Full_Packet_Ok;
@@ -728,7 +768,7 @@ void FP_Enroll_SM(void)
 	 */
 	static uint8_t err_c = 0;
 
-	switch (FP_Enroll_St)
+	switch(FP_Enroll_St)
 	{
 	case FP_E_Idle:
 	{
@@ -758,10 +798,10 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_GET_IMG_1_CMD:
 	{
 		/* Wait for first image capture response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
 		{
 			/* Check confirmation code */
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
 			{
 				/* First fingerprint image captured successfully */
 				FP_Enroll_St = FP_E_SEND_GEN_CHAR_1_CMD;
@@ -778,7 +818,7 @@ void FP_Enroll_SM(void)
 			err_c++;
 
 			/* If waiting too long, retry command */
-			if (err_c > 5)
+			if(err_c > 5)
 			{
 				FP_Enroll_St = FP_E_SEND_GET_IMG_1_CMD;
 				err_c = 0;
@@ -801,9 +841,9 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_GEN_CHAR_1_CMD:
 	{
 		/* Wait for character-file generation response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
 			{
 				/* First character file generated successfully.
 				 * Next step is to ensure user lifts finger before second scan.
@@ -833,9 +873,9 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_LIFT_CHECK_CMD:
 	{
 		/* Wait until module confirms no finger on sensor */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_NO_FINGER)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_NO_FINGER)
 			{
 				/* Finger successfully lifted -> proceed to second capture */
 				FP_Enroll_St = FP_E_SEND_GET_IMG_2_CMD;
@@ -860,9 +900,9 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_GET_IMG_2_CMD:
 	{
 		/* Wait for second image capture response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
 			{
 				/* Second image captured successfully */
 				FP_Enroll_St = FP_E_SEND_GEN_CHAR_2_CMD;
@@ -888,9 +928,9 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_GEN_CHAR_2_CMD:
 	{
 		/* Wait for second character-file generation response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
 			{
 				/* Both character files are ready -> merge them */
 				FP_Enroll_St = FP_E_SEND_MERGE_CMD;
@@ -915,9 +955,9 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_MERGE_CMD:
 	{
 		/* Wait for merge response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_MERGE_SUCCESS)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_MERGE_SUCCESS)
 			{
 				/* Template created successfully -> store in flash */
 				FP_Enroll_St = FP_E_SEND_STORE_CMD;
@@ -951,9 +991,9 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_STORE_CMD:
 	{
 		/* Wait for store response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_STORE_SUCCESS)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_STORE_SUCCESS)
 			{
 				/* Enrollment completed successfully */
 				FP_Enroll_St = FP_E_Success;
@@ -972,8 +1012,13 @@ void FP_Enroll_SM(void)
 		/* Increment page only on successful enrollment */
 		FP_NextPage++;
 
+		/* Save updated next available fingerprint page into EEPROM so enrolled users remain tracked after reset or power loss
+		 */
 		EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, FP_NextPage >> 8);
+
+		/* Store low byte of next available page number */
 		EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, FP_NextPage & 0xFF);
+
 		/* Return driver back to normal search mode */
 		FP_SetMode(FP_SEARCH_MODE);
 		break;
@@ -1011,13 +1056,13 @@ void FP_Enroll_SM(void)
 FP_GetEnroll_Instruction_t FP_GetEnroll_Instruction(void)
 {
 	/* If driver is not in enrollment mode, no enrollment instruction is active */
-	if (FP_Curr_Mode != FP_ENROLL_MODE)
+	if(FP_Curr_Mode != FP_ENROLL_MODE)
 	{
 		return FP_E_Inst_Idle;
 	}
 
 	/* Map internal enrollment states into user-facing instructions */
-	switch (FP_Enroll_St)
+	switch(FP_Enroll_St)
 	{
 	case FP_E_SEND_GET_IMG_1_CMD:
 	case FP_E_WAIT_GET_IMG_1_CMD:
@@ -1110,7 +1155,7 @@ void FP_SEARCH_SM(void)
 	/* Timestamp used for timeout checks in WAIT states */
 	static uint32_t start = 0;
 
-	switch (FP_Search_St)
+	switch(FP_Search_St)
 	{
 	case FP_S_SEND_GET_IMG_CMD:
 	{
@@ -1128,9 +1173,9 @@ void FP_SEARCH_SM(void)
 	case FP_S_WAIT_GET_IMG_CMD:
 	{
 		/* Wait for image capture response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
 			{
 				/* Image captured successfully -> convert to character file */
 				FP_Search_St = FP_S_SEND_GEN_CHAR_1_CMD;
@@ -1144,7 +1189,7 @@ void FP_SEARCH_SM(void)
 		else
 		{
 			/* If response takes too long, restart search flow */
-			if (HAL_GetTick() - start > 2000)
+			if(HAL_GetTick() - start > 2000)
 			{
 				FP_Search_St = FP_S_SEND_GET_IMG_CMD;
 			}
@@ -1167,9 +1212,9 @@ void FP_SEARCH_SM(void)
 	case FP_S_WAIT_GEN_CHAR_1_CMD:
 	{
 		/* Wait for character generation response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
 			{
 				/* Character file ready -> search database */
 				FP_Search_St = FP_S_SEND_SEARCH_CMD;
@@ -1182,7 +1227,7 @@ void FP_SEARCH_SM(void)
 		}
 		else
 		{
-			if (HAL_GetTick() - start > 2000)
+			if(HAL_GetTick() - start > 2000)
 			{
 				FP_Search_St = FP_S_SEND_GET_IMG_CMD;
 			}
@@ -1215,15 +1260,15 @@ void FP_SEARCH_SM(void)
 	case FP_S_WAIT_SEARCH_CMD:
 	{
 		/* Wait for search response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_MATCH)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_MATCH)
 			{
 				/* Extract matched user/page ID from payload bytes [1] and [2] */
 				user_id = ((FP_Rx_Buff[1] << 8) | FP_Rx_Buff[2]);
 				FP_Search_St = FP_S_MATCH;
 			}
-			else if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_NOT_MATCH)
+			else if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_NOT_MATCH)
 			{
 				FP_Search_St = FP_S_NOT_MATCH;
 			}
@@ -1231,7 +1276,7 @@ void FP_SEARCH_SM(void)
 		else
 		{
 			/* Timeout -> restart search flow */
-			if (HAL_GetTick() - start > 2000)
+			if(HAL_GetTick() - start > 2000)
 			{
 				FP_Search_St = FP_S_SEND_GET_IMG_CMD;
 			}
@@ -1270,6 +1315,7 @@ void FP_SEARCH_SM(void)
 	}
 	}
 }
+
 
 /******************************************************************************************
  *                                  FP_Get_User()
@@ -1416,7 +1462,7 @@ void FP_SimpleTesT(void)
 		(void)FP_Err_St;
 
 		/* Send a basic image generation command for communication test */
-		FP_SendCommand(FP_GEN_IMG_CMD , NULL , 0);
+		FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
 		flag = 1;
 	}
 
@@ -1433,7 +1479,7 @@ void FP_SimpleTesT(void)
 		}
 
 		/* Repeat command to continue test loop */
-		FP_SendCommand(FP_GEN_IMG_CMD , NULL , 0);
+		FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
 		printf("Simple Test Success");
 	}
 }

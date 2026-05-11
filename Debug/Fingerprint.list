@@ -29,25 +29,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  12 .ARM.attributes 00000030  00000000  00000000  000100a0  2**0
                   CONTENTS, READONLY
- 13 .debug_info   00022407  00000000  00000000  000100d0  2**0
+ 13 .debug_info   000223e1  00000000  00000000  000100d0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 00005a63  00000000  00000000  000324d7  2**0
+ 14 .debug_abbrev 00005a66  00000000  00000000  000324b1  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_aranges 00001d30  00000000  00000000  00037f40  2**3
+ 15 .debug_aranges 00001d28  00000000  00000000  00037f18  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_rnglists 00001676  00000000  00000000  00039c70  2**0
+ 16 .debug_rnglists 00001670  00000000  00000000  00039c40  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  000281e1  00000000  00000000  0003b2e6  2**0
+ 17 .debug_macro  000281e1  00000000  00000000  0003b2b0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   00028a55  00000000  00000000  000634c7  2**0
+ 18 .debug_line   000289b2  00000000  00000000  00063491  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000e01d2  00000000  00000000  0008bf1c  2**0
+ 19 .debug_str    000e01b8  00000000  00000000  0008be43  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000043  00000000  00000000  0016c0ee  2**0
+ 20 .comment      00000043  00000000  00000000  0016bffb  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  000076dc  00000000  00000000  0016c134  2**2
+ 21 .debug_frame  000076b8  00000000  00000000  0016c040  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 22 .debug_line_str 00000054  00000000  00000000  00173810  2**0
+ 22 .debug_line_str 00000054  00000000  00000000  001736f8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -19545,16 +19545,16 @@ HAL_StatusTypeDef USB_StopHost(USB_OTG_GlobalTypeDef *USBx)
  80078ee:	bd80      	pop	{r7, pc}
 
 080078f0 <EEPROM_Init>:
-#include "EEPROM.h"
-
-extern I2C_HandleTypeDef hi2c3;
-
+ *  Returns:
+ *    EEPROM_Init_Success: EEPROM initialized successfully.
+ *    EEPROM_Init_Failed : EEPROM initialization failed.
+ ******************************************************************************************/
 EEPROM_Err_St_t EEPROM_Init(void)
 {
  80078f0:	b580      	push	{r7, lr}
  80078f2:	b082      	sub	sp, #8
  80078f4:	af00      	add	r7, sp, #0
-	/* Default return assumes initialization will succeed */
+	/* Default return assumes initialization failed */
 	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Init_Failed;
  80078f6:	2301      	movs	r3, #1
  80078f8:	71fb      	strb	r3, [r7, #7]
@@ -19562,11 +19562,11 @@ EEPROM_Err_St_t EEPROM_Init(void)
 	/* HAL status used to evaluate I2C operation */
 	HAL_StatusTypeDef I2C_St;
 
-	/* Initialize I2C3 peripheral and related GPIO configuration */
+	/* Initialize I2C3 peripheral and GPIO configuration */
 	MX_I2C3_Init();
  80078fa:	f000 ff1b 	bl	8008734 <MX_I2C3_Init>
 
-	/* Check whether RTC slave is responding on the I2C bus */
+	/* Check whether EEPROM slave is responding on the I2C bus */
 	I2C_St = HAL_I2C_IsDeviceReady(EEPROM_I2C_NUM, EEPROM_SLAVE_ADDR, EEPROM_I2C_DEVICE_READY_TRIAL, EEMPROM_MAX_TIMEOUT);
  80078fe:	f241 3388 	movw	r3, #5000	@ 0x1388
  8007902:	2203      	movs	r2, #3
@@ -19604,7 +19604,10 @@ EEPROM_Err_St_t EEPROM_Init(void)
  800792c:	2000016c 	.word	0x2000016c
 
 08007930 <EEPROM_Write_Byte>:
-
+ *    EEPROM_Write_Success          : Write completed successfully.
+ *    EEPROM_Write_Failed           : I2C write operation failed.
+ *    EEPROM_Invalid_Mem_Addr_Arg   : Invalid EEPROM address.
+ ******************************************************************************************/
 EEPROM_Err_St_t EEPROM_Write_Byte(uint16_t EEPROM_Mem_Addr, uint8_t byte_val)
 {
  8007930:	b580      	push	{r7, lr}
@@ -19615,20 +19618,25 @@ EEPROM_Err_St_t EEPROM_Write_Byte(uint16_t EEPROM_Mem_Addr, uint8_t byte_val)
  800793a:	80fb      	strh	r3, [r7, #6]
  800793c:	4613      	mov	r3, r2
  800793e:	717b      	strb	r3, [r7, #5]
-
+	/* Default return assumes write success */
 	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Write_Success;
  8007940:	2302      	movs	r3, #2
  8007942:	73fb      	strb	r3, [r7, #15]
-	if(EEPROM_Mem_Addr >= EEPROM_MAX_ADDR)   return EEPROM_Invalid_Mem_Addr_Arg;
+
+	/* Validate EEPROM memory address */
+	if(EEPROM_Mem_Addr >= EEPROM_MAX_ADDR)
  8007944:	88fb      	ldrh	r3, [r7, #6]
  8007946:	f643 72fe 	movw	r2, #16382	@ 0x3ffe
  800794a:	4293      	cmp	r3, r2
  800794c:	d901      	bls.n	8007952 <EEPROM_Write_Byte+0x22>
+	{
+		return EEPROM_Invalid_Mem_Addr_Arg;
  800794e:	2309      	movs	r3, #9
  8007950:	e014      	b.n	800797c <EEPROM_Write_Byte+0x4c>
+	}
 
-	HAL_StatusTypeDef i2c_st =
-			HAL_I2C_Mem_Write(EEPROM_I2C_NUM, EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, &byte_val, EEPROM_BYTE_LEN, EEMPROM_MAX_TIMEOUT);
+	/* Write one byte into EEPROM memory */
+	HAL_StatusTypeDef i2c_st = HAL_I2C_Mem_Write(EEPROM_I2C_NUM, EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, &byte_val, EEPROM_BYTE_LEN, EEMPROM_MAX_TIMEOUT);
  8007952:	88fa      	ldrh	r2, [r7, #6]
  8007954:	f241 3388 	movw	r3, #5000	@ 0x1388
  8007958:	9302      	str	r3, [sp, #8]
@@ -19653,7 +19661,6 @@ EEPROM_Err_St_t EEPROM_Write_Byte(uint16_t EEPROM_Mem_Addr, uint8_t byte_val)
  8007978:	73fb      	strb	r3, [r7, #15]
 	}
 
-
 	return EEPROM_Err_St;
  800797a:	7bfb      	ldrb	r3, [r7, #15]
 }
@@ -19664,9 +19671,11 @@ EEPROM_Err_St_t EEPROM_Write_Byte(uint16_t EEPROM_Mem_Addr, uint8_t byte_val)
  8007984:	2000016c 	.word	0x2000016c
 
 08007988 <EEPROM_Read_Byte>:
-
-
-EEPROM_Err_St_t  EEPROM_Read_Byte(uint16_t EEPROM_Mem_Addr, uint8_t *read_val)
+ *    EEPROM_Read_Failed            : I2C read operation failed.
+ *    EEPROM_Invalid_Mem_Addr_Arg   : Invalid EEPROM address.
+ *    EEPROM_Invalid_Data_Arg       : NULL pointer argument.
+ ******************************************************************************************/
+EEPROM_Err_St_t EEPROM_Read_Byte(uint16_t EEPROM_Mem_Addr, uint8_t *read_val)
 {
  8007988:	b580      	push	{r7, lr}
  800798a:	b088      	sub	sp, #32
@@ -19674,24 +19683,35 @@ EEPROM_Err_St_t  EEPROM_Read_Byte(uint16_t EEPROM_Mem_Addr, uint8_t *read_val)
  800798e:	4603      	mov	r3, r0
  8007990:	6039      	str	r1, [r7, #0]
  8007992:	80fb      	strh	r3, [r7, #6]
+	/* Default return assumes read success */
 	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Read_Success;
  8007994:	2304      	movs	r3, #4
  8007996:	73fb      	strb	r3, [r7, #15]
 
-	if(EEPROM_Mem_Addr >= EEPROM_MAX_ADDR) return EEPROM_Invalid_Mem_Addr_Arg;
+	/* Validate EEPROM memory address */
+	if(EEPROM_Mem_Addr >= EEPROM_MAX_ADDR)
  8007998:	88fb      	ldrh	r3, [r7, #6]
  800799a:	f643 72fe 	movw	r2, #16382	@ 0x3ffe
  800799e:	4293      	cmp	r3, r2
  80079a0:	d901      	bls.n	80079a6 <EEPROM_Read_Byte+0x1e>
+	{
+		return EEPROM_Invalid_Mem_Addr_Arg;
  80079a2:	2309      	movs	r3, #9
  80079a4:	e019      	b.n	80079da <EEPROM_Read_Byte+0x52>
-	if(read_val == NULL)  return EEPROM_Invalid_Data_Arg;
+	}
+
+	/* Validate output pointer */
+	if(read_val == NULL)
  80079a6:	683b      	ldr	r3, [r7, #0]
  80079a8:	2b00      	cmp	r3, #0
  80079aa:	d101      	bne.n	80079b0 <EEPROM_Read_Byte+0x28>
+	{
+		return EEPROM_Invalid_Data_Arg;
  80079ac:	230b      	movs	r3, #11
  80079ae:	e014      	b.n	80079da <EEPROM_Read_Byte+0x52>
+	}
 
+	/* Read one byte from EEPROM memory */
 	HAL_StatusTypeDef i2c_st = HAL_I2C_Mem_Read(EEPROM_I2C_NUM, EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, read_val, EEPROM_BYTE_LEN, EEMPROM_MAX_TIMEOUT);
  80079b0:	88fa      	ldrh	r2, [r7, #6]
  80079b2:	f241 3388 	movw	r3, #5000	@ 0x1388
@@ -19712,7 +19732,6 @@ EEPROM_Err_St_t  EEPROM_Read_Byte(uint16_t EEPROM_Mem_Addr, uint8_t *read_val)
  80079d0:	2b00      	cmp	r3, #0
  80079d2:	d001      	beq.n	80079d8 <EEPROM_Read_Byte+0x50>
 	{
-		/* Read failed */
 		EEPROM_Err_St = EEPROM_Read_Failed;
  80079d4:	2305      	movs	r3, #5
  80079d6:	73fb      	strb	r3, [r7, #15]
@@ -19731,7 +19750,7 @@ EEPROM_Err_St_t  EEPROM_Read_Byte(uint16_t EEPROM_Mem_Addr, uint8_t *read_val)
 080079e8 <FP_Init>:
  *  Returns:
  *    FP_InitSuccess: Driver initialized successfully.
- *    FP_InitFailed:  Initialization failed (USART or queue creation error).
+ *    FP_InitFailed:  Initialization failed (USART, queue, or EEPROM error).
  ******************************************************************************************/
 FP_Err_St_t FP_Init(void)
 {
@@ -19743,12 +19762,16 @@ FP_Err_St_t FP_Init(void)
  80079ee:	2301      	movs	r3, #1
  80079f0:	71fb      	strb	r3, [r7, #7]
 
-	uint8_t next_page_h  = 0;
+	/* Temporary variables used to reconstruct stored fingerprint page ID
+	 * from EEPROM high and low bytes
+	 */
+	uint8_t next_page_h = 0;
  80079f2:	2300      	movs	r3, #0
  80079f4:	713b      	strb	r3, [r7, #4]
-	uint8_t next_page_l  = 0;
+	uint8_t next_page_l = 0;
  80079f6:	2300      	movs	r3, #0
  80079f8:	70fb      	strb	r3, [r7, #3]
+
 	/* Default USART init state */
 	USART_Err_St_t usart_err_st = USART_InitFailed;
  80079fa:	2301      	movs	r3, #1
@@ -19808,10 +19831,15 @@ FP_Err_St_t FP_Init(void)
 		}
 		else
 		{
-			EEPROM_Err_St_t  EEPROM_Err_St = EEPROM_Init();
+			/* Initialize EEPROM driver used for persistent storage */
+			EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Init();
  8007a36:	f7ff ff5b 	bl	80078f0 <EEPROM_Init>
  8007a3a:	4603      	mov	r3, r0
  8007a3c:	717b      	strb	r3, [r7, #5]
+
+			/* If EEPROM initialization fails,
+			 * fingerprint page persistence cannot be guaranteed
+			 */
 			if(EEPROM_Err_St == EEPROM_Init_Failed)
  8007a3e:	797b      	ldrb	r3, [r7, #5]
  8007a40:	2b01      	cmp	r3, #1
@@ -19821,21 +19849,26 @@ FP_Err_St_t FP_Init(void)
  8007a44:	2301      	movs	r3, #1
  8007a46:	71fb      	strb	r3, [r7, #7]
  8007a48:	e02d      	b.n	8007aa6 <FP_Init+0xbe>
-			}
 			else
 			{
+				/* Read previously stored next fingerprint page number
+				 * from EEPROM memory after power-up/reset
+				 */
 				EEPROM_Read_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, &next_page_h);
  8007a4a:	1d3b      	adds	r3, r7, #4
  8007a4c:	4619      	mov	r1, r3
  8007a4e:	2000      	movs	r0, #0
  8007a50:	f7ff ff9a 	bl	8007988 <EEPROM_Read_Byte>
+
+				/* Read low byte of stored page number */
 				EEPROM_Read_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, &next_page_l);
  8007a54:	1cfb      	adds	r3, r7, #3
  8007a56:	4619      	mov	r1, r3
  8007a58:	2001      	movs	r0, #1
  8007a5a:	f7ff ff95 	bl	8007988 <EEPROM_Read_Byte>
 
-				FP_NextPage = (next_page_h << 8) | next_page_l ;
+				/* Reconstruct full 16-bit page ID from EEPROM bytes */
+				FP_NextPage = (next_page_h << 8) | next_page_l;
  8007a5e:	793b      	ldrb	r3, [r7, #4]
  8007a60:	b21b      	sxth	r3, r3
  8007a62:	021b      	lsls	r3, r3, #8
@@ -19847,7 +19880,11 @@ FP_Err_St_t FP_Init(void)
  8007a6e:	b29a      	uxth	r2, r3
  8007a70:	4b10      	ldr	r3, [pc, #64]	@ (8007ab4 <FP_Init+0xcc>)
  8007a72:	801a      	strh	r2, [r3, #0]
-
+				/* Fresh EEPROM devices commonly contain 0xFF in all bytes.
+				 * If both EEPROM bytes are still 0xFF,
+				 * the reconstructed page becomes 0xFFFF,
+				 * which indicates no valid page has been stored yet.
+				 */
 				if(FP_NextPage == 0xFFFF)
  8007a74:	4b0f      	ldr	r3, [pc, #60]	@ (8007ab4 <FP_Init+0xcc>)
  8007a76:	881b      	ldrh	r3, [r3, #0]
@@ -19855,10 +19892,13 @@ FP_Err_St_t FP_Init(void)
  8007a7c:	4293      	cmp	r3, r2
  8007a7e:	d112      	bne.n	8007aa6 <FP_Init+0xbe>
 				{
+					/* Start fingerprint storage from page 1 */
 					FP_NextPage = 1;
  8007a80:	4b0c      	ldr	r3, [pc, #48]	@ (8007ab4 <FP_Init+0xcc>)
  8007a82:	2201      	movs	r2, #1
  8007a84:	801a      	strh	r2, [r3, #0]
+
+					/* Store initialized page value into EEPROM */
 					EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, FP_NextPage >> 8);
  8007a86:	4b0b      	ldr	r3, [pc, #44]	@ (8007ab4 <FP_Init+0xcc>)
  8007a88:	881b      	ldrh	r3, [r3, #0]
@@ -19868,6 +19908,8 @@ FP_Err_St_t FP_Init(void)
  8007a90:	4619      	mov	r1, r3
  8007a92:	2000      	movs	r0, #0
  8007a94:	f7ff ff4c 	bl	8007930 <EEPROM_Write_Byte>
+
+					/* Store low byte of initialized page value */
 					EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, FP_NextPage & 0xFF);
  8007a98:	4b06      	ldr	r3, [pc, #24]	@ (8007ab4 <FP_Init+0xcc>)
  8007a9a:	881b      	ldrh	r3, [r3, #0]
@@ -19875,10 +19917,10 @@ FP_Err_St_t FP_Init(void)
  8007a9e:	4619      	mov	r1, r3
  8007aa0:	2001      	movs	r0, #1
  8007aa2:	f7ff ff45 	bl	8007930 <EEPROM_Write_Byte>
+				}
 			}
 		}
 	}
-
 
 	return fp_err_st;
  8007aa6:	79fb      	ldrb	r3, [r7, #7]
@@ -19895,7 +19937,7 @@ FP_Err_St_t FP_Init(void)
  *    - This function does not wait for a response.
  *    - Response handling is performed by the RX state machine.
  ******************************************************************************************/
-FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payload_len)
+FP_Err_St_t FP_SendCommand(uint8_t inst_code, uint8_t *payload, uint8_t payload_len)
 {
  8007ab8:	b580      	push	{r7, lr}
  8007aba:	b08e      	sub	sp, #56	@ 0x38
@@ -19983,7 +20025,7 @@ FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payloa
 	 * Payload is optional.
 	 * If payload pointer is NULL, no copy is performed.
 	 */
-	for(uint8_t i = 0 ; i < payload_len ; i++)
+	for(uint8_t i = 0; i < payload_len; i++)
  8007b0a:	2300      	movs	r3, #0
  8007b0c:	f887 3033 	strb.w	r3, [r7, #51]	@ 0x33
  8007b10:	e013      	b.n	8007b3a <FP_SendCommand+0x82>
@@ -20003,7 +20045,7 @@ FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payloa
  8007b28:	3338      	adds	r3, #56	@ 0x38
  8007b2a:	443b      	add	r3, r7
  8007b2c:	f803 2c2c 	strb.w	r2, [r3, #-44]
-	for(uint8_t i = 0 ; i < payload_len ; i++)
+	for(uint8_t i = 0; i < payload_len; i++)
  8007b30:	f897 3033 	ldrb.w	r3, [r7, #51]	@ 0x33
  8007b34:	3301      	adds	r3, #1
  8007b36:	f887 3033 	strb.w	r3, [r7, #51]	@ 0x33
@@ -20016,7 +20058,7 @@ FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payloa
 	 *
 	 * Header and address are NOT included in checksum.
 	 */
-	for(uint8_t i = 6 ; i < (10 + payload_len) ; i++)
+	for(uint8_t i = 6; i < (10 + payload_len); i++)
  8007b44:	2306      	movs	r3, #6
  8007b46:	f887 3032 	strb.w	r3, [r7, #50]	@ 0x32
  8007b4a:	e00e      	b.n	8007b6a <FP_SendCommand+0xb2>
@@ -20030,7 +20072,7 @@ FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payloa
  8007b5a:	8ebb      	ldrh	r3, [r7, #52]	@ 0x34
  8007b5c:	4413      	add	r3, r2
  8007b5e:	86bb      	strh	r3, [r7, #52]	@ 0x34
-	for(uint8_t i = 6 ; i < (10 + payload_len) ; i++)
+	for(uint8_t i = 6; i < (10 + payload_len); i++)
  8007b60:	f897 3032 	ldrb.w	r3, [r7, #50]	@ 0x32
  8007b64:	3301      	adds	r3, #1
  8007b66:	f887 3032 	strb.w	r3, [r7, #50]	@ 0x32
@@ -20078,7 +20120,7 @@ FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payloa
 	 *
 	 * The driver sends one byte at a time because USART is inherently byte-oriented.
 	 */
-	for(uint8_t i = 0 ; i < frame_len ; i++)
+	for(uint8_t i = 0; i < frame_len; i++)
  8007bb0:	2300      	movs	r3, #0
  8007bb2:	f887 3031 	strb.w	r3, [r7, #49]	@ 0x31
  8007bb6:	e015      	b.n	8007be4 <FP_SendCommand+0x12c>
@@ -20101,7 +20143,7 @@ FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payloa
  8007bd4:	f887 3037 	strb.w	r3, [r7, #55]	@ 0x37
 			break;
  8007bd8:	e00a      	b.n	8007bf0 <FP_SendCommand+0x138>
-	for(uint8_t i = 0 ; i < frame_len ; i++)
+	for(uint8_t i = 0; i < frame_len; i++)
  8007bda:	f897 3031 	ldrb.w	r3, [r7, #49]	@ 0x31
  8007bde:	3301      	adds	r3, #1
  8007be0:	f887 3031 	strb.w	r3, [r7, #49]	@ 0x31
@@ -20153,10 +20195,10 @@ void FP_Rx_Cyclic(void)
 	 * This allows the cyclic function to consume all pending UART bytes
 	 * each time it runs.
 	 */
-	while (USART_ReceiveByte(FP_USART_NUM_, &byte) == USART_Rx_Ok)
+	while(USART_ReceiveByte(FP_USART_NUM_, &byte) == USART_Rx_Ok)
  8007c0e:	e0ad      	b.n	8007d6c <FP_Rx_Cyclic+0x170>
 	{
-		switch (FP_Rx_St)
+		switch(FP_Rx_St)
  8007c10:	4b5d      	ldr	r3, [pc, #372]	@ (8007d88 <FP_Rx_Cyclic+0x18c>)
  8007c12:	781b      	ldrb	r3, [r3, #0]
  8007c14:	2b06      	cmp	r3, #6
@@ -20175,7 +20217,7 @@ void FP_Rx_Cyclic(void)
 			 * Any byte that is not FP_HEADER_H is ignored.
 			 * This lets the parser resynchronize with the next valid packet.
 			 */
-			if (byte == FP_HEADER_H)
+			if(byte == FP_HEADER_H)
  8007c3c:	787b      	ldrb	r3, [r7, #1]
  8007c3e:	2bef      	cmp	r3, #239	@ 0xef
  8007c40:	f040 808f 	bne.w	8007d62 <FP_Rx_Cyclic+0x166>
@@ -20192,7 +20234,7 @@ void FP_Rx_Cyclic(void)
 			 * If it matches, packet synchronization is successful.
 			 * If not, restart from header high.
 			 */
-			if (byte == FP_HEADER_L)
+			if(byte == FP_HEADER_L)
  8007c4c:	787b      	ldrb	r3, [r7, #1]
  8007c4e:	2b01      	cmp	r3, #1
  8007c50:	d103      	bne.n	8007c5a <FP_Rx_Cyclic+0x5e>
@@ -20228,7 +20270,7 @@ void FP_Rx_Cyclic(void)
  8007c6c:	801a      	strh	r2, [r3, #0]
 
 			/* After 4 address bytes, move to PID state */
-			if (FP_Rx_Indx == 4)
+			if(FP_Rx_Indx == 4)
  8007c6e:	4b47      	ldr	r3, [pc, #284]	@ (8007d8c <FP_Rx_Cyclic+0x190>)
  8007c70:	881b      	ldrh	r3, [r3, #0]
  8007c72:	2b04      	cmp	r3, #4
@@ -20251,7 +20293,7 @@ void FP_Rx_Cyclic(void)
 			 *
 			 * This driver currently accepts only ACK packets.
 			 */
-			if (byte == FP_PID_ACK)
+			if(byte == FP_PID_ACK)
  8007c84:	787b      	ldrb	r3, [r7, #1]
  8007c86:	2b07      	cmp	r3, #7
  8007c88:	d103      	bne.n	8007c92 <FP_Rx_Cyclic+0x96>
@@ -20339,7 +20381,7 @@ void FP_Rx_Cyclic(void)
 			/* Once all payload + checksum bytes are received,
 			 * calculate and verify checksum.
 			 */
-			if (FP_Rx_Indx == FP_Rx_Packect_Len)
+			if(FP_Rx_Indx == FP_Rx_Packect_Len)
  8007cdc:	4b2b      	ldr	r3, [pc, #172]	@ (8007d8c <FP_Rx_Cyclic+0x190>)
  8007cde:	881a      	ldrh	r2, [r3, #0]
  8007ce0:	4b2b      	ldr	r3, [pc, #172]	@ (8007d90 <FP_Rx_Cyclic+0x194>)
@@ -20357,7 +20399,7 @@ void FP_Rx_Cyclic(void)
  8007cec:	3307      	adds	r3, #7
  8007cee:	80fb      	strh	r3, [r7, #6]
 
-				for (uint8_t i = 0; i < FP_Rx_Packect_Len - 2; i++)
+				for(uint8_t i = 0; i < FP_Rx_Packect_Len - 2; i++)
  8007cf0:	2300      	movs	r3, #0
  8007cf2:	717b      	strb	r3, [r7, #5]
  8007cf4:	e009      	b.n	8007d0a <FP_Rx_Cyclic+0x10e>
@@ -20370,7 +20412,7 @@ void FP_Rx_Cyclic(void)
  8007cfe:	88fb      	ldrh	r3, [r7, #6]
  8007d00:	4413      	add	r3, r2
  8007d02:	80fb      	strh	r3, [r7, #6]
-				for (uint8_t i = 0; i < FP_Rx_Packect_Len - 2; i++)
+				for(uint8_t i = 0; i < FP_Rx_Packect_Len - 2; i++)
  8007d04:	797b      	ldrb	r3, [r7, #5]
  8007d06:	3301      	adds	r3, #1
  8007d08:	717b      	strb	r3, [r7, #5]
@@ -20403,7 +20445,7 @@ void FP_Rx_Cyclic(void)
  8007d36:	807b      	strh	r3, [r7, #2]
 
 				/* Compare locally calculated checksum with received checksum */
-				if (calc_sum == rec_sum)
+				if(calc_sum == rec_sum)
  8007d38:	88fa      	ldrh	r2, [r7, #6]
  8007d3a:	887b      	ldrh	r3, [r7, #2]
  8007d3c:	429a      	cmp	r2, r3
@@ -20460,7 +20502,7 @@ void FP_Rx_Cyclic(void)
  8007d68:	e000      	b.n	8007d6c <FP_Rx_Cyclic+0x170>
 			break;
  8007d6a:	bf00      	nop
-	while (USART_ReceiveByte(FP_USART_NUM_, &byte) == USART_Rx_Ok)
+	while(USART_ReceiveByte(FP_USART_NUM_, &byte) == USART_Rx_Ok)
  8007d6c:	1c7b      	adds	r3, r7, #1
  8007d6e:	4619      	mov	r1, r3
  8007d70:	2001      	movs	r0, #1
@@ -20563,7 +20605,7 @@ FP_Err_St_t FP_CheckPacket(void)
  8007df4:	71fb      	strb	r3, [r7, #7]
 
 	/* Check if RX state machine has completed a valid frame */
-	if (FP_Rx_Frame_Ready_Flag == FRAME_COMPLETED)
+	if(FP_Rx_Frame_Ready_Flag == FRAME_COMPLETED)
  8007df6:	4b08      	ldr	r3, [pc, #32]	@ (8007e18 <FP_CheckPacket+0x2c>)
  8007df8:	781b      	ldrb	r3, [r3, #0]
  8007dfa:	b2db      	uxtb	r3, r3
@@ -20607,7 +20649,7 @@ void FP_Enroll_SM(void)
 	 */
 	static uint8_t err_c = 0;
 
-	switch (FP_Enroll_St)
+	switch(FP_Enroll_St)
  8007e22:	4ba0      	ldr	r3, [pc, #640]	@ (80080a4 <FP_Enroll_SM+0x288>)
  8007e24:	781b      	ldrb	r3, [r3, #0]
  8007e26:	2b11      	cmp	r3, #17
@@ -20667,14 +20709,14 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_GET_IMG_1_CMD:
 	{
 		/* Wait for first image capture response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
  8007e96:	f7ff ffa9 	bl	8007dec <FP_CheckPacket>
  8007e9a:	4603      	mov	r3, r0
  8007e9c:	2b02      	cmp	r3, #2
  8007e9e:	d10b      	bne.n	8007eb8 <FP_Enroll_SM+0x9c>
 		{
 			/* Check confirmation code */
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
  8007ea0:	4b81      	ldr	r3, [pc, #516]	@ (80080a8 <FP_Enroll_SM+0x28c>)
  8007ea2:	781b      	ldrb	r3, [r3, #0]
  8007ea4:	2b00      	cmp	r3, #0
@@ -20705,7 +20747,7 @@ void FP_Enroll_SM(void)
  8007ebe:	b2da      	uxtb	r2, r3
  8007ec0:	4b7a      	ldr	r3, [pc, #488]	@ (80080ac <FP_Enroll_SM+0x290>)
  8007ec2:	701a      	strb	r2, [r3, #0]
-			if (err_c > 5)
+			if(err_c > 5)
  8007ec4:	4b79      	ldr	r3, [pc, #484]	@ (80080ac <FP_Enroll_SM+0x290>)
  8007ec6:	781b      	ldrb	r3, [r3, #0]
  8007ec8:	2b05      	cmp	r3, #5
@@ -20747,13 +20789,13 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_GEN_CHAR_1_CMD:
 	{
 		/* Wait for character-file generation response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
  8007ef4:	f7ff ff7a 	bl	8007dec <FP_CheckPacket>
  8007ef8:	4603      	mov	r3, r0
  8007efa:	2b02      	cmp	r3, #2
  8007efc:	f040 80c2 	bne.w	8008084 <FP_Enroll_SM+0x268>
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
  8007f00:	4b69      	ldr	r3, [pc, #420]	@ (80080a8 <FP_Enroll_SM+0x28c>)
  8007f02:	781b      	ldrb	r3, [r3, #0]
  8007f04:	2b00      	cmp	r3, #0
@@ -20800,13 +20842,13 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_LIFT_CHECK_CMD:
 	{
 		/* Wait until module confirms no finger on sensor */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
  8007f2a:	f7ff ff5f 	bl	8007dec <FP_CheckPacket>
  8007f2e:	4603      	mov	r3, r0
  8007f30:	2b02      	cmp	r3, #2
  8007f32:	f040 80a9 	bne.w	8008088 <FP_Enroll_SM+0x26c>
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_NO_FINGER)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_NO_FINGER)
  8007f36:	4b5c      	ldr	r3, [pc, #368]	@ (80080a8 <FP_Enroll_SM+0x28c>)
  8007f38:	781b      	ldrb	r3, [r3, #0]
  8007f3a:	2b02      	cmp	r3, #2
@@ -20851,13 +20893,13 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_GET_IMG_2_CMD:
 	{
 		/* Wait for second image capture response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
  8007f60:	f7ff ff44 	bl	8007dec <FP_CheckPacket>
  8007f64:	4603      	mov	r3, r0
  8007f66:	2b02      	cmp	r3, #2
  8007f68:	f040 8090 	bne.w	800808c <FP_Enroll_SM+0x270>
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
  8007f6c:	4b4e      	ldr	r3, [pc, #312]	@ (80080a8 <FP_Enroll_SM+0x28c>)
  8007f6e:	781b      	ldrb	r3, [r3, #0]
  8007f70:	2b00      	cmp	r3, #0
@@ -20906,13 +20948,13 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_GEN_CHAR_2_CMD:
 	{
 		/* Wait for second character-file generation response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
  8007f9c:	f7ff ff26 	bl	8007dec <FP_CheckPacket>
  8007fa0:	4603      	mov	r3, r0
  8007fa2:	2b02      	cmp	r3, #2
  8007fa4:	d174      	bne.n	8008090 <FP_Enroll_SM+0x274>
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
  8007fa6:	4b40      	ldr	r3, [pc, #256]	@ (80080a8 <FP_Enroll_SM+0x28c>)
  8007fa8:	781b      	ldrb	r3, [r3, #0]
  8007faa:	2b00      	cmp	r3, #0
@@ -20957,13 +20999,13 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_MERGE_CMD:
 	{
 		/* Wait for merge response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
  8007fd0:	f7ff ff0c 	bl	8007dec <FP_CheckPacket>
  8007fd4:	4603      	mov	r3, r0
  8007fd6:	2b02      	cmp	r3, #2
  8007fd8:	d15c      	bne.n	8008094 <FP_Enroll_SM+0x278>
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_MERGE_SUCCESS)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_MERGE_SUCCESS)
  8007fda:	4b33      	ldr	r3, [pc, #204]	@ (80080a8 <FP_Enroll_SM+0x28c>)
  8007fdc:	781b      	ldrb	r3, [r3, #0]
  8007fde:	2b00      	cmp	r3, #0
@@ -21023,13 +21065,13 @@ void FP_Enroll_SM(void)
 	case FP_E_WAIT_STORE_CMD:
 	{
 		/* Wait for store response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
  800801e:	f7ff fee5 	bl	8007dec <FP_CheckPacket>
  8008022:	4603      	mov	r3, r0
  8008024:	2b02      	cmp	r3, #2
  8008026:	d137      	bne.n	8008098 <FP_Enroll_SM+0x27c>
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_STORE_SUCCESS)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_STORE_SUCCESS)
  8008028:	4b1f      	ldr	r3, [pc, #124]	@ (80080a8 <FP_Enroll_SM+0x28c>)
  800802a:	781b      	ldrb	r3, [r3, #0]
  800802c:	2b00      	cmp	r3, #0
@@ -21066,6 +21108,8 @@ void FP_Enroll_SM(void)
  8008048:	4b19      	ldr	r3, [pc, #100]	@ (80080b0 <FP_Enroll_SM+0x294>)
  800804a:	801a      	strh	r2, [r3, #0]
 
+		/* Save updated next available fingerprint page into EEPROM so enrolled users remain tracked after reset or power loss
+		 */
 		EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, FP_NextPage >> 8);
  800804c:	4b18      	ldr	r3, [pc, #96]	@ (80080b0 <FP_Enroll_SM+0x294>)
  800804e:	881b      	ldrh	r3, [r3, #0]
@@ -21075,6 +21119,8 @@ void FP_Enroll_SM(void)
  8008056:	4619      	mov	r1, r3
  8008058:	2000      	movs	r0, #0
  800805a:	f7ff fc69 	bl	8007930 <EEPROM_Write_Byte>
+
+		/* Store low byte of next available page number */
 		EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, FP_NextPage & 0xFF);
  800805e:	4b14      	ldr	r3, [pc, #80]	@ (80080b0 <FP_Enroll_SM+0x294>)
  8008060:	881b      	ldrh	r3, [r3, #0]
@@ -21082,6 +21128,7 @@ void FP_Enroll_SM(void)
  8008064:	4619      	mov	r1, r3
  8008066:	2001      	movs	r0, #1
  8008068:	f7ff fc62 	bl	8007930 <EEPROM_Write_Byte>
+
 		/* Return driver back to normal search mode */
 		FP_SetMode(FP_SEARCH_MODE);
  800806c:	2000      	movs	r0, #0
@@ -21144,7 +21191,7 @@ FP_GetEnroll_Instruction_t FP_GetEnroll_Instruction(void)
  80080b4:	b480      	push	{r7}
  80080b6:	af00      	add	r7, sp, #0
 	/* If driver is not in enrollment mode, no enrollment instruction is active */
-	if (FP_Curr_Mode != FP_ENROLL_MODE)
+	if(FP_Curr_Mode != FP_ENROLL_MODE)
  80080b8:	4b1f      	ldr	r3, [pc, #124]	@ (8008138 <FP_GetEnroll_Instruction+0x84>)
  80080ba:	781b      	ldrb	r3, [r3, #0]
  80080bc:	2b01      	cmp	r3, #1
@@ -21156,7 +21203,7 @@ FP_GetEnroll_Instruction_t FP_GetEnroll_Instruction(void)
 	}
 
 	/* Map internal enrollment states into user-facing instructions */
-	switch (FP_Enroll_St)
+	switch(FP_Enroll_St)
  80080c4:	4b1d      	ldr	r3, [pc, #116]	@ (800813c <FP_GetEnroll_Instruction+0x88>)
  80080c6:	781b      	ldrb	r3, [r3, #0]
  80080c8:	3b02      	subs	r3, #2
@@ -21255,7 +21302,7 @@ void FP_SEARCH_SM(void)
 	/* Timestamp used for timeout checks in WAIT states */
 	static uint32_t start = 0;
 
-	switch (FP_Search_St)
+	switch(FP_Search_St)
  8008146:	4b72      	ldr	r3, [pc, #456]	@ (8008310 <FP_SEARCH_SM+0x1d0>)
  8008148:	781b      	ldrb	r3, [r3, #0]
  800814a:	2b07      	cmp	r3, #7
@@ -21300,13 +21347,13 @@ void FP_SEARCH_SM(void)
 	case FP_S_WAIT_GET_IMG_CMD:
 	{
 		/* Wait for image capture response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
  8008194:	f7ff fe2a 	bl	8007dec <FP_CheckPacket>
  8008198:	4603      	mov	r3, r0
  800819a:	2b02      	cmp	r3, #2
  800819c:	d10b      	bne.n	80081b6 <FP_SEARCH_SM+0x76>
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GET_FINGER_OK)
  800819e:	4b5e      	ldr	r3, [pc, #376]	@ (8008318 <FP_SEARCH_SM+0x1d8>)
  80081a0:	781b      	ldrb	r3, [r3, #0]
  80081a2:	2b00      	cmp	r3, #0
@@ -21317,7 +21364,7 @@ void FP_SEARCH_SM(void)
  80081a6:	4b5a      	ldr	r3, [pc, #360]	@ (8008310 <FP_SEARCH_SM+0x1d0>)
  80081a8:	2202      	movs	r2, #2
  80081aa:	701a      	strb	r2, [r3, #0]
-			if (HAL_GetTick() - start > 2000)
+			if(HAL_GetTick() - start > 2000)
 			{
 				FP_Search_St = FP_S_SEND_GET_IMG_CMD;
 			}
@@ -21330,7 +21377,7 @@ void FP_SEARCH_SM(void)
  80081b2:	701a      	strb	r2, [r3, #0]
 		break;
  80081b4:	e0a3      	b.n	80082fe <FP_SEARCH_SM+0x1be>
-			if (HAL_GetTick() - start > 2000)
+			if(HAL_GetTick() - start > 2000)
  80081b6:	f7f8 fd3d 	bl	8000c34 <HAL_GetTick>
  80081ba:	4602      	mov	r2, r0
  80081bc:	4b55      	ldr	r3, [pc, #340]	@ (8008314 <FP_SEARCH_SM+0x1d4>)
@@ -21376,13 +21423,13 @@ void FP_SEARCH_SM(void)
 	case FP_S_WAIT_GEN_CHAR_1_CMD:
 	{
 		/* Wait for character generation response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
  80081f6:	f7ff fdf9 	bl	8007dec <FP_CheckPacket>
  80081fa:	4603      	mov	r3, r0
  80081fc:	2b02      	cmp	r3, #2
  80081fe:	d10b      	bne.n	8008218 <FP_SEARCH_SM+0xd8>
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_GEN_CHAR_OK)
  8008200:	4b45      	ldr	r3, [pc, #276]	@ (8008318 <FP_SEARCH_SM+0x1d8>)
  8008202:	781b      	ldrb	r3, [r3, #0]
  8008204:	2b00      	cmp	r3, #0
@@ -21393,7 +21440,7 @@ void FP_SEARCH_SM(void)
  8008208:	4b41      	ldr	r3, [pc, #260]	@ (8008310 <FP_SEARCH_SM+0x1d0>)
  800820a:	2204      	movs	r2, #4
  800820c:	701a      	strb	r2, [r3, #0]
-			if (HAL_GetTick() - start > 2000)
+			if(HAL_GetTick() - start > 2000)
 			{
 				FP_Search_St = FP_S_SEND_GET_IMG_CMD;
 			}
@@ -21406,7 +21453,7 @@ void FP_SEARCH_SM(void)
  8008214:	701a      	strb	r2, [r3, #0]
 		break;
  8008216:	e074      	b.n	8008302 <FP_SEARCH_SM+0x1c2>
-			if (HAL_GetTick() - start > 2000)
+			if(HAL_GetTick() - start > 2000)
  8008218:	f7f8 fd0c 	bl	8000c34 <HAL_GetTick>
  800821c:	4602      	mov	r2, r0
  800821e:	4b3d      	ldr	r3, [pc, #244]	@ (8008314 <FP_SEARCH_SM+0x1d4>)
@@ -21456,13 +21503,13 @@ void FP_SEARCH_SM(void)
 	case FP_S_WAIT_SEARCH_CMD:
 	{
 		/* Wait for search response */
-		if (FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+		if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
  8008262:	f7ff fdc3 	bl	8007dec <FP_CheckPacket>
  8008266:	4603      	mov	r3, r0
  8008268:	2b02      	cmp	r3, #2
  800826a:	d11c      	bne.n	80082a6 <FP_SEARCH_SM+0x166>
 		{
-			if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_MATCH)
+			if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_MATCH)
  800826c:	4b2a      	ldr	r3, [pc, #168]	@ (8008318 <FP_SEARCH_SM+0x1d8>)
  800826e:	781b      	ldrb	r3, [r3, #0]
  8008270:	2b00      	cmp	r3, #0
@@ -21487,14 +21534,14 @@ void FP_SEARCH_SM(void)
  800828e:	4b20      	ldr	r3, [pc, #128]	@ (8008310 <FP_SEARCH_SM+0x1d0>)
  8008290:	2206      	movs	r2, #6
  8008292:	701a      	strb	r2, [r3, #0]
-			if (HAL_GetTick() - start > 2000)
+			if(HAL_GetTick() - start > 2000)
 			{
 				FP_Search_St = FP_S_SEND_GET_IMG_CMD;
 			}
 		}
 		break;
  8008294:	e037      	b.n	8008306 <FP_SEARCH_SM+0x1c6>
-			else if (FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_NOT_MATCH)
+			else if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == FP_SEARCH_NOT_MATCH)
  8008296:	4b20      	ldr	r3, [pc, #128]	@ (8008318 <FP_SEARCH_SM+0x1d8>)
  8008298:	781b      	ldrb	r3, [r3, #0]
  800829a:	2b09      	cmp	r3, #9
@@ -21505,7 +21552,7 @@ void FP_SEARCH_SM(void)
  80082a2:	701a      	strb	r2, [r3, #0]
 		break;
  80082a4:	e02f      	b.n	8008306 <FP_SEARCH_SM+0x1c6>
-			if (HAL_GetTick() - start > 2000)
+			if(HAL_GetTick() - start > 2000)
  80082a6:	f7f8 fcc5 	bl	8000c34 <HAL_GetTick>
  80082aa:	4602      	mov	r2, r0
  80082ac:	4b19      	ldr	r3, [pc, #100]	@ (8008314 <FP_SEARCH_SM+0x1d4>)
