@@ -18,16 +18,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "USART_Prv.h"
 #include "usb_host.h"
 #include "Sys.h"
-#include "USART.h"
-#include "USART_Cfg.h"
 #include "TASKS.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "stm32f4xx_hal.h"
-#include "FP.h"
+
 
 int main(void)
 {
@@ -43,7 +39,6 @@ int main(void)
 
 	ret_st = xTaskCreate(TASKS_RELAY_Cyclic, "TASKS_RELAY_Cyclic", 400, NULL,2, NULL);
 	configASSERT(ret_st == pdPASS);
-
 
 
 	vTaskStartScheduler();

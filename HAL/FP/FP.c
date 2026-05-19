@@ -211,6 +211,7 @@ FP_Err_St_t FP_Init(void)
 			}
 			else
 			{
+
 				/* Read previously stored next fingerprint page number
 				 * from EEPROM memory after power-up/reset
 				 */
@@ -237,6 +238,7 @@ FP_Err_St_t FP_Init(void)
 
 					/* Store low byte of initialized page value */
 					EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, FP_NextPage & 0xFF);
+
 				}
 			}
 		}
@@ -1012,12 +1014,22 @@ void FP_Enroll_SM(void)
 		/* Increment page only on successful enrollment */
 		FP_NextPage++;
 
+		EEPROM_Err_St_t EEPROM_Err_St  = EEPROM_Write_Failed;
 		/* Save updated next available fingerprint page into EEPROM so enrolled users remain tracked after reset or power loss
 		 */
-		EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, FP_NextPage >> 8);
+		EEPROM_Err_St = EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, FP_NextPage >> 8);
 
-		/* Store low byte of next available page number */
-		EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, FP_NextPage & 0xFF);
+		if(EEPROM_Err_St == EEPROM_Write_Success)
+		{
+			vTaskDelay(pdMS_TO_TICKS(5));
+			/* Store low byte of next available page number */
+			EEPROM_Err_St = EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, FP_NextPage & 0xFF);
+			if(EEPROM_Err_St != EEPROM_Write_Success)
+			{
+//				while(1);
+			}
+		}
+
 
 		/* Return driver back to normal search mode */
 		FP_SetMode(FP_SEARCH_MODE);
@@ -1033,6 +1045,9 @@ void FP_Enroll_SM(void)
 	}
 }
 
+uint16_t FP_Get_Curr_User_Id(void){
+	return FP_NextPage;
+}
 
 /******************************************************************************************
  *                           FP_GetEnroll_Instruction()
@@ -1482,4 +1497,76 @@ void FP_SimpleTesT(void)
 		FP_SendCommand(FP_GEN_IMG_CMD, NULL, 0);
 		printf("Simple Test Success");
 	}
+}
+
+/******************************************************************************************
+ *                              FP_Delete_All_Users()
+ *
+ *  Delete all stored fingerprints from the fingerprint sensor database.
+ *
+ *  Description:
+ *    - Sends the "Empty Database" command to the fingerprint module.
+ *    - Removes all enrolled fingerprint templates stored in sensor flash memory.
+ *
+ *  Fingerprint Sensor Command:
+ *    Command: Empty Database
+ *    Instruction Code: 0x0D
+ *
+ *  Application Use:
+ *    Use this API when:
+ *      - resetting the system
+ *      - clearing all enrolled users
+ *      - factory reset operation
+ *
+ *  Important:
+ *    - This operation is irreversible.
+ *    - All enrolled users will be permanently deleted.
+ *
+ *  Returns:
+ *    FP_SendCmd_Success:
+ *        Database erase command completed successfully.
+ *
+ *    FP_SendCmd_Failed:
+ *        Failed to send command or sensor rejected operation.
+ ******************************************************************************************/
+FP_Err_St_t FP_Delete_All_Users(void)
+{
+	static uint8_t cmd_sent = 0;
+
+	FP_Err_St_t FP_Err_St = FP_SendCmd_Failed;
+
+	/* Always keep RX parser running */
+	FP_Rx_Cyclic();
+
+	if(cmd_sent == 0)
+	{
+		FP_Err_St = FP_SendCommand(FP_EMPTY_DATABASE_CMD, NULL, 0);
+
+		if(FP_Err_St == FP_SendCmd_Success)
+		{
+			cmd_sent = 1;
+		}
+	}
+
+	if(FP_CheckPacket() == FP_Rx_Full_Packet_Ok)
+	{
+		cmd_sent = 0;
+
+		if(FP_Rx_Buff[FP_CONFIRM_CODE_INDX] == 0x00)
+		{
+			FP_NextPage = 1;
+
+			EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_H_MEM_ADDR, FP_NextPage >> 8);
+			vTaskDelay(pdMS_TO_TICKS(5));
+			EEPROM_Write_Byte(FP_EEPROM_NEXT_PAGE_L_MEM_ADDR, FP_NextPage & 0xFF);
+
+			return FP_SendCmd_Success;
+		}
+		else
+		{
+			return FP_SendCmd_Failed;
+		}
+	}
+
+	return FP_Rx_Full_Packet_Nok;
 }

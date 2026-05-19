@@ -182,5 +182,7 @@ typedef struct APP_RxFrame_s{
  ******************************************************************************************/
 #define APP_LOG_ACCESS_DATA_LEN  10
 
+#define APP_ENROLL_INST_LEN              3
+#define APP_ENROLL_SUCCESS_PAYLOAD_LEN   3
 
 #endif /* APP_APP_PRV_H_ */

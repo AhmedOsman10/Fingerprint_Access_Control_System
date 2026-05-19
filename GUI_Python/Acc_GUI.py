@@ -469,8 +469,9 @@ class FingerprintAccessGUI:
             self._log(f"RX unknown command: 0x{cmd:02X} | Data: {data.hex(' ')}")
 
     def handle_enroll_status(self, data: bytes):
-        if len(data) != 1:
-            self._log(f"Invalid 0x11 frame length: expected 1, got {len(data)}")
+        # 1. Change expected length from 1 to 3
+        if len(data) != 3:
+            self._log(f"Invalid 0x11 frame length: expected 3, got {len(data)}")
             return
 
         instruction_id = data[0]
@@ -480,8 +481,20 @@ class FingerprintAccessGUI:
             instruction_id,
             (f"UNKNOWN INSTRUCTION: {instruction_id}", "#7f8c8d")
         )
-        self._log(f"RX 0x11 -> {text}")
 
+        # 2. Check if it's the Success instruction (Index 5 in your INSTRUCTION_MAP)
+        if instruction_id == 5:
+            # 3. Extract the 16-bit User ID from bytes 1 and 2
+            user_id = (data[1] << 8) | data[2]
+            
+            # Append the ID to the text string
+            text = f"{text} (Assigned ID: {user_id})"
+            
+            # Update the big top banner so the Admin sees the ID instantly
+            self.banner_label.configure(text=text)
+
+        # Print to the scrolling log
+        self._log(f"RX 0x11 -> {text}")
     def handle_access_log(self, data: bytes):
         """
         Command 0x12 payload format:

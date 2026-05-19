@@ -280,7 +280,7 @@ EEPROM_Err_St_t EEPROM_Write_Page(uint16_t Page_Num, uint8_t *data, uint8_t lent
  *    EEPROM_Invalid_Page_Len_Arg   : Invalid write range.
  *    EEPROM_Invalid_Data_Arg       : NULL pointer argument.
  ******************************************************************************************/
-EEPROM_Err_St_t EEPROM_Write(uint16_t EEPROM_Mem_Addr ,uint8_t *data , uint8_t lenth)
+EEPROM_Err_St_t EEPROM_Write(uint16_t EEPROM_Mem_Addr, uint8_t *data, uint8_t lenth)
 {
 	/* Default return assumes write success */
 	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Write_Success;

@@ -433,7 +433,24 @@ FP_Mode_t FP_GetMode(void);
  *    FP_MainFunction_Cyclic() must be called periodically for this status
  *    to update correctly.
  ******************************************************************************************/
+
+
 FP_GetEnroll_Instruction_t FP_GetEnroll_Instruction(void);
 
+/******************************************************************************************
+ *                              FP_Delete_All_Users()
+ *
+ *  Delete all enrolled fingerprints stored in sensor flash memory.
+ *
+ *  Warning:
+ *    This removes all registered users permanently.
+ *
+ *  Returns:
+ *    FP_SendCmd_Success / FP_SendCmd_Failed
+ ******************************************************************************************/
+FP_Err_St_t FP_Delete_All_Users(void);
 
+
+
+uint16_t FP_Get_Curr_User_Id(void);
 #endif /* FP_FP_H_ */

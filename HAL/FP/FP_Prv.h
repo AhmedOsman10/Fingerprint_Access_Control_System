@@ -116,6 +116,8 @@
 #define FRAME_COMPLETED 1
 #define  FRAME_NOT_COMPLETED 0
 
+#define FP_EMPTY_DATABASE_CMD   0x0D
+
 
 /******************************************************************************************
  *                                  FP_Rx_St_t

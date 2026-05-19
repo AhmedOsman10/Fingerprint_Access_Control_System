@@ -12,7 +12,6 @@
 #include "stm32f4xx.h"
 #include "stm32f407xx.h"
 #include "stm32f4xx_hal.h"
-#include "USART.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "TASKS.h"
@@ -36,7 +35,6 @@ void FP_Main_Cyclic(void *pram)
 		FP_MainFunction_Cyclic();
 		vTaskDelayUntil(&last_wake , pdMS_TO_TICKS(400));
 	}
-
 }
 
 void TASKS_APP_Cyclic(void *pram)

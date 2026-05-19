@@ -1,15 +1,15 @@
 HAL/FP/FP.o: ../HAL/FP/FP.c \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/MCAL/USART/USART.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/FreeRTOS.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/FreeRTOSConfig.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/projdefs.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/portable.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/deprecated_definitions.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/portable/GCC/ARM_CM4F/portmacro.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/mpu_wrappers.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/queue.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/task.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/list.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/MCAL/USART/USART.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/FreeRTOS.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/FreeRTOSConfig.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/projdefs.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/portable.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/deprecated_definitions.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/portable/GCC/ARM_CM4F/portmacro.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/mpu_wrappers.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/queue.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/task.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/list.h \
  ../HAL/FP/FP.h ../HAL/FP/FP_Prv.h ../HAL/FP/FP_Cfg.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
@@ -44,18 +44,18 @@ HAL/FP/FP.o: ../HAL/FP/FP.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_usart.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/HAL/EEPROM/EEPROM.h
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/MCAL/USART/USART.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/FreeRTOS.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/FreeRTOSConfig.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/projdefs.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/portable.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/deprecated_definitions.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/portable/GCC/ARM_CM4F/portmacro.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/mpu_wrappers.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/queue.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/task.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/list.h:
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/HAL/EEPROM/EEPROM.h
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/MCAL/USART/USART.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/FreeRTOS.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/FreeRTOSConfig.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/projdefs.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/portable.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/deprecated_definitions.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/portable/GCC/ARM_CM4F/portmacro.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/mpu_wrappers.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/queue.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/task.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/list.h:
 ../HAL/FP/FP.h:
 ../HAL/FP/FP_Prv.h:
 ../HAL/FP/FP_Cfg.h:
@@ -92,4 +92,4 @@ E:/Learning_WorkSpace\ -\ 2/Fingerprint/Third_Party/FreeRtos/Source/include/list
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_usart.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/HAL/EEPROM/EEPROM.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/HAL/EEPROM/EEPROM.h:

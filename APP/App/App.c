@@ -269,125 +269,125 @@ static APP_Err_St_t APP_Send_Cmd(APP_CMD_t APP_CMD_Inst, uint8_t *Data_payload, 
  ******************************************************************************************/
 static void APP_Check_RxFrame(void)
 {
-    /* Holds one received USART byte at a time */
-    uint8_t rx_byte;
+	/* Holds one received USART byte at a time */
+	uint8_t rx_byte;
 
-    /* Payload index used while receiving DATA bytes.
-     *
-     * static is required because this function is called cyclically and
-     * a complete frame may arrive over multiple calls.
-     */
-    static uint8_t data_indx = 0;
+	/* Payload index used while receiving DATA bytes.
+	 *
+	 * static is required because this function is called cyclically and
+	 * a complete frame may arrive over multiple calls.
+	 */
+	static uint8_t data_indx = 0;
 
-    /* Read all currently available bytes from USART */
-    while (USART_ReceiveByte(APP_USART_NUM_, &rx_byte) == USART_Rx_Ok)
-    {
-        switch (App_Rx_St)
-        {
-            case APP_Rx_Wait_Sof:
-            {
-                /* Wait for Start Of Frame.
-                 *
-                 * Any non-SOF byte is ignored, allowing resynchronization
-                 * if noise or corrupted bytes are received.
-                 */
-                if (rx_byte == APP_SOF)
-                {
-                    /* Valid SOF detected -> next expected byte is CMD */
-                    App_Rx_St = APP_Rx_Get_Cmd;
-                }
-                break;
-            }
+	/* Read all currently available bytes from USART */
+	while (USART_ReceiveByte(APP_USART_NUM_, &rx_byte) == USART_Rx_Ok)
+	{
+		switch (App_Rx_St)
+		{
+		case APP_Rx_Wait_Sof:
+		{
+			/* Wait for Start Of Frame.
+			 *
+			 * Any non-SOF byte is ignored, allowing resynchronization
+			 * if noise or corrupted bytes are received.
+			 */
+			if (rx_byte == APP_SOF)
+			{
+				/* Valid SOF detected -> next expected byte is CMD */
+				App_Rx_St = APP_Rx_Get_Cmd;
+			}
+			break;
+		}
 
-            case APP_Rx_Get_Cmd:
-            {
-                /* Store command byte */
-                APP_RxFrame.cmd = rx_byte;
+		case APP_Rx_Get_Cmd:
+		{
+			/* Store command byte */
+			APP_RxFrame.cmd = rx_byte;
 
-                /* Next field is payload length */
-                App_Rx_St = APP_Rx_Get_Len;
-                break;
-            }
+			/* Next field is payload length */
+			App_Rx_St = APP_Rx_Get_Len;
+			break;
+		}
 
-            case APP_Rx_Get_Len:
-            {
-                /* Store payload length */
-                APP_RxFrame.len = rx_byte;
+		case APP_Rx_Get_Len:
+		{
+			/* Store payload length */
+			APP_RxFrame.len = rx_byte;
 
-                /* If length is zero, the next byte will be checksum directly.
-                 * Otherwise move to DATA reception.
-                 */
-                if (APP_RxFrame.len == 0)
-                {
-                    App_Rx_St = APP_Rx_Get_Cs;
-                }
-                else
-                {
-                    /* Reset payload index before collecting payload */
-                    data_indx = 0;
-                    App_Rx_St = APP_Rx_Get_Data;
-                }
+			/* If length is zero, the next byte will be checksum directly.
+			 * Otherwise move to DATA reception.
+			 */
+			if (APP_RxFrame.len == 0)
+			{
+				App_Rx_St = APP_Rx_Get_Cs;
+			}
+			else
+			{
+				/* Reset payload index before collecting payload */
+				data_indx = 0;
+				App_Rx_St = APP_Rx_Get_Data;
+			}
 
-                break;
-            }
+			break;
+		}
 
-            case APP_Rx_Get_Data:
-            {
-                /* Store payload byte */
-                APP_RxFrame.data[data_indx] = rx_byte;
+		case APP_Rx_Get_Data:
+		{
+			/* Store payload byte */
+			APP_RxFrame.data[data_indx] = rx_byte;
 
-                /* Move to next payload index */
-                data_indx++;
+			/* Move to next payload index */
+			data_indx++;
 
-                /* Once all payload bytes are received, expect checksum next */
-                if (data_indx >= APP_RxFrame.len)
-                {
-                    App_Rx_St = APP_Rx_Get_Cs;
-                }
+			/* Once all payload bytes are received, expect checksum next */
+			if (data_indx >= APP_RxFrame.len)
+			{
+				App_Rx_St = APP_Rx_Get_Cs;
+			}
 
-                break;
-            }
+			break;
+		}
 
-            case APP_Rx_Get_Cs:
-            {
-                /* Received checksum byte */
-                uint8_t received_cs = rx_byte;
+		case APP_Rx_Get_Cs:
+		{
+			/* Received checksum byte */
+			uint8_t received_cs = rx_byte;
 
-                /* Recalculate checksum locally */
-                uint8_t calc_cs = APP_RxFrame.cmd ^ APP_RxFrame.len;
+			/* Recalculate checksum locally */
+			uint8_t calc_cs = APP_RxFrame.cmd ^ APP_RxFrame.len;
 
-                /* Include payload bytes in checksum calculation */
-                for (uint8_t i = 0; i < APP_RxFrame.len; i++)
-                {
-                    calc_cs ^= APP_RxFrame.data[i];
-                }
+			/* Include payload bytes in checksum calculation */
+			for (uint8_t i = 0; i < APP_RxFrame.len; i++)
+			{
+				calc_cs ^= APP_RxFrame.data[i];
+			}
 
-                /* Compare local checksum with received checksum */
-                if (received_cs == calc_cs)
-                {
-                    /* Frame is valid and ready for application processing */
-                    App_Rx_St = APP_Rx_Complete_Frame;
-                }
-                else
-                {
-                    /* Invalid checksum -> discard frame and restart synchronization */
-                    App_Rx_St = APP_Rx_Wait_Sof;
-                }
+			/* Compare local checksum with received checksum */
+			if (received_cs == calc_cs)
+			{
+				/* Frame is valid and ready for application processing */
+				App_Rx_St = APP_Rx_Complete_Frame;
+			}
+			else
+			{
+				/* Invalid checksum -> discard frame and restart synchronization */
+				App_Rx_St = APP_Rx_Wait_Sof;
+			}
 
-                break;
-            }
+			break;
+		}
 
-            case APP_Rx_Complete_Frame:
-            {
-                /* A full valid frame is already available.
-                 *
-                 * Do not overwrite it until APP_Check_Response() consumes it
-                 * and resets the RX state machine.
-                 */
-                break;
-            }
-        }
-    }
+		case APP_Rx_Complete_Frame:
+		{
+			/* A full valid frame is already available.
+			 *
+			 * Do not overwrite it until APP_Check_Response() consumes it
+			 * and resets the RX state machine.
+			 */
+			break;
+		}
+		}
+	}
 }
 
 
@@ -597,8 +597,27 @@ void APP_Cyclic(void)
 		 */
 		if(current_inst != prev_inst)
 		{
-			/* Send updated enrollment status to GUI */
-			APP_Send_Cmd(APP_Enroll_St, &current_inst, 1);
+
+			uint8_t enroll_success_payload[APP_ENROLL_SUCCESS_PAYLOAD_LEN] ;
+			if(current_inst == FP_E_Inst_Success)
+			{
+
+				uint16_t curr_user_id = FP_Get_Curr_User_Id();
+				enroll_success_payload[0] = current_inst;
+				enroll_success_payload[1] =  (curr_user_id >> 8);
+				enroll_success_payload[2] = (curr_user_id & 0xFF) ;
+
+				/* Send updated enrollment status to GUI */
+				APP_Send_Cmd(APP_Enroll_St, enroll_success_payload, APP_ENROLL_SUCCESS_PAYLOAD_LEN);
+			}
+			else{
+				/* Send updated enrollment status to GUI */
+				enroll_success_payload[0] = current_inst;
+				enroll_success_payload[1] =  0;
+				enroll_success_payload[2] = 0;
+				APP_Send_Cmd(APP_Enroll_St, enroll_success_payload, APP_ENROLL_INST_LEN);
+			}
+
 
 			/* Save it as the last transmitted instruction */
 			prev_inst = current_inst;
