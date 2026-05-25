@@ -50,34 +50,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := Fingerprint
+BUILD_ARTIFACT_NAME := Fingerprint_Access_Control_System
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-Fingerprint.elf \
+Fingerprint_Access_Control_System.elf \
 
 MAP_FILES += \
-Fingerprint.map \
+Fingerprint_Access_Control_System.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-Fingerprint.list \
+Fingerprint_Access_Control_System.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: Fingerprint.elf secondary-outputs
+main-build: Fingerprint_Access_Control_System.elf secondary-outputs
 
 # Tool invocations
-Fingerprint.elf Fingerprint.map: $(OBJS) $(USER_OBJS) E:\Learning_WorkSpace\ -\ 2\Fingerprint\Fingerprint\STM32F407VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Fingerprint.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"E:\Learning_WorkSpace - 2\Fingerprint\Fingerprint\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Fingerprint.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Fingerprint_Access_Control_System.elf Fingerprint_Access_Control_System.map: $(OBJS) $(USER_OBJS) E:\Learning_WorkSpace\ -\ 2\Fingerprint_Access_Control_System\STM32F407VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Fingerprint_Access_Control_System.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"E:\Learning_WorkSpace - 2\Fingerprint_Access_Control_System\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Fingerprint_Access_Control_System.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -86,14 +86,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Fingerprint.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Fingerprint.list"
+Fingerprint_Access_Control_System.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Fingerprint_Access_Control_System.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) Fingerprint.elf Fingerprint.list Fingerprint.map default.size.stdout
+	-$(RM) Fingerprint_Access_Control_System.elf Fingerprint_Access_Control_System.list Fingerprint_Access_Control_System.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

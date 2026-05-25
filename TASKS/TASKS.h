@@ -12,7 +12,7 @@ void TASKS_Init(void);
 void FP_Main_Cyclic(void *pram);
 void TASKS_APP_Cyclic(void *pram);
 void TASKS_RELAY_Cyclic(void *pram);
-
+void TASKS_Led_Toggle(void *pram);
 
 #endif /* TASKS_H_ */
 
