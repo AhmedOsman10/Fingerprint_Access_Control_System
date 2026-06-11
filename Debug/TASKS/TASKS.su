@@ -1,4 +1,9 @@
+../Drivers/CMSIS/Include/core_cm4.h:1775:22:__NVIC_ClearPendingIRQ	16	static
 ../TASKS/TASKS.c:23:6:TASKS_Init	8	static
 ../TASKS/TASKS.c:29:6:FP_Main_Cyclic	24	static
 ../TASKS/TASKS.c:40:6:TASKS_APP_Cyclic	24	static
 ../TASKS/TASKS.c:52:6:TASKS_RELAY_Cyclic	24	static
+../TASKS/TASKS.c:63:6:Enter_SleepMode	8	static
+../TASKS/TASKS.c:80:6:EXTI9_5_IRQHandler	8	static
+../TASKS/TASKS.c:90:6:HAL_GPIO_EXTI_Callback	24	static
+../TASKS/TASKS.c:100:6:TASKS_Led_Toggle	48	static

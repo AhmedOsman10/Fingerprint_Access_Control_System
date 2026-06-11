@@ -45,6 +45,7 @@ TASKS/TASKS.o: ../TASKS/TASKS.c \
  ../TASKS/TASKS.h \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/RELAY/RELAY.h \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/FP/FP.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/System/Sys.h \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/APP/App/App.h
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h:
@@ -92,4 +93,5 @@ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRt
 ../TASKS/TASKS.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/RELAY/RELAY.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/FP/FP.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/System/Sys.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/APP/App/App.h:
