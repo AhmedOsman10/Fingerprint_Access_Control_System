@@ -35,14 +35,23 @@
 
 #include <stdio.h>
 #include <stdint.h>
+
+#include "stm32f4xx.h"
+#include "stm32f407xx.h"
+#include "stm32f4xx_hal.h"
+#include <stm32f4xx_hal_pwr.h>
+#include "FreeRTOS.h"
+#include "task.h"
 #include <USART.h>
 #include <RTC.h>
 #include <FP.h>
+#include "Sys.h"
 #include "RELAY.h"
 #include "App_Cfg.h"
 #include "App_Prv.h"
 #include "App.h"
 
+extern RTC_HandleTypeDef hrtc;
 
 /* Application RX state machine current state.
  *
@@ -428,6 +437,82 @@ static APP_Err_St_t APP_Check_Response(void)
 }
 
 
+void Enter_SleepMode(void)
+{
+	RTC_Time_t    external_rtc_time;
+	RTC_TimeTypeDef  internal_rtc_time;
+	RTC_AlarmTypeDef alarm;
+
+	GPIO_InitTypeDef GPIO_Init ;
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	GPIO_Init.Pin = GPIO_PIN_3;
+	GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_Init.Pull = GPIO_NOPULL;
+
+	HAL_GPIO_Init(GPIOB, &GPIO_Init);
+
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
+
+	RTC_GetTime(&external_rtc_time);
+
+	internal_rtc_time.Hours   = external_rtc_time.hours;
+	internal_rtc_time.Minutes = external_rtc_time.minutes;
+	internal_rtc_time.Seconds = external_rtc_time.seconds;
+
+	HAL_RTC_SetTime(&hrtc, &internal_rtc_time, RTC_FORMAT_BIN);
+
+
+
+	alarm.AlarmTime.Hours   = 18;
+	alarm.AlarmTime.Minutes = 46;
+	alarm.AlarmTime.Seconds = 0 ;
+	alarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	alarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+	alarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY;
+	alarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
+	alarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+	alarm.AlarmDateWeekDay = 1;
+	alarm.Alarm = RTC_ALARM_A;
+
+	HAL_RTC_SetAlarm_IT(&hrtc, &alarm, RTC_FORMAT_BIN);
+
+
+
+
+
+
+	vTaskSuspendAll();
+	HAL_SuspendTick();
+
+	SysTick->CTRL  &= ~SysTick_CTRL_TICKINT_Msk;
+
+
+	__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_7);
+	NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+
+
+	/*	HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON,PWR_SLEEPENTRY_WFI );*/
+	HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+
+
+
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
+	for(uint8_t i = 0 ; i < 10 ;i++)
+	{
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+		vTaskDelay(pdMS_TO_TICKS(1000));
+	}
+
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
+
+
+
+	Sys_Init();
+	xTaskResumeAll();
+	HAL_ResumeTick();
+	SysTick->CTRL  |= SysTick_CTRL_TICKINT_Msk;
+}
 /******************************************************************************************
  *                                  APP_Cyclic()
  *
@@ -475,6 +560,14 @@ void APP_Cyclic(void)
 	/* RTC structures used to timestamp access events */
 	RTC_Time_t time;
 	RTC_Date_t date;
+
+	RTC_GetTime(&time);
+
+
+	if(time.hours >= 9 && time.minutes == 45 )
+	{
+		Enter_SleepMode();
+	}
 
 	/* Last enrollment instruction sent to GUI.
 	 *

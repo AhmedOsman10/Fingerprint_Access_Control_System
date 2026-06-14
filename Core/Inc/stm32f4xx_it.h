@@ -58,7 +58,8 @@ void SysTick_Handler(void);
 void TIM6_DAC_IRQHandler(void);
 void OTG_FS_IRQHandler(void);
 /* USER CODE BEGIN EFP */
-
+void RTC_WKUP_IRQHandler(void);
+extern RTC_HandleTypeDef hrtc;
 /* USER CODE END EFP */
 
 #ifdef __cplusplus

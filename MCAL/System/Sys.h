@@ -9,6 +9,6 @@
 #define SYSTEM_SYS_H_
 
 void Sys_Init(void);
-
+void Error_Handler(void);
 
 #endif /* SYSTEM_SYS_H_ */

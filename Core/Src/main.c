@@ -41,8 +41,8 @@ int main(void)
 	configASSERT(ret_st == pdPASS);
 
 
-	ret_st = xTaskCreate(TASKS_Led_Toggle, "TASKS_Led_Toggle", 400, NULL,2, NULL);
-	configASSERT(ret_st == pdPASS);
+//	ret_st = xTaskCreate(TASKS_Led_Toggle, "TASKS_Led_Toggle", 400, NULL,2, NULL);
+//	configASSERT(ret_st == pdPASS);
 
 	vTaskStartScheduler();
 
