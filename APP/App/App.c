@@ -441,7 +441,7 @@ void Enter_SleepMode(uint8_t wake_hour, uint8_t wake_minute)
 {
 	RTC_Time_t        external_rtc_time;
 	RTC_TimeTypeDef   internal_rtc_time;
-	RTC_AlarmTypeDef  alarm;
+	RTC_AlarmTypeDef alarm = {0};
 
 
 	GPIO_InitTypeDef GPIO_Init ;
@@ -473,7 +473,7 @@ void Enter_SleepMode(uint8_t wake_hour, uint8_t wake_minute)
 	alarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
 	alarm.AlarmDateWeekDay = 1;
 	alarm.Alarm = RTC_ALARM_A;
-	HAL_RTC_SetAlarm_IT(&hrtc, &alarm, RTC_FORMAT_BIN);
+
 
 	/* 3. Suspend FreeRTOS Timekeeping */
 	vTaskSuspendAll();
@@ -481,21 +481,41 @@ void Enter_SleepMode(uint8_t wake_hour, uint8_t wake_minute)
 	SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
 
 	/* 4. Safety Clears: Wipe out any old hardware flags so WFI doesn't abort */
-	__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_7);
 	NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
 	__HAL_RTC_ALARM_CLEAR_FLAG(&hrtc, RTC_FLAG_ALRAF);
+
+
+	__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+	__HAL_RTC_ALARM_CLEAR_FLAG(&hrtc, RTC_FLAG_ALRAF);
 	EXTI->PR = (1U << 17);
+
+	HAL_StatusTypeDef st;
+
+	st = HAL_RTC_SetAlarm_IT(&hrtc, &alarm, RTC_FORMAT_BIN);
+
+	if(st != HAL_OK)
+	{
+	    Error_Handler();
+	}
+	NVIC_DisableIRQ(USART2_IRQn);
+	NVIC_DisableIRQ(USART3_IRQn);
+	NVIC_DisableIRQ(EXTI9_5_IRQn);
 
 	/* 5. Freeze the CPU Core */
 	HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+
+	NVIC_EnableIRQ(USART2_IRQn);
+	NVIC_EnableIRQ(USART3_IRQn);
+	NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 	/* ==========================================================
 	 * WAKE UP POINT: The CPU drops back in right here!
 	 * ========================================================== */
 
 	/* 6. IMMEDIATELY restore clocks and FreeRTOS before doing ANY loops or delays */
-	Sys_Init();
+	//Sys_Init();
 	SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
 	HAL_ResumeTick();
 	xTaskResumeAll();
@@ -563,12 +583,12 @@ void APP_Cyclic(void)
 	RTC_GetTime(&time);
 
 	/* Go to sleep at 09:45, wake up at 18:46 */
-	if(time.hours == 9 && time.minutes == 26)
+	if(time.hours == 8 && time.minutes == 25)
 	{
 		if (has_slept_today == 0)
 		{
 			/* Pass the target Wake-Up Hour and Minute here */
-			Enter_SleepMode(9, 28);
+			Enter_SleepMode(8, 26);
 
 			/* Mark that we have completed the sleep cycle for this minute */
 			has_slept_today = 1;
