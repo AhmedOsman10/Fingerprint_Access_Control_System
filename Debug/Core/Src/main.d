@@ -33,17 +33,17 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  ../USB_HOST/App/usb_host.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/MCAL/System/Sys.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/TASKS/TASKS.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/FreeRTOS.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/FreeRTOSConfig.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/projdefs.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/portable.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/deprecated_definitions.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/portable/GCC/ARM_CM4F/portmacro.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/mpu_wrappers.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/task.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/list.h
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/System/Sys.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/TASKS/TASKS.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/FreeRTOS.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/FreeRTOSConfig.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/projdefs.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/portable.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/deprecated_definitions.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/portable/GCC/ARM_CM4F/portmacro.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/mpu_wrappers.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/task.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/list.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -79,14 +79,14 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
 ../USB_HOST/App/usb_host.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/MCAL/System/Sys.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/TASKS/TASKS.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/FreeRTOS.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/FreeRTOSConfig.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/projdefs.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/portable.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/deprecated_definitions.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/portable/GCC/ARM_CM4F/portmacro.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/mpu_wrappers.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/task.h:
-E:/Learning_WorkSpace\ -\ 2/Fingerprint/Fingerprint/Third_Party/FreeRtos/Source/include/list.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/System/Sys.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/TASKS/TASKS.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/FreeRTOS.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/FreeRTOSConfig.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/projdefs.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/portable.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/deprecated_definitions.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/portable/GCC/ARM_CM4F/portmacro.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/mpu_wrappers.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/task.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/Third_Party/FreeRtos/Source/include/list.h:
