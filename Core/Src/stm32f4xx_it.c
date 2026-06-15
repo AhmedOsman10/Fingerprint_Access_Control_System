@@ -195,15 +195,18 @@ void OTG_FS_IRQHandler(void)
 /**
   * @brief This function handles RTC wake-up interrupt through EXTI line 22.
   */
-void RTC_WKUP_IRQHandler(void)
+/**
+  * @brief This function handles RTC Alarm (A and B) through EXTI Line 17.
+  */
+void RTC_Alarm_IRQHandler(void)
 {
-  /* USER CODE BEGIN RTC_WKUP_IRQn 0 */
+    /* 1. The HAL processes the interrupt and clears the hardware pending flags */
+    HAL_RTC_AlarmIRQHandler(&hrtc);
 
-  /* USER CODE END RTC_WKUP_IRQn 0 */
-  HAL_RTCEx_WakeUpTimerIRQHandler(&hrtc);
-  /* USER CODE BEGIN RTC_WKUP_IRQn 1 */
-
-  /* USER CODE END RTC_WKUP_IRQn 1 */
+    /* 2. (Optional) The HAL automatically calls HAL_RTC_AlarmAEventCallback() here
+     * if you need to run specific application logic.
+     * However, just executing this function is enough to break the WFI sleep!
+     */
 }
 
 /* USER CODE END 1 */
