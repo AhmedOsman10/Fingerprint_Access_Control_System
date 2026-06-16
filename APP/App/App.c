@@ -510,20 +510,32 @@ void APP_Cyclic(void)
 	}
 
 	/* Go to sleep at 09:45, wake up at 18:46 */
-	if(time.hours == 6 && time.minutes == 34)
+	/* Sleep period 1:
+	 * At 09:00, sleep until 16:00
+	 */
+	if(time.hours == 9 && time.minutes == 0)
 	{
-		if (has_slept_today == 0)
+		if(has_slept_today == 0)
 		{
-			/* Pass the target Wake-Up Hour and Minute here */
-			INTERNAL_RTC_EnterSleepMode(6, 35);
-
-			/* Mark that we have completed the sleep cycle for this minute */
+			INTERNAL_RTC_EnterSleepMode(16, 0);
 			has_slept_today = 1;
 		}
 	}
+
+	/* Sleep period 2:
+	 * At 18:00, sleep until 07:00
+	 */
+	else if(time.hours == 6 && time.minutes == 50)
+	{
+		if(has_slept_today == 0)
+		{
+			INTERNAL_RTC_EnterSleepMode(6, 51);
+			has_slept_today = 1;
+		}
+	}
+
 	else
 	{
-		/* Reset the flag once 09:45 has passed, readying it for tomorrow */
 		has_slept_today = 0;
 	}
 
