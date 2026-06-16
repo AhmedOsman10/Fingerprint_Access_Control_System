@@ -1,171 +1,183 @@
 /*
  * INTERNAL_RTC.c
  *
- *  Created on: 16 Jun 2026
- *      Author: Ahmed
- *
- *  STM32 internal RTC driver implementation.
- *
- *  Responsibilities:
- *    - initialize the STM32 internal RTC peripheral
- *    - configure RTC Alarm A interrupt
- *    - synchronize internal RTC time from the external RTC module
- *    - prepare RTC alarm flags before entering sleep mode
- *
- *  Layering note:
- *    APP layer decides WHEN the system should sleep.
- *    This driver handles HOW the internal RTC wakes the MCU.
+ * Internal RTC driver for STM32 sleep/wake-up handling.
  */
 
 #include "INTERNAL_RTC.h"
-#include "INTERNAL_RTC_Cfg.h"
-#include "INTERNAL_RTC_Prv.h"
-#include "main.h"
 
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_pwr.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "RTC.h"
+#include "Sys.h"
+
+/* Internal RTC handle owned only by this driver */
 RTC_HandleTypeDef hrtc;
 
-/**
-  * @brief RTC MSP Initialization.
-  *
-  * This function is called by HAL_RTC_Init().
-  * It enables the backup domain, selects LSI as RTC clock source,
-  * enables the RTC peripheral clock, and enables the RTC Alarm IRQ.
-  */
-void HAL_RTC_MspInit(RTC_HandleTypeDef* rtc_handle)
+
+/******************************************************************************************
+ *                              HAL_RTC_MspInit()
+ ******************************************************************************************/
+void HAL_RTC_MspInit(RTC_HandleTypeDef* rtcHandle)
 {
-    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+	if(rtcHandle->Instance == RTC)
+	{
+		RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
-    if(rtc_handle->Instance == RTC)
-    {
-        __HAL_RCC_PWR_CLK_ENABLE();
-        HAL_PWR_EnableBkUpAccess();
+		__HAL_RCC_PWR_CLK_ENABLE();
+		HAL_PWR_EnableBkUpAccess();
 
-#if (INTERNAL_RTC_USE_LSI == 1U)
-        __HAL_RCC_LSI_ENABLE();
-        while (__HAL_RCC_GET_FLAG(RCC_FLAG_LSIRDY) == RESET);
+		/* Enable LSI oscillator first */
+		__HAL_RCC_LSI_ENABLE();
 
-        __HAL_RCC_BACKUPRESET_FORCE();
-        __HAL_RCC_BACKUPRESET_RELEASE();
+		/* Select LSI as RTC clock source */
+		PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+		PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
 
-        PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
-        PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
-#endif
+		if(HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+		{
+			return;
+		}
 
-        if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-        {
-            Error_Handler();
-        }
+		__HAL_RCC_RTC_ENABLE();
 
-        __HAL_RCC_RTC_ENABLE();
-
-        HAL_NVIC_SetPriority(RTC_Alarm_IRQn, INTERNAL_RTC_NVIC_PREEMPT_PRIO, INTERNAL_RTC_NVIC_SUB_PRIO);
-        HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
-    }
+		HAL_NVIC_SetPriority(RTC_Alarm_IRQn, 5, 0);
+		HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
+	}
 }
 
+/******************************************************************************************
+ *                              INTERNAL_RTC_Init()
+ ******************************************************************************************/
 INTERNAL_RTC_Err_t INTERNAL_RTC_Init(void)
 {
-    INTERNAL_RTC_Err_t err_st = INTERNAL_RTC_Ok;
-    RTC_TimeTypeDef sTime = {0};
-    RTC_DateTypeDef sDate = {0};
+	hrtc.Instance = RTC;
+	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+	hrtc.Init.AsynchPrediv = 127;
+	hrtc.Init.SynchPrediv = 255;
+	hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+	hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+	hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
 
-    hrtc.Instance = RTC;
-    hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
-    hrtc.Init.AsynchPrediv = 127;
-    hrtc.Init.SynchPrediv = 255;
-    hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
-    hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
-    hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+	if(HAL_RTC_Init(&hrtc) != HAL_OK)
+	{
+		return INTERNAL_RTC_Nok;
+	}
 
-    if (HAL_RTC_Init(&hrtc) != HAL_OK)
-    {
-        err_st = INTERNAL_RTC_Nok;
-    }
-    else
-    {
-        /* Default time/date. The real time is synchronized before sleeping. */
-        sTime.Hours = 0x0;
-        sTime.Minutes = 0x0;
-        sTime.Seconds = 0x0;
-        sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-        sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-
-        if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
-        {
-            err_st = INTERNAL_RTC_Nok;
-        }
-
-        sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-        sDate.Month = RTC_MONTH_JANUARY;
-        sDate.Date = 0x1;
-        sDate.Year = 0x0;
-
-        if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
-        {
-            err_st = INTERNAL_RTC_Nok;
-        }
-    }
-
-    return err_st;
+	return INTERNAL_RTC_Ok;
 }
 
-INTERNAL_RTC_Err_t INTERNAL_RTC_SyncFromExternal(const RTC_Time_t *external_time)
+
+/******************************************************************************************
+ *                         INTERNAL_RTC_EnterSleepMode()
+ *
+ * APP layer calls this function only.
+ * Internal RTC driver handles:
+ *   - RTC time sync
+ *   - RTC alarm setup
+ *   - RTC flag clearing
+ *   - FreeRTOS tick suspension/restoration
+ *   - Sleep mode entry
+ ******************************************************************************************/
+void INTERNAL_RTC_EnterSleepMode(uint8_t wake_hour, uint8_t wake_minute)
 {
-    INTERNAL_RTC_Err_t err_st = INTERNAL_RTC_Ok;
-    RTC_TimeTypeDef internal_time = {0};
+	RTC_Time_t external_rtc_time;
+	RTC_TimeTypeDef internal_rtc_time = {0};
+	RTC_AlarmTypeDef alarm = {0};
 
-    if(external_time == NULL)
-    {
-        err_st = INTERNAL_RTC_Nok;
-    }
-    else
-    {
-        internal_time.Hours   = external_time->hours;
-        internal_time.Minutes = external_time->minutes;
-        internal_time.Seconds = external_time->seconds;
-        internal_time.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-        internal_time.StoreOperation = RTC_STOREOPERATION_RESET;
+	GPIO_InitTypeDef GPIO_Init = {0};
 
-        if(HAL_RTC_SetTime(&hrtc, &internal_time, RTC_FORMAT_BIN) != HAL_OK)
-        {
-            err_st = INTERNAL_RTC_Nok;
-        }
-    }
+	/* LED setup for sleep/wake test */
+	__HAL_RCC_GPIOB_CLK_ENABLE();
 
-    return err_st;
-}
+	GPIO_Init.Pin = GPIO_PIN_3;
+	GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_Init.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOB, &GPIO_Init);
 
-INTERNAL_RTC_Err_t INTERNAL_RTC_SetWakeAlarm(uint8_t wake_hour, uint8_t wake_minute)
-{
-    INTERNAL_RTC_Err_t err_st = INTERNAL_RTC_Ok;
-    RTC_AlarmTypeDef alarm = {0};
+	/* Turn off LED before sleeping */
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
 
-    alarm.AlarmTime.Hours   = wake_hour;
-    alarm.AlarmTime.Minutes = wake_minute;
-    alarm.AlarmTime.Seconds = 0;
-    alarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-    alarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+	/* 1. Synchronize internal RTC with external RTC */
+	RTC_GetTime(&external_rtc_time);
 
-    /* Ignore date. Alarm triggers when hour/minute/second match. */
-    alarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY;
-    alarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
-    alarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
-    alarm.AlarmDateWeekDay = INTERNAL_RTC_WAKE_ALARM_DATE;
-    alarm.Alarm = RTC_ALARM_A;
+	internal_rtc_time.Hours = external_rtc_time.hours;
+	internal_rtc_time.Minutes = external_rtc_time.minutes;
+	internal_rtc_time.Seconds = external_rtc_time.seconds;
+	internal_rtc_time.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	internal_rtc_time.StoreOperation = RTC_STOREOPERATION_RESET;
 
-    if(HAL_RTC_SetAlarm_IT(&hrtc, &alarm, RTC_FORMAT_BIN) != HAL_OK)
-    {
-        err_st = INTERNAL_RTC_Nok;
-    }
+	if(HAL_RTC_SetTime(&hrtc, &internal_rtc_time, RTC_FORMAT_BIN) != HAL_OK)
+	{
+		Error_Handler();
+	}
 
-    return err_st;
-}
+	/* 2. Configure RTC Alarm A */
+	alarm.AlarmTime.Hours = wake_hour;
+	alarm.AlarmTime.Minutes = wake_minute;
+	alarm.AlarmTime.Seconds = 0;
+	alarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	alarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
 
-void INTERNAL_RTC_ClearWakeFlags(void)
-{
-    __HAL_RTC_ALARM_CLEAR_FLAG(&hrtc, RTC_FLAG_ALRAF);
-    __HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+	/* Ignore date, compare only time */
+	alarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY;
+	alarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
+	alarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+	alarm.AlarmDateWeekDay = 1;
+	alarm.Alarm = RTC_ALARM_A;
 
-    /* RTC Alarm uses EXTI line 17 on STM32F4. */
-    EXTI->PR = (1U << 17);
+	/* 3. Suspend FreeRTOS and HAL tick */
+	vTaskSuspendAll();
+	HAL_SuspendTick();
+	SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
+
+	/* 4. Clear old wake-up / interrupt flags */
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_7);
+	NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+
+	__HAL_RTC_ALARM_CLEAR_FLAG(&hrtc, RTC_FLAG_ALRAF);
+	__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+
+	/* Clear EXTI line 17 pending flag for RTC Alarm */
+	EXTI->PR = (1U << 17);
+
+	/* 5. Set RTC alarm interrupt */
+	if(HAL_RTC_SetAlarm_IT(&hrtc, &alarm, RTC_FORMAT_BIN) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	/* 6. Disable interrupts that can wake CPU earlier than RTC alarm */
+	NVIC_DisableIRQ(USART2_IRQn);
+	NVIC_DisableIRQ(USART3_IRQn);
+	NVIC_DisableIRQ(EXTI9_5_IRQn);
+
+	/* 7. Enter Sleep Mode */
+	HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+
+	/* ==========================================================
+	 * Wake-up point
+	 * CPU continues from here after RTC alarm interrupt
+	 * ========================================================== */
+
+	/* 8. Re-enable interrupts */
+	NVIC_EnableIRQ(USART2_IRQn);
+	NVIC_EnableIRQ(USART3_IRQn);
+	NVIC_EnableIRQ(EXTI9_5_IRQn);
+
+	/* 9. Restore HAL tick and FreeRTOS scheduler */
+	SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
+	HAL_ResumeTick();
+	xTaskResumeAll();
+
+	/* 10. Wake-up indication LED blink */
+	for(uint8_t i = 0; i < 10; i++)
+	{
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
+		vTaskDelay(pdMS_TO_TICKS(1000));
+	}
+
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
 }

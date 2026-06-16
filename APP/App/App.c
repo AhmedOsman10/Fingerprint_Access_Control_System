@@ -47,11 +47,12 @@
 #include <FP.h>
 #include "Sys.h"
 #include "RELAY.h"
+#include "INTERNAL_RTC.h"
 #include "App_Cfg.h"
 #include "App_Prv.h"
 #include "App.h"
 
-extern RTC_HandleTypeDef hrtc;
+
 
 /* Application RX state machine current state.
  *
@@ -437,99 +438,6 @@ static APP_Err_St_t APP_Check_Response(void)
 }
 
 
-void Enter_SleepMode(uint8_t wake_hour, uint8_t wake_minute)
-{
-	RTC_Time_t        external_rtc_time;
-	RTC_TimeTypeDef   internal_rtc_time;
-	RTC_AlarmTypeDef alarm = {0};
-
-
-	GPIO_InitTypeDef GPIO_Init ;
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-	GPIO_Init.Pin = GPIO_PIN_3;
-	GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_Init.Pull = GPIO_NOPULL;
-
-	HAL_GPIO_Init(GPIOB, &GPIO_Init);
-
-	/* Turn off LED before sleeping to save power */
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
-
-	/* 1. Synchronize the Clocks */
-	RTC_GetTime(&external_rtc_time);
-	internal_rtc_time.Hours   = external_rtc_time.hours;
-	internal_rtc_time.Minutes = external_rtc_time.minutes;
-	internal_rtc_time.Seconds = external_rtc_time.seconds;
-	HAL_RTC_SetTime(&hrtc, &internal_rtc_time, RTC_FORMAT_BIN);
-
-	/* 2. Configure the Hardware Alarm */
-	alarm.AlarmTime.Hours   = wake_hour;
-	alarm.AlarmTime.Minutes = wake_minute;
-	alarm.AlarmTime.Seconds = 0;
-	alarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-	alarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
-	alarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY; /* Ignore date, only trigger on time */
-	alarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
-	alarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
-	alarm.AlarmDateWeekDay = 1;
-	alarm.Alarm = RTC_ALARM_A;
-
-
-	/* 3. Suspend FreeRTOS Timekeeping */
-	vTaskSuspendAll();
-	HAL_SuspendTick();
-	SysTick->CTRL &= ~SysTick_CTRL_TICKINT_Msk;
-
-	/* 4. Safety Clears: Wipe out any old hardware flags so WFI doesn't abort */
-
-	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_7);
-	NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
-	__HAL_RTC_ALARM_CLEAR_FLAG(&hrtc, RTC_FLAG_ALRAF);
-
-
-	__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
-	__HAL_RTC_ALARM_CLEAR_FLAG(&hrtc, RTC_FLAG_ALRAF);
-	EXTI->PR = (1U << 17);
-
-	HAL_StatusTypeDef st;
-
-	st = HAL_RTC_SetAlarm_IT(&hrtc, &alarm, RTC_FORMAT_BIN);
-
-	if(st != HAL_OK)
-	{
-	    Error_Handler();
-	}
-	NVIC_DisableIRQ(USART2_IRQn);
-	NVIC_DisableIRQ(USART3_IRQn);
-	NVIC_DisableIRQ(EXTI9_5_IRQn);
-
-	/* 5. Freeze the CPU Core */
-	HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
-
-	NVIC_EnableIRQ(USART2_IRQn);
-	NVIC_EnableIRQ(USART3_IRQn);
-	NVIC_EnableIRQ(EXTI9_5_IRQn);
-
-	/* ==========================================================
-	 * WAKE UP POINT: The CPU drops back in right here!
-	 * ========================================================== */
-
-	/* 6. IMMEDIATELY restore clocks and FreeRTOS before doing ANY loops or delays */
-	//Sys_Init();
-	SysTick->CTRL |= SysTick_CTRL_TICKINT_Msk;
-	HAL_ResumeTick();
-	xTaskResumeAll();
-
-	/* 7. Application Code (Now safe to use vTaskDelay) */
-	for(uint8_t i = 0 ; i < 10 ;i++)
-	{
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
-		vTaskDelay(pdMS_TO_TICKS(1000));
-	}
-
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
-}
-
 /******************************************************************************************
  *                                  APP_Cyclic()
  *
@@ -588,7 +496,7 @@ void APP_Cyclic(void)
 		if (has_slept_today == 0)
 		{
 			/* Pass the target Wake-Up Hour and Minute here */
-			Enter_SleepMode(8, 26);
+			INTERNAL_RTC_EnterSleepMode(8, 26);
 
 			/* Mark that we have completed the sleep cycle for this minute */
 			has_slept_today = 1;

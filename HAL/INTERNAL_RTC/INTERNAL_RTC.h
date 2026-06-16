@@ -51,6 +51,10 @@ INTERNAL_RTC_Err_t INTERNAL_RTC_SetWakeAlarm(uint8_t wake_hour, uint8_t wake_min
  */
 void INTERNAL_RTC_ClearWakeFlags(void);
 
+
+
+void INTERNAL_RTC_EnterSleepMode(uint8_t wake_hour, uint8_t wake_minute);
+
 /**
  * @brief HAL RTC handle used by the interrupt handler.
  */

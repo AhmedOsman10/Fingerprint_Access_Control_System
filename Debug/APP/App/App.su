@@ -1,9 +1,5 @@
-../Drivers/CMSIS/Include/core_cm4.h:1684:22:__NVIC_EnableIRQ	16	static,ignoring_inline_asm
-../Drivers/CMSIS/Include/core_cm4.h:1722:22:__NVIC_DisableIRQ	16	static,ignoring_inline_asm
-../Drivers/CMSIS/Include/core_cm4.h:1775:22:__NVIC_ClearPendingIRQ	16	static
-../APP/App/App.c:106:14:APP_Init	16	static
-../APP/App/App.c:196:21:APP_Send_Cmd	56	static
-../APP/App/App.c:279:13:APP_Check_RxFrame	16	static
-../APP/App/App.c:420:21:APP_Check_Response	16	static
-../APP/App/App.c:440:6:Enter_SleepMode	112	static
-../APP/App/App.c:563:6:APP_Cyclic	48	static
+../APP/App/App.c:107:14:APP_Init	16	static
+../APP/App/App.c:197:21:APP_Send_Cmd	56	static
+../APP/App/App.c:280:13:APP_Check_RxFrame	16	static
+../APP/App/App.c:421:21:APP_Check_Response	16	static
+../APP/App/App.c:471:6:APP_Cyclic	48	static

@@ -49,6 +49,7 @@ APP/App/App.o: ../APP/App/App.c \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/FP/FP.h \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/System/Sys.h \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/RELAY/RELAY.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/INTERNAL_RTC/INTERNAL_RTC.h \
  ../APP/App/App_Cfg.h ../APP/App/App_Prv.h ../APP/App/App.h
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h:
@@ -100,6 +101,7 @@ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/RTC/RTC.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/FP/FP.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/System/Sys.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/RELAY/RELAY.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/INTERNAL_RTC/INTERNAL_RTC.h:
 ../APP/App/App_Cfg.h:
 ../APP/App/App_Prv.h:
 ../APP/App/App.h:
