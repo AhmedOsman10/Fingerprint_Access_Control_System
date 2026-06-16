@@ -29,6 +29,7 @@ Drivers/STM32F4xx_HAL_Driver/Src/Legacy \
 Drivers/STM32F4xx_HAL_Driver/Src \
 HAL/EEPROM \
 HAL/FP \
+HAL/INTERNAL_RTC \
 HAL/RELAY \
 HAL/RTC \
 MCAL/System \

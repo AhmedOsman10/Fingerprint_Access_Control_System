@@ -48,7 +48,9 @@ TASKS/TASKS.o: ../TASKS/TASKS.c \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/RELAY/RELAY.h \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/FP/FP.h \
  E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/System/Sys.h \
- E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/APP/App/App.h
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/APP/App/App.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/INTERNAL_RTC/INTERNAL_RTC.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/RTC/RTC.h
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h:
 ../Drivers/CMSIS/Include/core_cm4.h:
@@ -99,3 +101,5 @@ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/RELAY/RELAY.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/FP/FP.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/System/Sys.h:
 E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/APP/App/App.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/INTERNAL_RTC/INTERNAL_RTC.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/RTC/RTC.h:
