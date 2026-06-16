@@ -22,6 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "INTERNAL_RTC.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -207,6 +208,11 @@ void RTC_Alarm_IRQHandler(void)
      * if you need to run specific application logic.
      * However, just executing this function is enough to break the WFI sleep!
      */
+}
+
+void EXTI9_5_IRQHandler(void)
+{
+	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
 }
 
 /* USER CODE END 1 */

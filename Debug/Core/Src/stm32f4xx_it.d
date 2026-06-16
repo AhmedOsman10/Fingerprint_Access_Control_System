@@ -34,7 +34,9 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_usart.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
- ../Core/Inc/stm32f4xx_it.h
+ ../Core/Inc/stm32f4xx_it.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/INTERNAL_RTC/INTERNAL_RTC.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/RTC/RTC.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -72,3 +74,5 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
 ../Core/Inc/stm32f4xx_it.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/INTERNAL_RTC/INTERNAL_RTC.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/HAL/RTC/RTC.h:

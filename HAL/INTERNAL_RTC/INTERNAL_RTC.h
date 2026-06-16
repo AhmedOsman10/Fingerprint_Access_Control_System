@@ -18,6 +18,7 @@
 #include "stm32f4xx_hal.h"
 #include "RTC.h"
 
+
 typedef enum
 {
     INTERNAL_RTC_Ok = 0,
@@ -51,9 +52,11 @@ INTERNAL_RTC_Err_t INTERNAL_RTC_SetWakeAlarm(uint8_t wake_hour, uint8_t wake_min
  */
 void INTERNAL_RTC_ClearWakeFlags(void);
 
-
-
 void INTERNAL_RTC_EnterSleepMode(uint8_t wake_hour, uint8_t wake_minute);
+
+void INTERNAL_RTC_EnterSleepModeOnly(void);
+
+uint8_t INTERNAL_RTC_GetAndClear_EXTI7WakeupFlag(void);
 
 /**
  * @brief HAL RTC handle used by the interrupt handler.

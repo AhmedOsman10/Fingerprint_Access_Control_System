@@ -470,6 +470,10 @@ static APP_Err_St_t APP_Check_Response(void)
  ******************************************************************************************/
 void APP_Cyclic(void)
 {
+
+	static uint8_t exti_awake_mode = 0;
+	static TickType_t exti_start_tick = 0;
+
 	/* Match result returned by fingerprint driver */
 	uint8_t match_st;
 
@@ -489,14 +493,29 @@ void APP_Cyclic(void)
 	static uint8_t has_slept_today = 0;
 
 	RTC_GetTime(&time);
+	if(INTERNAL_RTC_GetAndClear_EXTI7WakeupFlag())
+	{
+		exti_awake_mode = 1;
+		exti_start_tick = xTaskGetTickCount();
+	}
+
+	if(exti_awake_mode)
+	{
+		if((xTaskGetTickCount() - exti_start_tick) >= pdMS_TO_TICKS((10UL * 1000UL)))
+		{
+			exti_awake_mode = 0;
+
+			INTERNAL_RTC_EnterSleepModeOnly();
+		}
+	}
 
 	/* Go to sleep at 09:45, wake up at 18:46 */
-	if(time.hours == 8 && time.minutes == 25)
+	if(time.hours == 6 && time.minutes == 34)
 	{
 		if (has_slept_today == 0)
 		{
 			/* Pass the target Wake-Up Hour and Minute here */
-			INTERNAL_RTC_EnterSleepMode(8, 26);
+			INTERNAL_RTC_EnterSleepMode(6, 35);
 
 			/* Mark that we have completed the sleep cycle for this minute */
 			has_slept_today = 1;
