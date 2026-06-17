@@ -92,9 +92,10 @@
  *    - Used inside CMD field of the frame.
  ******************************************************************************************/
 typedef enum APP_CMD_e{
-	APP_Enroll_Req = 0x10,
-	APP_Enroll_St  = 0x11,
-	APP_Log_Access = 0x12
+    APP_Enroll_Req = 0x10,
+    APP_Enroll_St  = 0x11,
+    APP_Log_Access = 0x12,
+    APP_Sleep_St   = 0x13
 }APP_CMD_t;
 
 

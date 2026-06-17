@@ -4,3 +4,4 @@
 ../APP/App/App.c:421:21:APP_Check_Response	2
 ../APP/App/App.c:471:6:APP_Cyclic	10
 ../APP/App/App.c:651:6:APP_HandleSleepMode	10
+../APP/App/App.c:712:6:APP_SendSleepStatus	1

@@ -654,11 +654,12 @@ void APP_HandleSleepMode(RTC_Time_t *time)
     static TickType_t exti_start_tick = 0;
     static uint8_t has_slept_today = 0;
 
-
     if(INTERNAL_RTC_GetAndClear_EXTI7WakeupFlag())
     {
-        exti_awake_mode = 1;
-        exti_start_tick = xTaskGetTickCount();
+    	    exti_awake_mode = 1;
+    	    exti_start_tick = xTaskGetTickCount();
+
+    	    APP_SendSleepStatus(APP_SYSTEM_AWAKE);
     }
 
     if(exti_awake_mode)
@@ -666,15 +667,25 @@ void APP_HandleSleepMode(RTC_Time_t *time)
         if((xTaskGetTickCount() - exti_start_tick) >= pdMS_TO_TICKS(10UL * 1000UL))
         {
             exti_awake_mode = 0;
+
+            APP_SendSleepStatus(APP_SYSTEM_SLEEP);
+            vTaskDelay(pdMS_TO_TICKS(100));
+
             INTERNAL_RTC_EnterSleepModeOnly();
         }
     }
 
-    if(time->hours == 2 && time->minutes == 1)
+    if(time->hours == 7 && time->minutes == 15)
     {
         if(has_slept_today == 0)
         {
-            INTERNAL_RTC_EnterSleepMode(2, 2);
+            APP_SendSleepStatus(APP_SYSTEM_SLEEP);
+            vTaskDelay(pdMS_TO_TICKS(100));
+
+            INTERNAL_RTC_EnterSleepMode(7, 16);
+
+            APP_SendSleepStatus(APP_SYSTEM_AWAKE);
+
             has_slept_today = 1;
         }
     }
@@ -682,7 +693,13 @@ void APP_HandleSleepMode(RTC_Time_t *time)
     {
         if(has_slept_today == 0)
         {
+            APP_SendSleepStatus(APP_SYSTEM_SLEEP);
+            vTaskDelay(pdMS_TO_TICKS(100));
+
             INTERNAL_RTC_EnterSleepMode(6, 59);
+
+            APP_SendSleepStatus(APP_SYSTEM_AWAKE);
+
             has_slept_today = 1;
         }
     }
@@ -690,4 +707,13 @@ void APP_HandleSleepMode(RTC_Time_t *time)
     {
         has_slept_today = 0;
     }
+}
+
+void APP_SendSleepStatus(uint8_t state)
+{
+    uint8_t payload[1];
+
+    payload[0] = state;
+
+    APP_Send_Cmd(APP_Sleep_St, payload, 1);
 }
