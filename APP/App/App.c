@@ -471,8 +471,7 @@ static APP_Err_St_t APP_Check_Response(void)
 void APP_Cyclic(void)
 {
 
-	static uint8_t exti_awake_mode = 0;
-	static TickType_t exti_start_tick = 0;
+
 
 	/* Match result returned by fingerprint driver */
 	uint8_t match_st;
@@ -490,64 +489,24 @@ void APP_Cyclic(void)
 	RTC_Time_t time;
 	RTC_Date_t date;
 
-	static uint8_t has_slept_today = 0;
-
-	RTC_GetTime(&time);
-	if(INTERNAL_RTC_GetAndClear_EXTI7WakeupFlag())
-	{
-		exti_awake_mode = 1;
-		exti_start_tick = xTaskGetTickCount();
-	}
-
-	if(exti_awake_mode)
-	{
-		if((xTaskGetTickCount() - exti_start_tick) >= pdMS_TO_TICKS((10UL * 1000UL)))
-		{
-			exti_awake_mode = 0;
-
-			INTERNAL_RTC_EnterSleepModeOnly();
-		}
-	}
-
-	/* Go to sleep at 09:45, wake up at 18:46 */
-	/* Sleep period 1:
-	 * At 09:00, sleep until 16:00
-	 */
-	if(time.hours == 23 && time.minutes == 38)
-	{
-		if(has_slept_today == 0)
-		{
-			INTERNAL_RTC_EnterSleepMode(23, 39);
-			has_slept_today = 1;
-		}
-	}
-
-	/* Sleep period 2:
-	 * At 18:00, sleep until 07:00
-	 */
-	else if(time.hours == 6 && time.minutes == 50)
-	{
-		if(has_slept_today == 0)
-		{
-			INTERNAL_RTC_EnterSleepMode(6, 51);
-			has_slept_today = 1;
-		}
-	}
-
-	else
-	{
-		has_slept_today = 0;
-	}
-
 	/* Last enrollment instruction sent to GUI.
 	 *
 	 * Used to avoid sending duplicate status frames continuously.
 	 */
 	static FP_GetEnroll_Instruction_t prev_inst = FP_E_Inst_Idle;
 
+
+	RTC_GetTime(&time);
+
+	APP_HandleSleepMode(&time);
+
+
+
+
 	/* ------------------------------------------------------------------
 	 * Step 1: Receive and validate GUI frames
 	 * ------------------------------------------------------------------
+	 * 	APP_HandleSleepMode();
 	 */
 	APP_Check_RxFrame();
 
@@ -686,4 +645,49 @@ void APP_Cyclic(void)
 			prev_inst = current_inst;
 		}
 	}
+}
+
+
+void APP_HandleSleepMode(RTC_Time_t *time)
+{
+    static uint8_t exti_awake_mode = 0;
+    static TickType_t exti_start_tick = 0;
+    static uint8_t has_slept_today = 0;
+
+
+    if(INTERNAL_RTC_GetAndClear_EXTI7WakeupFlag())
+    {
+        exti_awake_mode = 1;
+        exti_start_tick = xTaskGetTickCount();
+    }
+
+    if(exti_awake_mode)
+    {
+        if((xTaskGetTickCount() - exti_start_tick) >= pdMS_TO_TICKS(10UL * 1000UL))
+        {
+            exti_awake_mode = 0;
+            INTERNAL_RTC_EnterSleepModeOnly();
+        }
+    }
+
+    if(time->hours == 2 && time->minutes == 1)
+    {
+        if(has_slept_today == 0)
+        {
+            INTERNAL_RTC_EnterSleepMode(2, 2);
+            has_slept_today = 1;
+        }
+    }
+    else if(time->hours == 6 && time->minutes == 1)
+    {
+        if(has_slept_today == 0)
+        {
+            INTERNAL_RTC_EnterSleepMode(6, 59);
+            has_slept_today = 1;
+        }
+    }
+    else
+    {
+        has_slept_today = 0;
+    }
 }
