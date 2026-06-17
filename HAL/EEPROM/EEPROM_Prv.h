@@ -62,27 +62,5 @@
 #define EEPROM_BYTE_LEN   1
 
 
-/******************************************************************************************
- *                              MX_I2C3_Init()
- *
- *  Internal helper used to initialize I2C3 peripheral.
- *
- *  Internal Use:
- *    Used only by EEPROM driver.
- ******************************************************************************************/
-void MX_I2C3_Init(void);
-
-
-/******************************************************************************************
- *                          HAL_I2C_MspInit()
- *
- *  STM32 HAL MSP initialization callback.
- *
- *  Responsibilities:
- *    - configure GPIO pins
- *    - enable clocks
- *    - configure NVIC if needed
- ******************************************************************************************/
-void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c);
 
 #endif /* EEPROM_EEPROM_PRV_H_ */

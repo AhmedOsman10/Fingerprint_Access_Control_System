@@ -9,7 +9,7 @@
  *  This file provides the implementation of the external EEPROM driver.
  *
  *  Responsibilities:
- *    - initialize EEPROM communication interface
+ *    - use MCAL I2C interface for EEPROM communication
  *    - check EEPROM device availability on I2C bus
  *    - write single bytes into EEPROM memory
  *    - read single bytes from EEPROM memory
@@ -38,18 +38,11 @@
 
 #include "stm32f4xx_hal_i2c.h"
 #include "stm32f4xx_hal_i2c_ex.h"
+#include "I2C.h"
 
 #include "EEPROM_Prv.h"
 #include "EEPROM_Cfg.h"
 #include "EEPROM.h"
-
-/* External I2C handle used by EEPROM driver.
- *
- * This handle is initialized inside MX_I2C3_Init()
- * and shared with EEPROM communication APIs.
- */
-extern I2C_HandleTypeDef hi2c3;
-
 
 /******************************************************************************************
  *                                  EEPROM_Init()
@@ -57,12 +50,12 @@ extern I2C_HandleTypeDef hi2c3;
  *  Initialize EEPROM driver.
  *
  *  Description:
- *    - Initializes I2C3 peripheral.
+ *    - Initializes MCAL I2C driver.
  *    - Verifies EEPROM device presence on the I2C bus.
  *
  *  Internal Behavior:
- *    - Calls MX_I2C3_Init().
- *    - Uses HAL_I2C_IsDeviceReady() to verify EEPROM response.
+ *    - Calls I2C_Init().
+ *    - Uses MCAL I2C device-ready wrapper to verify EEPROM response.
  *
  *  Returns:
  *    EEPROM_Init_Success: EEPROM initialized successfully.
@@ -76,11 +69,11 @@ EEPROM_Err_St_t EEPROM_Init(void)
 	/* HAL status used to evaluate I2C operation */
 	HAL_StatusTypeDef I2C_St;
 
-	/* Initialize I2C3 peripheral and GPIO configuration */
-	MX_I2C3_Init();
+	/* Initialize MCAL I2C driver */
+	I2C_Init();
 
 	/* Check whether EEPROM slave is responding on the I2C bus */
-	I2C_St = HAL_I2C_IsDeviceReady(EEPROM_I2C_NUM, EEPROM_SLAVE_ADDR, EEPROM_I2C_DEVICE_READY_TRIAL, EEMPROM_MAX_TIMEOUT);
+	I2C_St = I2C_IsDeviceReady(EEPROM_SLAVE_ADDR, EEPROM_I2C_DEVICE_READY_TRIAL, EEMPROM_MAX_TIMEOUT);
 
 	if(I2C_St == HAL_OK)
 	{
@@ -109,7 +102,7 @@ EEPROM_Err_St_t EEPROM_Init(void)
  *
  *  Internal Behavior:
  *    - Validates memory address.
- *    - Uses HAL_I2C_Mem_Write() with 16-bit memory addressing.
+ *    - Uses MCAL I2C memory write wrapper with 16-bit memory addressing.
  *
  *  Returns:
  *    EEPROM_Write_Success          : Write completed successfully.
@@ -128,7 +121,7 @@ EEPROM_Err_St_t EEPROM_Write_Byte(uint16_t EEPROM_Mem_Addr, uint8_t byte_val)
 	}
 
 	/* Write one byte into EEPROM memory */
-	HAL_StatusTypeDef i2c_st = HAL_I2C_Mem_Write(EEPROM_I2C_NUM, EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, &byte_val, EEPROM_BYTE_LEN, EEMPROM_MAX_TIMEOUT);
+	HAL_StatusTypeDef i2c_st = I2C_Mem_Write(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, &byte_val, EEPROM_BYTE_LEN, EEMPROM_MAX_TIMEOUT);
 
 	if(i2c_st != HAL_OK)
 	{
@@ -153,7 +146,7 @@ EEPROM_Err_St_t EEPROM_Write_Byte(uint16_t EEPROM_Mem_Addr, uint8_t byte_val)
  *
  *  Internal Behavior:
  *    - Validates address and pointer.
- *    - Uses HAL_I2C_Mem_Read() with 16-bit addressing.
+ *    - Uses MCAL I2C memory read wrapper with 16-bit addressing.
  *
  *  Returns:
  *    EEPROM_Read_Success           : Read completed successfully.
@@ -179,7 +172,7 @@ EEPROM_Err_St_t EEPROM_Read_Byte(uint16_t EEPROM_Mem_Addr, uint8_t *read_val)
 	}
 
 	/* Read one byte from EEPROM memory */
-	HAL_StatusTypeDef i2c_st = HAL_I2C_Mem_Read(EEPROM_I2C_NUM, EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, read_val, EEPROM_BYTE_LEN, EEMPROM_MAX_TIMEOUT);
+	HAL_StatusTypeDef i2c_st = I2C_Mem_Read(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, read_val, EEPROM_BYTE_LEN, EEMPROM_MAX_TIMEOUT);
 
 	if(i2c_st != HAL_OK)
 	{
@@ -243,7 +236,7 @@ EEPROM_Err_St_t EEPROM_Write_Page(uint16_t Page_Num, uint8_t *data, uint8_t lent
 	uint16_t EEPROM_Mem_Addr = Page_Num * EEPROM_PAGE_SIZE;
 
 	/* Write page data into EEPROM */
-	HAL_StatusTypeDef i2c_st = HAL_I2C_Mem_Write(EEPROM_I2C_NUM, EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
+	HAL_StatusTypeDef i2c_st = I2C_Mem_Write(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
 
 	if(i2c_st != HAL_OK)
 	{
@@ -304,7 +297,7 @@ EEPROM_Err_St_t EEPROM_Write(uint16_t EEPROM_Mem_Addr, uint8_t *data, uint8_t le
 	}
 
 	/* Write multiple bytes into EEPROM */
-	HAL_StatusTypeDef i2c_st = HAL_I2C_Mem_Write(EEPROM_I2C_NUM, EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
+	HAL_StatusTypeDef i2c_st = I2C_Mem_Write(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
 
 	if(i2c_st != HAL_OK)
 	{
@@ -361,7 +354,7 @@ EEPROM_Err_St_t EEPROM_Read(uint16_t EEPROM_Mem_Addr, uint8_t *data, uint8_t len
 	}
 
 	/* Read multiple bytes from EEPROM */
-	HAL_StatusTypeDef i2c_st = HAL_I2C_Mem_Read(EEPROM_I2C_NUM, EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
+	HAL_StatusTypeDef i2c_st = I2C_Mem_Read(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
 
 	if(i2c_st != HAL_OK)
 	{
@@ -421,7 +414,7 @@ EEPROM_Err_St_t EEPROM_Read_Page(uint16_t Page_Num, uint8_t *data, uint8_t lenth
 	uint16_t EEPROM_Mem_Addr = Page_Num * EEPROM_PAGE_SIZE;
 
 	/* Read page data from EEPROM */
-	HAL_StatusTypeDef i2c_st = HAL_I2C_Mem_Read(EEPROM_I2C_NUM, EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
+	HAL_StatusTypeDef i2c_st = I2C_Mem_Read(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
 
 	if(i2c_st != HAL_OK)
 	{

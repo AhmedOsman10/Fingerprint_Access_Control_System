@@ -36,6 +36,7 @@ HAL/EEPROM/EEPROM.o: ../HAL/EEPROM/EEPROM.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c_ex.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/I2C/I2C.h \
  ../HAL/EEPROM/EEPROM_Prv.h ../HAL/EEPROM/EEPROM_Cfg.h \
  ../HAL/EEPROM/EEPROM.h
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h:
@@ -75,6 +76,7 @@ HAL/EEPROM/EEPROM.o: ../HAL/EEPROM/EEPROM.c \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c_ex.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/I2C/I2C.h:
 ../HAL/EEPROM/EEPROM_Prv.h:
 ../HAL/EEPROM/EEPROM_Cfg.h:
 ../HAL/EEPROM/EEPROM.h:

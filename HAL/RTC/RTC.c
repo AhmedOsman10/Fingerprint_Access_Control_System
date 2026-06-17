@@ -9,7 +9,7 @@
  *  This file provides the implementation of the RTC driver APIs.
  *
  *  Responsibilities:
- *    - initialize I2C interface used by the RTC device
+ *    - use MCAL I2C interface for the RTC device
  *    - check RTC device availability
  *    - write time values to RTC registers
  *    - write date values to RTC registers
@@ -37,17 +37,10 @@
 
 #include "stm32f4xx_hal_i2c.h"
 #include "stm32f4xx_hal_i2c_ex.h"
+#include "I2C.h"
 
 #include "RTC_Prv.h"
 #include "RTC.h"
-
-/* Global I2C handle used by the RTC driver.
- *
- * This handle is configured inside MX_I2C3_Init() and then used by all
- * RTC read/write APIs.
- */
-I2C_HandleTypeDef hi2c3;
-
 
 /******************************************************************************************
  *                                  RTC_Init()
@@ -55,12 +48,12 @@ I2C_HandleTypeDef hi2c3;
  *  Initialize the RTC driver.
  *
  *  Description:
- *    - Initializes I2C3 peripheral.
+ *    - Initializes MCAL I2C driver.
  *    - Checks whether the RTC device is present and ready on the I2C bus.
  *
  *  Internal Behavior:
- *    - Calls MX_I2C3_Init() to configure the I2C peripheral and GPIO pins.
- *    - Uses HAL_I2C_IsDeviceReady() to verify communication with the RTC.
+ *    - Calls I2C_Init() to configure the I2C peripheral and GPIO pins.
+ *    - Uses MCAL I2C device-ready wrapper to verify communication with the RTC.
  *
  *  Returns:
  *    RTC_Init_Success: RTC initialized and device is reachable.
@@ -74,11 +67,11 @@ RTC_Err_St_t RTC_Init(void)
 	/* HAL status used to evaluate I2C operation */
 	HAL_StatusTypeDef I2C_St;
 
-	/* Initialize I2C3 peripheral and related GPIO configuration */
-	MX_I2C3_Init();
+	/* Initialize MCAL I2C driver */
+	I2C_Init();
 
 	/* Check whether RTC slave is responding on the I2C bus */
-	I2C_St = HAL_I2C_IsDeviceReady(&hi2c3, RTC_SLAVE_ADDR, RTC_I2C_DEVICE_READY_TRIAL, RTC_I2C_TIMEOUT);
+	I2C_St = I2C_IsDeviceReady(RTC_SLAVE_ADDR, RTC_I2C_DEVICE_READY_TRIAL, RTC_I2C_TIMEOUT);
 
 	if(I2C_St == HAL_OK)
 	{
@@ -138,7 +131,7 @@ RTC_Err_St_t RTC_SetTime(RTC_Time_t *time)
 
 	/* Write time registers starting from seconds register */
 	HAL_StatusTypeDef i2c_st =
-			HAL_I2C_Mem_Write(&hi2c3, RTC_SLAVE_ADDR, RTC_MEM_SECONDS_ADDR, I2C_MEMADD_SIZE_8BIT, Time, RTC_TIME_SIZE, RTC_MAX_TIMEOUT);
+			I2C_Mem_Write(RTC_SLAVE_ADDR, RTC_MEM_SECONDS_ADDR, I2C_MEMADD_SIZE_8BIT, Time, RTC_TIME_SIZE, RTC_MAX_TIMEOUT);
 
 	if(i2c_st != HAL_OK)
 	{
@@ -197,7 +190,7 @@ RTC_Err_St_t RTC_SetDate(RTC_Date_t *date)
 
 	/* Write date registers starting from day register */
 	HAL_StatusTypeDef i2c_st =
-			HAL_I2C_Mem_Write(&hi2c3, RTC_SLAVE_ADDR, RTC_MEM_DAY_ADDR, I2C_MEMADD_SIZE_8BIT, Date, RTC_DATE_SIZE, RTC_MAX_TIMEOUT);
+			I2C_Mem_Write(RTC_SLAVE_ADDR, RTC_MEM_DAY_ADDR, I2C_MEMADD_SIZE_8BIT, Date, RTC_DATE_SIZE, RTC_MAX_TIMEOUT);
 
 	if(i2c_st != HAL_OK)
 	{
@@ -287,7 +280,7 @@ RTC_Err_St_t RTC_GetTime(RTC_Time_t *time)
 	uint8_t Time[RTC_TIME_SIZE];
 
 	/* Read time registers starting from seconds register */
-	HAL_StatusTypeDef i2c_st = HAL_I2C_Mem_Read(&hi2c3, RTC_SLAVE_ADDR, RTC_MEM_SECONDS_ADDR, I2C_MEMADD_SIZE_8BIT, Time, RTC_TIME_SIZE, RTC_MAX_TIMEOUT);
+	HAL_StatusTypeDef i2c_st = I2C_Mem_Read(RTC_SLAVE_ADDR, RTC_MEM_SECONDS_ADDR, I2C_MEMADD_SIZE_8BIT, Time, RTC_TIME_SIZE, RTC_MAX_TIMEOUT);
 
 	if(i2c_st != HAL_OK)
 	{
@@ -345,7 +338,7 @@ RTC_Err_St_t RTC_GetDate(RTC_Date_t *date)
 
 	/* Read date registers starting from day register */
 	HAL_StatusTypeDef i2c_st =
-			HAL_I2C_Mem_Read(&hi2c3, RTC_SLAVE_ADDR, RTC_MEM_DAY_ADDR, I2C_MEMADD_SIZE_8BIT, Date, RTC_DATE_SIZE, RTC_MAX_TIMEOUT);
+			I2C_Mem_Read(RTC_SLAVE_ADDR, RTC_MEM_DAY_ADDR, I2C_MEMADD_SIZE_8BIT, Date, RTC_DATE_SIZE, RTC_MAX_TIMEOUT);
 
 	if(i2c_st != HAL_OK)
 	{
@@ -369,116 +362,4 @@ RTC_Err_St_t RTC_GetDate(RTC_Date_t *date)
 	}
 
 	return RTC_Err_St;
-}
-
-
-/******************************************************************************************
- *                                  MX_I2C3_Init()
- *
- *  Initialize I2C3 peripheral used by the RTC driver.
- *
- *  Description:
- *    - Configures I2C3 instance parameters.
- *    - Calls HAL_I2C_Init() to initialize the peripheral.
- *
- *  I2C Configuration:
- *    - Clock speed: 100 kHz
- *    - Addressing mode: 7-bit
- *    - Duty cycle: standard
- *
- *  Internal Use:
- *    - Called from RTC_Init().
- *
- *  Returns:
- *    None.
- ******************************************************************************************/
-  void MX_I2C3_Init(void)
-{
-	/* Configure I2C3 instance */
-	hi2c3.Instance = I2C3;
-
-	/* Standard mode: 100 kHz */
-	hi2c3.Init.ClockSpeed = 100000;
-
-	/* Standard duty cycle */
-	hi2c3.Init.DutyCycle = I2C_DUTYCYCLE_2;
-
-	/* Own addresses are unused in master mode */
-	hi2c3.Init.OwnAddress1 = 0;
-	hi2c3.Init.OwnAddress2 = 0;
-
-	/* Standard 7-bit addressing */
-	hi2c3.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-
-	/* Disable unused features */
-	hi2c3.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-	hi2c3.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-	hi2c3.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-
-	/* Apply initialization */
-	if (HAL_I2C_Init(&hi2c3) != HAL_OK)
-	{
-		/* Error handler can be added later if required */
-//		Error_Handler();
-	}
-}
-
-
-/******************************************************************************************
- *                                  HAL_I2C_MspInit()
- *
- *  MCU Support Package (MSP) initialization for I2C3.
- *
- *  Description:
- *    - Configures GPIO pins used by I2C3.
- *    - Enables required GPIO and I2C peripheral clocks.
- *
- *  I2C3 Pin Mapping:
- *    PC9 -> I2C3_SDA
- *    PA8 -> I2C3_SCL
- *
- *  GPIO Configuration:
- *    - Alternate function open-drain
- *    - No internal pull-up
- *    - Very high speed
- *
- *  Internal Use:
- *    - Called internally by HAL_I2C_Init().
- *
- *  Parameters:
- *    hi2c: Pointer to I2C handle being initialized.
- *
- *  Returns:
- *    None.
- ******************************************************************************************/
-void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
-{
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-	/* Only configure resources for I2C3 handle */
-	if(hi2c->Instance == I2C3)
-	{
-		/* Enable clocks for GPIO ports used by I2C3 pins */
-		__HAL_RCC_GPIOC_CLK_ENABLE();
-		__HAL_RCC_GPIOA_CLK_ENABLE();
-
-		/* Enable I2C3 peripheral clock */
-		__HAL_RCC_I2C3_CLK_ENABLE();
-
-		/* Configure PC9 as I2C3_SDA */
-		GPIO_InitStruct.Pin = GPIO_PIN_9;
-		GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-		GPIO_InitStruct.Pull = GPIO_NOPULL;
-		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-		GPIO_InitStruct.Alternate = GPIO_AF4_I2C3;
-		HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-		/* Configure PA8 as I2C3_SCL */
-		GPIO_InitStruct.Pin = GPIO_PIN_8;
-		GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-		GPIO_InitStruct.Pull = GPIO_NOPULL;
-		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-		GPIO_InitStruct.Alternate = GPIO_AF4_I2C3;
-		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-	}
 }

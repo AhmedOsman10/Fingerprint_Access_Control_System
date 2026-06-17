@@ -36,6 +36,7 @@ HAL/RTC/RTC.o: ../HAL/RTC/RTC.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c_ex.h \
+ E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/I2C/I2C.h \
  ../HAL/RTC/RTC_Prv.h ../HAL/RTC/RTC.h
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h:
@@ -74,5 +75,6 @@ HAL/RTC/RTC.o: ../HAL/RTC/RTC.c \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c_ex.h:
+E:/Learning_WorkSpace\ -\ 2/Fingerprint_Access_Control_System/MCAL/I2C/I2C.h:
 ../HAL/RTC/RTC_Prv.h:
 ../HAL/RTC/RTC.h:

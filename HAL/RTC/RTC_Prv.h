@@ -101,24 +101,6 @@
 #define BCDToDec(val)    ((((val) >> 4) * 10) + ((val) & 0x0F))
 
 
-/******************************************************************************************
- *                                  MX_I2C3_Init()
- *
- *  Internal I2C3 initialization helper.
- *
- *  Description:
- *    - Configures the I2C3 peripheral used by the RTC driver.
- *    - Sets the required I2C timing and addressing parameters.
- *    - Called during RTC_Init().
- *
- *  Internal Use:
- *    - Used only by RTC.c
- *    - Not part of the public RTC API
- *
- *  Returns:
- *    None.
- ******************************************************************************************/
- void MX_I2C3_Init(void);
 
 
 #endif /* RTC_RTC_PRV_H_ */

@@ -32,6 +32,7 @@ HAL/FP \
 HAL/INTERNAL_RTC \
 HAL/RELAY \
 HAL/RTC \
+MCAL/I2C \
 MCAL/System \
 MCAL/USART \
 Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src \

@@ -513,11 +513,11 @@ void APP_Cyclic(void)
 	/* Sleep period 1:
 	 * At 09:00, sleep until 16:00
 	 */
-	if(time.hours == 9 && time.minutes == 0)
+	if(time.hours == 23 && time.minutes == 38)
 	{
 		if(has_slept_today == 0)
 		{
-			INTERNAL_RTC_EnterSleepMode(16, 0);
+			INTERNAL_RTC_EnterSleepMode(23, 39);
 			has_slept_today = 1;
 		}
 	}
