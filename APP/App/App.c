@@ -675,14 +675,14 @@ void APP_HandleSleepMode(RTC_Time_t *time)
         }
     }
 
-    if(time->hours == 7 && time->minutes == 15)
+    if(time->hours == 0 && time->minutes == 25)
     {
         if(has_slept_today == 0)
         {
             APP_SendSleepStatus(APP_SYSTEM_SLEEP);
             vTaskDelay(pdMS_TO_TICKS(100));
 
-            INTERNAL_RTC_EnterSleepMode(7, 16);
+            INTERNAL_RTC_EnterSleepMode(0, 26);
 
             APP_SendSleepStatus(APP_SYSTEM_AWAKE);
 

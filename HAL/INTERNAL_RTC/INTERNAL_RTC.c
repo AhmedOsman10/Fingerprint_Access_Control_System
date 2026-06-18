@@ -189,6 +189,8 @@ void INTERNAL_RTC_EnterSleepMode(uint8_t wake_hour, uint8_t wake_minute)
 	HAL_ResumeTick();
 	xTaskResumeAll();
 
+
+
 	for(uint8_t i = 0; i < 10; i++)
 	{
 		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);

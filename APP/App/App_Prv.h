@@ -186,6 +186,12 @@ typedef struct APP_RxFrame_s{
 #define APP_ENROLL_INST_LEN              3
 #define APP_ENROLL_SUCCESS_PAYLOAD_LEN   3
 
+
+
+#define APP_SYSTEM_AWAKE   0x00
+#define APP_SYSTEM_SLEEP   0x01
+
+
 void APP_HandleSleepMode(RTC_Time_t *time);
 
 

@@ -18,6 +18,7 @@ Commands:
     0x10 : PC -> STM32  : Start enrollment
     0x11 : STM32 -> PC  : GUI/enrollment instruction
     0x12 : STM32 -> PC  : Access log frame
+    0x13 : STM32 -> PC  : Power/Sleep state
 """
 
 import struct
@@ -36,6 +37,7 @@ class FingerprintAccessGUI:
     CMD_ENROLL_REQ = 0x10
     CMD_ENROLL_ST = 0x11
     CMD_LOG_ACCESS = 0x12
+    CMD_SLEEP_ST = 0x13  # NEW: Power state command
 
     POLL_INTERVAL_MS = 50
 
@@ -48,6 +50,7 @@ class FingerprintAccessGUI:
         5: ("Enrollment Successful", "Fingerprint template stored successfully", "#16A34A"),
         6: ("Enrollment Failed", "The fingerprint could not be enrolled", "#DC2626"),
         7: ("Bad Scan", "Scan quality was poor. Please try again", "#EF4444"),
+        8: ("System Asleep", "STM32 is in low-power standby mode. UART paused.", "#0F172A"), # NEW: Sleep State
     }
 
     def __init__(self, root: tk.Tk):
@@ -75,7 +78,7 @@ class FingerprintAccessGUI:
         # Blinking state tracking
         self.blink_state = True
         self.blink_job = None
-        self.reset_job = None  # Tracks the 3-second auto-reset timer
+        self.reset_job = None  # Tracks the auto-reset timer
 
         self._setup_styles()
         self._build_gui()
@@ -863,6 +866,9 @@ class FingerprintAccessGUI:
         elif cmd == self.CMD_LOG_ACCESS:
             self.handle_access_log(data)
 
+        elif cmd == self.CMD_SLEEP_ST:  # Route the sleep frame
+            self.handle_sleep_status(data)
+
         else:
             self._log(f"RX unknown command: 0x{cmd:02X} | Data: {data.hex(' ')}")
 
@@ -886,6 +892,37 @@ class FingerprintAccessGUI:
             self._log(f"RX 0x11 -> {title} | Assigned ID: {user_id}")
         else:
             self._log(f"RX 0x11 -> {title} | {details}")
+
+    def handle_sleep_status(self, data: bytes):
+        if len(data) != 1:
+            self._log(f"Invalid 0x13 frame length: expected 1, got {len(data)}")
+            return
+
+        state = data[0]
+
+        if state == 0x01:  # SYSTEM_SLEEP
+            # 1. Update banner using the new Map ID 8 (System Asleep)
+            self._update_status_card(8)
+            
+            # 2. Disable the UART interaction buttons
+            self.enroll_btn.config(state="disabled", bg="#64748B")
+            self.enrollment_section_btn.config(state="disabled", bg="#64748B")
+            
+            self._log("RX 0x13 -> System entered SLEEP mode. Interaction disabled.")
+
+        elif state == 0x00:  # SYSTEM_AWAKE
+            # 1. Re-enable the UART interaction buttons if still connected
+            if self.is_connected:
+                self.enroll_btn.config(state="normal", bg="#2563EB")
+                self.enrollment_section_btn.config(state="normal", bg="#2563EB")
+
+            # 2. Return the banner to the System Idle state (Map ID 0)
+            self._update_status_card(0)
+            
+            self._log("RX 0x13 -> System WOKE UP. System is now Idle.")
+
+        else:
+            self._log(f"RX 0x13 -> Unknown sleep state payload: {state}")
 
     def handle_access_log(self, data: bytes):
         if len(data) != 10:

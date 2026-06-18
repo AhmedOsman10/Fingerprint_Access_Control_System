@@ -159,8 +159,7 @@ APP_Err_St_t APP_Init(void);
  *  Returns:
  *    None.
  ******************************************************************************************/
-#define APP_SYSTEM_AWAKE   0x00
-#define APP_SYSTEM_SLEEP   0x01
+
 void APP_Cyclic(void);
 void APP_SendSleepStatus(uint8_t state);
 
