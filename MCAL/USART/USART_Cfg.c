@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    USART_Cfg.c
+ * @author  Ahmed Abdelrhman
+ * @brief   Implementation file for USART Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * =========================================================================================
  *  File      : USART_Cfg.c
@@ -89,39 +99,39 @@
  */
 const USART_Pin_Config_t USART_Pin_Config[USART_MAX_NUM] =
 {
-	/* ===================================== USART_1 =======================================
-	 * Common STM32F4 pin option shown here:
-	 *   TX = PB6, RX = PB7
-	 * Verify against your exact MCU datasheet / board schematic.
-	 */
-	{ .Tx_Port = USART_PORT_B, .Tx_Pin = USART_PIN_6, .Rx_Port = USART_PORT_B, .Rx_Pin = USART_PIN_7 },
+    /* ===================================== USART_1 =======================================
+     * Common STM32F4 pin option shown here:
+     *   TX = PB6, RX = PB7
+     * Verify against your exact MCU datasheet / board schematic.
+     */
+    { .Tx_Port = USART_PORT_B, .Tx_Pin = USART_PIN_6, .Rx_Port = USART_PORT_B, .Rx_Pin = USART_PIN_7 },
 
-	/* ===================================== USART_2 =======================================
-	 * Typical STM32F4 mapping:
-	 *   TX = PA2, RX = PA3
-	 */
-	{ .Tx_Port = USART_PORT_A, .Tx_Pin = USART_PIN_2, .Rx_Port = USART_PORT_A, .Rx_Pin = USART_PIN_3 },
+    /* ===================================== USART_2 =======================================
+     * Typical STM32F4 mapping:
+     *   TX = PA2, RX = PA3
+     */
+    { .Tx_Port = USART_PORT_A, .Tx_Pin = USART_PIN_2, .Rx_Port = USART_PORT_A, .Rx_Pin = USART_PIN_3 },
 
-	/* ===================================== USART_3 =======================================
-	 * TODO: Fill with your actual board mapping if used.
-	 * Example placeholders (set to safe/unused until defined):
-	 */
-	{ .Tx_Port = USART_PORT_B, .Tx_Pin = USART_PIN_10, .Rx_Port = USART_PORT_B, .Rx_Pin = USART_PIN_11 },
+    /* ===================================== USART_3 =======================================
+     * TODO: Fill with your actual board mapping if used.
+     * Example placeholders (set to safe/unused until defined):
+     */
+    { .Tx_Port = USART_PORT_B, .Tx_Pin = USART_PIN_10, .Rx_Port = USART_PORT_B, .Rx_Pin = USART_PIN_11 },
 
-	/* ===================================== UART_4 =======================================
-	 * TODO: Fill with your actual board mapping if used.
-	 */
-	{ .Tx_Port = NULL, .Tx_Pin = 0, .Rx_Port = NULL, .Rx_Pin = 0 },
+    /* ===================================== UART_4 =======================================
+     * TODO: Fill with your actual board mapping if used.
+     */
+    { .Tx_Port = NULL, .Tx_Pin = 0, .Rx_Port = NULL, .Rx_Pin = 0 },
 
-	/* ===================================== UART_5 =======================================
-	 * TODO: Fill with your actual board mapping if used.
-	 */
-	{ .Tx_Port = NULL, .Tx_Pin = 0, .Rx_Port = NULL, .Rx_Pin = 0 },
+    /* ===================================== UART_5 =======================================
+     * TODO: Fill with your actual board mapping if used.
+     */
+    { .Tx_Port = NULL, .Tx_Pin = 0, .Rx_Port = NULL, .Rx_Pin = 0 },
 
-	/* ===================================== USART_6 ======================================
-	 * TODO: Fill with your actual board mapping if used.
-	 */
-	{ .Tx_Port = NULL, .Tx_Pin = 0, .Rx_Port = NULL, .Rx_Pin = 0 },
+    /* ===================================== USART_6 ======================================
+     * TODO: Fill with your actual board mapping if used.
+     */
+    { .Tx_Port = NULL, .Tx_Pin = 0, .Rx_Port = NULL, .Rx_Pin = 0 },
 };
 
 /*
@@ -138,57 +148,57 @@ const USART_Pin_Config_t USART_Pin_Config[USART_MAX_NUM] =
  */
 const USART_Config_t USART_Config[USART_MAX_NUM] =
 {
-	/* ===================================== USART_1 ===================================== */
-	{
-		.BaudRate     = USART_BAUDRATE_9600,
-		.stop_bit     = USART_STOPBIT_1_,
-		.Parity       = USART_PARITY_NONE_,
-		.WordLength   = USART_WORD_LEN_8_,
-		.OverSampling = USART_OVERSAMPLING_8_
-	},
+    /* ===================================== USART_1 ===================================== */
+    {
+        .BaudRate     = USART_BAUDRATE_9600,
+        .stop_bit     = USART_STOPBIT_1_,
+        .Parity       = USART_PARITY_NONE_,
+        .WordLength   = USART_WORD_LEN_8_,
+        .OverSampling = USART_OVERSAMPLING_8_
+    },
 
-	/* ===================================== USART_2 ===================================== */
-	{
-		.BaudRate     = USART_BAUDRATE_57600,
-		.stop_bit     = USART_STOPBIT_1_,
-		.Parity       = USART_PARITY_NONE_,
-		.WordLength   = USART_WORD_LEN_8_,
-		.OverSampling = USART_OVERSAMPLING_8_
-	},
+    /* ===================================== USART_2 ===================================== */
+    {
+        .BaudRate     = USART_BAUDRATE_57600,
+        .stop_bit     = USART_STOPBIT_1_,
+        .Parity       = USART_PARITY_NONE_,
+        .WordLength   = USART_WORD_LEN_8_,
+        .OverSampling = USART_OVERSAMPLING_8_
+    },
 
-	/* ===================================== USART_3 ===================================== */
-	{
-		.BaudRate     = USART_BAUDRATE_9600,
-		.stop_bit     = USART_STOPBIT_1_,
-		.Parity       = USART_PARITY_NONE_,
-		.WordLength   = USART_WORD_LEN_8_,
-		.OverSampling = USART_OVERSAMPLING_8_
-	},
+    /* ===================================== USART_3 ===================================== */
+    {
+        .BaudRate     = USART_BAUDRATE_9600,
+        .stop_bit     = USART_STOPBIT_1_,
+        .Parity       = USART_PARITY_NONE_,
+        .WordLength   = USART_WORD_LEN_8_,
+        .OverSampling = USART_OVERSAMPLING_8_
+    },
 
-	/* ===================================== UART_4 ====================================== */
-	{
-		.BaudRate     = USART_BAUDRATE_9600,
-		.stop_bit     = USART_STOPBIT_1_,
-		.Parity       = USART_PARITY_NONE_,
-		.WordLength   = USART_WORD_LEN_8_,
-		.OverSampling = USART_OVERSAMPLING_8_
-	},
+    /* ===================================== UART_4 ====================================== */
+    {
+        .BaudRate     = USART_BAUDRATE_9600,
+        .stop_bit     = USART_STOPBIT_1_,
+        .Parity       = USART_PARITY_NONE_,
+        .WordLength   = USART_WORD_LEN_8_,
+        .OverSampling = USART_OVERSAMPLING_8_
+    },
 
-	/* ===================================== UART_5 ====================================== */
-	{
-		.BaudRate     = USART_BAUDRATE_9600,
-		.stop_bit     = USART_STOPBIT_1_,
-		.Parity       = USART_PARITY_NONE_,
-		.WordLength   = USART_WORD_LEN_8_,
-		.OverSampling = USART_OVERSAMPLING_8_
-	},
+    /* ===================================== UART_5 ====================================== */
+    {
+        .BaudRate     = USART_BAUDRATE_9600,
+        .stop_bit     = USART_STOPBIT_1_,
+        .Parity       = USART_PARITY_NONE_,
+        .WordLength   = USART_WORD_LEN_8_,
+        .OverSampling = USART_OVERSAMPLING_8_
+    },
 
-	/* ===================================== USART_6 ===================================== */
-	{
-		.BaudRate     = USART_BAUDRATE_9600,
-		.stop_bit     = USART_STOPBIT_1_,
-		.Parity       = USART_PARITY_NONE_,
-		.WordLength   = USART_WORD_LEN_8_,
-		.OverSampling = USART_OVERSAMPLING_8_
-	},
+    /* ===================================== USART_6 ===================================== */
+    {
+        .BaudRate     = USART_BAUDRATE_9600,
+        .stop_bit     = USART_STOPBIT_1_,
+        .Parity       = USART_PARITY_NONE_,
+        .WordLength   = USART_WORD_LEN_8_,
+        .OverSampling = USART_OVERSAMPLING_8_
+    },
 };

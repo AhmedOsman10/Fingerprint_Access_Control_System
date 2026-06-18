@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    EEPROM.c
+ * @author  Ahmed Abdelrhman
+ * @brief   Implementation file for EEPROM Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * EEPROM.c
  *
@@ -63,28 +73,28 @@
  ******************************************************************************************/
 EEPROM_Err_St_t EEPROM_Init(void)
 {
-	/* Default return assumes initialization failed */
-	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Init_Failed;
+    /* Default return assumes initialization failed */
+    EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Init_Failed;
 
-	/* HAL status used to evaluate I2C operation */
-	HAL_StatusTypeDef I2C_St;
+    /* HAL status used to evaluate I2C operation */
+    HAL_StatusTypeDef I2C_St;
 
-	/* Initialize MCAL I2C driver */
-	I2C_Init();
+    /* Initialize MCAL I2C driver */
+    I2C_Init();
 
-	/* Check whether EEPROM slave is responding on the I2C bus */
-	I2C_St = I2C_IsDeviceReady(EEPROM_SLAVE_ADDR, EEPROM_I2C_DEVICE_READY_TRIAL, EEMPROM_MAX_TIMEOUT);
+    /* Check whether EEPROM slave is responding on the I2C bus */
+    I2C_St = I2C_IsDeviceReady(EEPROM_SLAVE_ADDR, EEPROM_I2C_DEVICE_READY_TRIAL, EEMPROM_MAX_TIMEOUT);
 
-	if(I2C_St == HAL_OK)
-	{
-		EEPROM_Err_St = EEPROM_Init_Success;
-	}
-	else
-	{
-		EEPROM_Err_St = EEPROM_Init_Failed;
-	}
+    if (I2C_St == HAL_OK)
+    {
+        EEPROM_Err_St = EEPROM_Init_Success;
+    }
+    else
+    {
+        EEPROM_Err_St = EEPROM_Init_Failed;
+    }
 
-	return EEPROM_Err_St;
+    return EEPROM_Err_St;
 }
 
 
@@ -111,24 +121,24 @@ EEPROM_Err_St_t EEPROM_Init(void)
  ******************************************************************************************/
 EEPROM_Err_St_t EEPROM_Write_Byte(uint16_t EEPROM_Mem_Addr, uint8_t byte_val)
 {
-	/* Default return assumes write success */
-	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Write_Success;
+    /* Default return assumes write success */
+    EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Write_Success;
 
-	/* Validate EEPROM memory address */
-	if(EEPROM_Mem_Addr >= EEPROM_MAX_ADDR)
-	{
-		return EEPROM_Invalid_Mem_Addr_Arg;
-	}
+    /* Validate EEPROM memory address */
+    if (EEPROM_Mem_Addr >= EEPROM_MAX_ADDR)
+    {
+        return EEPROM_Invalid_Mem_Addr_Arg;
+    }
 
-	/* Write one byte into EEPROM memory */
-	HAL_StatusTypeDef i2c_st = I2C_Mem_Write(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, &byte_val, EEPROM_BYTE_LEN, EEMPROM_MAX_TIMEOUT);
+    /* Write one byte into EEPROM memory */
+    HAL_StatusTypeDef i2c_st = I2C_Mem_Write(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, &byte_val, EEPROM_BYTE_LEN, EEMPROM_MAX_TIMEOUT);
 
-	if(i2c_st != HAL_OK)
-	{
-		EEPROM_Err_St = EEPROM_Write_Failed;
-	}
+    if (i2c_st != HAL_OK)
+    {
+        EEPROM_Err_St = EEPROM_Write_Failed;
+    }
 
-	return EEPROM_Err_St;
+    return EEPROM_Err_St;
 }
 
 
@@ -156,30 +166,30 @@ EEPROM_Err_St_t EEPROM_Write_Byte(uint16_t EEPROM_Mem_Addr, uint8_t byte_val)
  ******************************************************************************************/
 EEPROM_Err_St_t EEPROM_Read_Byte(uint16_t EEPROM_Mem_Addr, uint8_t *read_val)
 {
-	/* Default return assumes read success */
-	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Read_Success;
+    /* Default return assumes read success */
+    EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Read_Success;
 
-	/* Validate EEPROM memory address */
-	if(EEPROM_Mem_Addr >= EEPROM_MAX_ADDR)
-	{
-		return EEPROM_Invalid_Mem_Addr_Arg;
-	}
+    /* Validate EEPROM memory address */
+    if (EEPROM_Mem_Addr >= EEPROM_MAX_ADDR)
+    {
+        return EEPROM_Invalid_Mem_Addr_Arg;
+    }
 
-	/* Validate output pointer */
-	if(read_val == NULL)
-	{
-		return EEPROM_Invalid_Data_Arg;
-	}
+    /* Validate output pointer */
+    if (read_val == NULL)
+    {
+        return EEPROM_Invalid_Data_Arg;
+    }
 
-	/* Read one byte from EEPROM memory */
-	HAL_StatusTypeDef i2c_st = I2C_Mem_Read(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, read_val, EEPROM_BYTE_LEN, EEMPROM_MAX_TIMEOUT);
+    /* Read one byte from EEPROM memory */
+    HAL_StatusTypeDef i2c_st = I2C_Mem_Read(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, read_val, EEPROM_BYTE_LEN, EEMPROM_MAX_TIMEOUT);
 
-	if(i2c_st != HAL_OK)
-	{
-		EEPROM_Err_St = EEPROM_Read_Failed;
-	}
+    if (i2c_st != HAL_OK)
+    {
+        EEPROM_Err_St = EEPROM_Read_Failed;
+    }
 
-	return EEPROM_Err_St;
+    return EEPROM_Err_St;
 }
 
 
@@ -211,39 +221,39 @@ EEPROM_Err_St_t EEPROM_Read_Byte(uint16_t EEPROM_Mem_Addr, uint8_t *read_val)
  ******************************************************************************************/
 EEPROM_Err_St_t EEPROM_Write_Page(uint16_t Page_Num, uint8_t *data, uint8_t lenth)
 {
-	/* Default return assumes write success */
-	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Write_Success;
+    /* Default return assumes write success */
+    EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Write_Success;
 
-	/* Validate page number */
-	if(Page_Num >= EEPROM_TOTAL_PAGES)
-	{
-		return EEPROM_Invalid_Page_Num_Arg;
-	}
+    /* Validate page number */
+    if (Page_Num >= EEPROM_TOTAL_PAGES)
+    {
+        return EEPROM_Invalid_Page_Num_Arg;
+    }
 
-	/* Validate page length */
-	if(lenth > EEPROM_PAGE_SIZE)
-	{
-		return EEPROM_Invalid_Page_Len_Arg;
-	}
+    /* Validate page length */
+    if (lenth > EEPROM_PAGE_SIZE)
+    {
+        return EEPROM_Invalid_Page_Len_Arg;
+    }
 
-	/* Validate data pointer */
-	if(data == NULL)
-	{
-		return EEPROM_Invalid_Data_Arg;
-	}
+    /* Validate data pointer */
+    if (data == NULL)
+    {
+        return EEPROM_Invalid_Data_Arg;
+    }
 
-	/* Convert page number into EEPROM memory address */
-	uint16_t EEPROM_Mem_Addr = Page_Num * EEPROM_PAGE_SIZE;
+    /* Convert page number into EEPROM memory address */
+    uint16_t EEPROM_Mem_Addr = Page_Num * EEPROM_PAGE_SIZE;
 
-	/* Write page data into EEPROM */
-	HAL_StatusTypeDef i2c_st = I2C_Mem_Write(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
+    /* Write page data into EEPROM */
+    HAL_StatusTypeDef i2c_st = I2C_Mem_Write(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
 
-	if(i2c_st != HAL_OK)
-	{
-		EEPROM_Err_St = EEPROM_Write_Failed;
-	}
+    if (i2c_st != HAL_OK)
+    {
+        EEPROM_Err_St = EEPROM_Write_Failed;
+    }
 
-	return EEPROM_Err_St;
+    return EEPROM_Err_St;
 }
 
 
@@ -275,36 +285,36 @@ EEPROM_Err_St_t EEPROM_Write_Page(uint16_t Page_Num, uint8_t *data, uint8_t lent
  ******************************************************************************************/
 EEPROM_Err_St_t EEPROM_Write(uint16_t EEPROM_Mem_Addr, uint8_t *data, uint8_t lenth)
 {
-	/* Default return assumes write success */
-	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Write_Success;
+    /* Default return assumes write success */
+    EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Write_Success;
 
-	/* Validate EEPROM memory address */
-	if(EEPROM_Mem_Addr > EEPROM_MAX_ADDR)
-	{
-		return EEPROM_Invalid_Mem_Addr_Arg;
-	}
+    /* Validate EEPROM memory address */
+    if (EEPROM_Mem_Addr > EEPROM_MAX_ADDR)
+    {
+        return EEPROM_Invalid_Mem_Addr_Arg;
+    }
 
-	/* Validate write range */
-	if((EEPROM_Mem_Addr + lenth) > EEPROM_MAX_ADDR)
-	{
-		return EEPROM_Invalid_Page_Len_Arg;
-	}
+    /* Validate write range */
+    if ((EEPROM_Mem_Addr + lenth) > EEPROM_MAX_ADDR)
+    {
+        return EEPROM_Invalid_Page_Len_Arg;
+    }
 
-	/* Validate data pointer */
-	if(data == NULL)
-	{
-		return EEPROM_Invalid_Data_Arg;
-	}
+    /* Validate data pointer */
+    if (data == NULL)
+    {
+        return EEPROM_Invalid_Data_Arg;
+    }
 
-	/* Write multiple bytes into EEPROM */
-	HAL_StatusTypeDef i2c_st = I2C_Mem_Write(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
+    /* Write multiple bytes into EEPROM */
+    HAL_StatusTypeDef i2c_st = I2C_Mem_Write(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
 
-	if(i2c_st != HAL_OK)
-	{
-		EEPROM_Err_St = EEPROM_Write_Failed;
-	}
+    if (i2c_st != HAL_OK)
+    {
+        EEPROM_Err_St = EEPROM_Write_Failed;
+    }
 
-	return EEPROM_Err_St;
+    return EEPROM_Err_St;
 }
 
 
@@ -332,36 +342,36 @@ EEPROM_Err_St_t EEPROM_Write(uint16_t EEPROM_Mem_Addr, uint8_t *data, uint8_t le
  ******************************************************************************************/
 EEPROM_Err_St_t EEPROM_Read(uint16_t EEPROM_Mem_Addr, uint8_t *data, uint8_t lenth)
 {
-	/* Default return assumes read success */
-	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Read_Success;
+    /* Default return assumes read success */
+    EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Read_Success;
 
-	/* Validate EEPROM memory address */
-	if(EEPROM_Mem_Addr >= EEPROM_MAX_ADDR)
-	{
-		return EEPROM_Invalid_Mem_Addr_Arg;
-	}
+    /* Validate EEPROM memory address */
+    if (EEPROM_Mem_Addr >= EEPROM_MAX_ADDR)
+    {
+        return EEPROM_Invalid_Mem_Addr_Arg;
+    }
 
-	/* Validate memory range */
-	if((EEPROM_Mem_Addr + lenth) > EEPROM_MAX_ADDR)
-	{
-		return EEPROM_Invalid_Page_Len_Arg;
-	}
+    /* Validate memory range */
+    if ((EEPROM_Mem_Addr + lenth) > EEPROM_MAX_ADDR)
+    {
+        return EEPROM_Invalid_Page_Len_Arg;
+    }
 
-	/* Validate data pointer */
-	if(data == NULL)
-	{
-		return EEPROM_Invalid_Data_Arg;
-	}
+    /* Validate data pointer */
+    if (data == NULL)
+    {
+        return EEPROM_Invalid_Data_Arg;
+    }
 
-	/* Read multiple bytes from EEPROM */
-	HAL_StatusTypeDef i2c_st = I2C_Mem_Read(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
+    /* Read multiple bytes from EEPROM */
+    HAL_StatusTypeDef i2c_st = I2C_Mem_Read(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
 
-	if(i2c_st != HAL_OK)
-	{
-		EEPROM_Err_St = EEPROM_Read_Failed;
-	}
+    if (i2c_st != HAL_OK)
+    {
+        EEPROM_Err_St = EEPROM_Read_Failed;
+    }
 
-	return EEPROM_Err_St;
+    return EEPROM_Err_St;
 }
 
 
@@ -389,39 +399,39 @@ EEPROM_Err_St_t EEPROM_Read(uint16_t EEPROM_Mem_Addr, uint8_t *data, uint8_t len
  ******************************************************************************************/
 EEPROM_Err_St_t EEPROM_Read_Page(uint16_t Page_Num, uint8_t *data, uint8_t lenth)
 {
-	/* Default return assumes read success */
-	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Read_Success;
+    /* Default return assumes read success */
+    EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Read_Success;
 
-	/* Validate page number */
-	if(Page_Num >= EEPROM_TOTAL_PAGES)
-	{
-		return EEPROM_Invalid_Page_Num_Arg;
-	}
+    /* Validate page number */
+    if (Page_Num >= EEPROM_TOTAL_PAGES)
+    {
+        return EEPROM_Invalid_Page_Num_Arg;
+    }
 
-	/* Validate requested length */
-	if(lenth > EEPROM_PAGE_SIZE)
-	{
-		return EEPROM_Invalid_Page_Len_Arg;
-	}
+    /* Validate requested length */
+    if (lenth > EEPROM_PAGE_SIZE)
+    {
+        return EEPROM_Invalid_Page_Len_Arg;
+    }
 
-	/* Validate data pointer */
-	if(data == NULL)
-	{
-		return EEPROM_Invalid_Data_Arg;
-	}
+    /* Validate data pointer */
+    if (data == NULL)
+    {
+        return EEPROM_Invalid_Data_Arg;
+    }
 
-	/* Convert page number into EEPROM memory address */
-	uint16_t EEPROM_Mem_Addr = Page_Num * EEPROM_PAGE_SIZE;
+    /* Convert page number into EEPROM memory address */
+    uint16_t EEPROM_Mem_Addr = Page_Num * EEPROM_PAGE_SIZE;
 
-	/* Read page data from EEPROM */
-	HAL_StatusTypeDef i2c_st = I2C_Mem_Read(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
+    /* Read page data from EEPROM */
+    HAL_StatusTypeDef i2c_st = I2C_Mem_Read(EEPROM_SLAVE_ADDR, EEPROM_Mem_Addr, I2C_MEMADD_SIZE_16BIT, data, lenth, EEMPROM_MAX_TIMEOUT);
 
-	if(i2c_st != HAL_OK)
-	{
-		EEPROM_Err_St = EEPROM_Read_Failed;
-	}
+    if (i2c_st != HAL_OK)
+    {
+        EEPROM_Err_St = EEPROM_Read_Failed;
+    }
 
-	return EEPROM_Err_St;
+    return EEPROM_Err_St;
 }
 
 
@@ -443,22 +453,22 @@ EEPROM_Err_St_t EEPROM_Read_Page(uint16_t Page_Num, uint8_t *data, uint8_t lenth
  ******************************************************************************************/
 EEPROM_Err_St_t EEPROM_Erase_Byte(uint16_t EEPROM_Mem_Addr)
 {
-	/* Default return assumes erase success */
-	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Erase_Success;
+    /* Default return assumes erase success */
+    EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Erase_Success;
 
-	/* Erase byte by writing 0xFF */
-	EEPROM_Err_St = EEPROM_Write_Byte(EEPROM_Mem_Addr, 0xFF);
+    /* Erase byte by writing 0xFF */
+    EEPROM_Err_St = EEPROM_Write_Byte(EEPROM_Mem_Addr, 0xFF);
 
-	if(EEPROM_Err_St == EEPROM_Write_Success)
-	{
-		EEPROM_Err_St = EEPROM_Erase_Success;
-	}
-	else
-	{
-		EEPROM_Err_St = EEPROM_Erase_Failed;
-	}
+    if (EEPROM_Err_St == EEPROM_Write_Success)
+    {
+        EEPROM_Err_St = EEPROM_Erase_Success;
+    }
+    else
+    {
+        EEPROM_Err_St = EEPROM_Erase_Failed;
+    }
 
-	return EEPROM_Err_St;
+    return EEPROM_Err_St;
 }
 
 
@@ -481,29 +491,29 @@ EEPROM_Err_St_t EEPROM_Erase_Byte(uint16_t EEPROM_Mem_Addr)
  ******************************************************************************************/
 EEPROM_Err_St_t EEPROM_Erase_Page(uint16_t Page_Num)
 {
-	/* Default return assumes erase success */
-	EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Erase_Success;
+    /* Default return assumes erase success */
+    EEPROM_Err_St_t EEPROM_Err_St = EEPROM_Erase_Success;
 
-	/* Temporary erase buffer */
-	uint8_t buffer[EEPROM_PAGE_SIZE];
+    /* Temporary erase buffer */
+    uint8_t buffer[EEPROM_PAGE_SIZE];
 
-	/* Fill page buffer with erased state value */
-	for(uint8_t i = 0; i < EEPROM_PAGE_SIZE; i++)
-	{
-		buffer[i] = 0xFF;
-	}
+    /* Fill page buffer with erased state value */
+    for (uint8_t i = 0; i < EEPROM_PAGE_SIZE; i++)
+    {
+        buffer[i] = 0xFF;
+    }
 
-	/* Write erase pattern into EEPROM page */
-	EEPROM_Err_St = EEPROM_Write_Page(Page_Num, buffer, EEPROM_PAGE_SIZE);
+    /* Write erase pattern into EEPROM page */
+    EEPROM_Err_St = EEPROM_Write_Page(Page_Num, buffer, EEPROM_PAGE_SIZE);
 
-	if(EEPROM_Err_St == EEPROM_Write_Success)
-	{
-		EEPROM_Err_St = EEPROM_Erase_Success;
-	}
-	else
-	{
-		EEPROM_Err_St = EEPROM_Erase_Failed;
-	}
+    if (EEPROM_Err_St == EEPROM_Write_Success)
+    {
+        EEPROM_Err_St = EEPROM_Erase_Success;
+    }
+    else
+    {
+        EEPROM_Err_St = EEPROM_Erase_Failed;
+    }
 
-	return EEPROM_Err_St;
+    return EEPROM_Err_St;
 }

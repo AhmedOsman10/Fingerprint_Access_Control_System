@@ -2,6 +2,12 @@
 STM32 Fingerprint Access Control GUI - LinkedIn Demo Version
 ------------------------------------------------------------
 
+@file    Acc_GUI.py
+@author  Ahmed Abdelrhman
+@project Fingerprint Access Control System - STM32F407
+@note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+         Application behavior and logic are intentionally unchanged.
+
 A polished Tkinter + PySerial desktop GUI for presenting an STM32-based
 fingerprint biometric access control system.
 
@@ -432,9 +438,9 @@ class FingerprintAccessGUI:
         self._log("Select COM port, choose baudrate, then press CONNECT.")
 
     def _build_enrollment_click_section(self):
-        bg_color = "#1E293B"  
-        bd_color = "#38BDF8"  
-        
+        bg_color = "#1E293B"
+        bd_color = "#38BDF8"
+
         section = tk.Frame(
             self.right_panel,
             bg=bg_color,
@@ -450,7 +456,7 @@ class FingerprintAccessGUI:
             left,
             text="Enrollment Control",
             bg=bg_color,
-            fg="#38BDF8",  
+            fg="#38BDF8",
             font=("Segoe UI", 15, "bold")
         ).pack(anchor="w")
 
@@ -458,7 +464,7 @@ class FingerprintAccessGUI:
             left,
             text="Click to send the enrollment command to STM32 and follow the live instruction banner above.",
             bg=bg_color,
-            fg="#F8FAFC",  
+            fg="#F8FAFC",
             font=("Segoe UI", 10),
             wraplength=520,
             justify="left"
@@ -486,19 +492,19 @@ class FingerprintAccessGUI:
 
     def _create_info_card(self, parent, title, variable, icon):
         if title == "Last User ID":
-            card_bg = "#EAB308"        
-            border_color = "#CA8A04"   
-            title_fg = "#FEF9C3"       
-            value_fg = "#000000"       
+            card_bg = "#EAB308"
+            border_color = "#CA8A04"
+            title_fg = "#FEF9C3"
+            value_fg = "#000000"
 
         elif title == "Last Access Result":
-            card_bg = "#7C3AED"        
+            card_bg = "#7C3AED"
             border_color = "#A855F7"
             title_fg = "#F3E8FF"
             value_fg = "#FFFFFF"
 
         elif title == "Last Event Time":
-            card_bg = "#D97706"        
+            card_bg = "#D97706"
             border_color = "#F59E0B"
             title_fg = "#FEF3C7"
             value_fg = "#FFFFFF"
@@ -903,11 +909,11 @@ class FingerprintAccessGUI:
         if state == 0x01:  # SYSTEM_SLEEP
             # 1. Update banner using the new Map ID 8 (System Asleep)
             self._update_status_card(8)
-            
+
             # 2. Disable the UART interaction buttons
             self.enroll_btn.config(state="disabled", bg="#64748B")
             self.enrollment_section_btn.config(state="disabled", bg="#64748B")
-            
+
             self._log("RX 0x13 -> System entered SLEEP mode. Interaction disabled.")
 
         elif state == 0x00:  # SYSTEM_AWAKE
@@ -918,7 +924,7 @@ class FingerprintAccessGUI:
 
             # 2. Return the banner to the System Idle state (Map ID 0)
             self._update_status_card(0)
-            
+
             self._log("RX 0x13 -> System WOKE UP. System is now Idle.")
 
         else:

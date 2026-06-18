@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    FP_Cfg.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public/private interface and configuration declarations for Fingerprint Sensor Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * FP_Cfg.h
  *

@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    FP.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public/private interface and configuration declarations for Fingerprint Sensor Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * FP.h
  *
@@ -84,18 +94,18 @@
  ******************************************************************************************/
 typedef enum FP_Err_St_e
 {
-	FP_InitSuccess,         /* Driver initialization completed successfully */
-	FP_InitFailed,          /* Driver initialization failed */
+    FP_InitSuccess, /* Driver initialization completed successfully */
+    FP_InitFailed, /* Driver initialization failed */
 
-	FP_Rx_Full_Packet_Ok,   /* A full valid packet is available */
-	FP_Rx_Full_Packet_Nok,  /* No full valid packet is available */
+    FP_Rx_Full_Packet_Ok, /* A full valid packet is available */
+    FP_Rx_Full_Packet_Nok, /* No full valid packet is available */
 
-	FP_SendCmd_Success,     /* Command packet sent successfully */
-	FP_SendCmd_Failed,      /* Command packet sending failed */
+    FP_SendCmd_Success, /* Command packet sent successfully */
+    FP_SendCmd_Failed, /* Command packet sending failed */
 
-	FP_GetUser_Ok,          /* A user search result was returned successfully */
-	FP_GetUser_NOk,         /* No new user search result is available */
-}FP_Err_St_t;
+    FP_GetUser_Ok, /* A user search result was returned successfully */
+    FP_GetUser_NOk, /* No new user search result is available */
+} FP_Err_St_t;
 
 
 /******************************************************************************************
@@ -121,8 +131,8 @@ typedef enum FP_Err_St_e
  ******************************************************************************************/
 typedef struct FP_Search_Data_s
 {
-	uint8_t match_st;
-	uint16_t user_id;
+    uint8_t match_st;
+    uint16_t user_id;
 }FP_Search_Data_t;
 
 
@@ -150,14 +160,14 @@ typedef struct FP_Search_Data_s
  *    FP_E_Inst_Failed:             Enrollment failed.
  ******************************************************************************************/
 typedef enum FP_GetEnroll_Instruction_e{
-	FP_E_Inst_Idle,               /* No active enrollment operation */
-	FP_E_Inst_Place_Finger,       /* Ask user to place finger */
-	FP_E_Inst_Lift_Finger,        /* Ask user to lift finger */
-	FP_E_Inst_Place_Finger_Again, /* Ask user to place the same finger again */
-	FP_E_Inst_Processing,         /* Enrollment is being processed internally */
-	FP_E_Inst_Success,            /* Enrollment completed successfully */
-	FP_E_Inst_Failed,             /* Enrollment failed */
-}FP_GetEnroll_Instruction_t;
+    FP_E_Inst_Idle, /* No active enrollment operation */
+    FP_E_Inst_Place_Finger, /* Ask user to place finger */
+    FP_E_Inst_Lift_Finger, /* Ask user to lift finger */
+    FP_E_Inst_Place_Finger_Again, /* Ask user to place the same finger again */
+    FP_E_Inst_Processing, /* Enrollment is being processed internally */
+    FP_E_Inst_Success, /* Enrollment completed successfully */
+    FP_E_Inst_Failed, /* Enrollment failed */
+} FP_GetEnroll_Instruction_t;
 
 
 /******************************************************************************************
@@ -304,7 +314,7 @@ void FP_SimpleTesT(void);
  *    FP_MainFunction_Cyclic() must be called periodically for new results
  *    to become available.
  ******************************************************************************************/
-FP_Err_St_t FP_Get_User(uint8_t *match_st , uint16_t *user_id);
+FP_Err_St_t FP_Get_User(uint8_t *match_st, uint16_t *user_id);
 
 
 /******************************************************************************************
@@ -449,7 +459,6 @@ FP_GetEnroll_Instruction_t FP_GetEnroll_Instruction(void);
  *    FP_SendCmd_Success / FP_SendCmd_Failed
  ******************************************************************************************/
 FP_Err_St_t FP_Delete_All_Users(void);
-
 
 
 uint16_t FP_Get_Curr_User_Id(void);

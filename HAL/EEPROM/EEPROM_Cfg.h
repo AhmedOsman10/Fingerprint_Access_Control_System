@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    EEPROM_Cfg.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public/private interface and configuration declarations for EEPROM Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * EEPROM_Cfg.h
  *

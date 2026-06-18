@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    EEPROM_Prv.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public/private interface and configuration declarations for EEPROM Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * EEPROM_Prv.h
  *
@@ -60,7 +70,6 @@
  *  Length of single byte transfer.
  ******************************************************************************************/
 #define EEPROM_BYTE_LEN   1
-
 
 
 #endif /* EEPROM_EEPROM_PRV_H_ */

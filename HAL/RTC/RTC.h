@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    RTC.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public/private interface and configuration declarations for External RTC Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * RTC.h
  *
@@ -47,21 +57,21 @@
  ******************************************************************************************/
 typedef enum RTC_Err_St_e
 {
-	RTC_Init_Success,
-	RTC_Init_Failed,
+    RTC_Init_Success,
+    RTC_Init_Failed,
 
-	RTC_SetTime_Success,
-	RTC_SetTime_Failed,
+    RTC_SetTime_Success,
+    RTC_SetTime_Failed,
 
-	RTC_GetTime_Success,
-	RTC_GetTime_Failed,
+    RTC_GetTime_Success,
+    RTC_GetTime_Failed,
 
-	RTC_GetDate_Success,
-	RTC_GetDate_Failed,
+    RTC_GetDate_Success,
+    RTC_GetDate_Failed,
 
-	RTC_SetDate_Success,
-	RTC_SetDate_Failed,
-}RTC_Err_St_t;
+    RTC_SetDate_Success,
+    RTC_SetDate_Failed,
+} RTC_Err_St_t;
 
 
 /******************************************************************************************
@@ -77,11 +87,12 @@ typedef enum RTC_Err_St_e
  *  Application Use:
  *    Used with RTC_SetTime() and RTC_GetTime().
  ******************************************************************************************/
-typedef struct RTC_Time_s{
-	uint8_t seconds; /* 0 - 59 */
-	uint8_t minutes; /* 0 - 59 */
-	uint8_t hours;   /* 0 - 23 */
-}RTC_Time_t;
+typedef struct RTC_Time_s
+{
+    uint8_t seconds; /* 0 - 59 */
+    uint8_t minutes; /* 0 - 59 */
+    uint8_t hours; /* 0 - 23 */
+} RTC_Time_t;
 
 
 /******************************************************************************************
@@ -98,12 +109,13 @@ typedef struct RTC_Time_s{
  *  Application Use:
  *    Used with RTC_SetDate() and RTC_GetDate().
  ******************************************************************************************/
-typedef struct RTC_Date_s{
-	uint8_t Day;    /* 1 - 7 */
-	uint8_t Date;   /* 1 - 31 */
-	uint8_t month;  /* 1 - 12 */
-	uint16_t year;  /* e.g., 2026 */
-}RTC_Date_t;
+typedef struct RTC_Date_s
+{
+    uint8_t Day; /* 1 - 7 */
+    uint8_t Date; /* 1 - 31 */
+    uint8_t month; /* 1 - 12 */
+    uint16_t year; /* e.g., 2026 */
+} RTC_Date_t;
 
 
 /******************************************************************************************

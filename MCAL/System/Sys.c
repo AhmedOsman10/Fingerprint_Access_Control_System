@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    Sys.c
+ * @author  Ahmed Abdelrhman
+ * @brief   Implementation file for System Initialization.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * Sys.c
  *
@@ -11,11 +21,11 @@
 
 void Sys_Init(void)
 {
-	HAL_Init();
-	SystemClock_Config();
-	MX_GPIO_Init();
-	HAL_Delay(100);
-	MX_USB_HOST_Init();
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+    HAL_Delay(100);
+    MX_USB_HOST_Init();
 }
 
 /**

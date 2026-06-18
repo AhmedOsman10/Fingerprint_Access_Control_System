@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    FP_Prv.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public/private interface and configuration declarations for Fingerprint Sensor Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * FP_Prv.h
  *
@@ -29,9 +39,9 @@
  *  FP_PID_ACK:   Packet Identifier used when the sensor returns an ACK packet.
  ******************************************************************************************/
 #define FP_HEADER_H  0xEF
-#define FP_HEADER_L	 0x01
-#define FP_PID_CMD	 0x01
-#define FP_PID_ACK	 0x07
+#define FP_HEADER_L     0x01
+#define FP_PID_CMD     0x01
+#define FP_PID_ACK     0x07
 
 
 /******************************************************************************************
@@ -138,14 +148,14 @@
  ******************************************************************************************/
 typedef enum FP_Rx_St_e
 {
-	FP_Wait_Rx_Header_H,        /* Waiting for first header byte */
-	FP_Wait_Rx_Header_L,        /* Waiting for second header byte */
-	FP_Wait_Rx_ADDR,            /* Receiving 4 address bytes */
-	FP_Wait_Rx_Pid,             /* Waiting for ACK packet identifier */
-	FP_Wait_Rx_len_H,           /* Waiting for packet length high byte */
-	FP_Wait_Rx_len_L,           /* Waiting for packet length low byte */
-	FP_Wait_Rx_Data,            /* Receiving payload + checksum bytes */
-	FP_Wait_Rx_Frame_Complete,  /* Full valid frame received */
+    FP_Wait_Rx_Header_H, /* Waiting for first header byte */
+    FP_Wait_Rx_Header_L, /* Waiting for second header byte */
+    FP_Wait_Rx_ADDR, /* Receiving 4 address bytes */
+    FP_Wait_Rx_Pid, /* Waiting for ACK packet identifier */
+    FP_Wait_Rx_len_H, /* Waiting for packet length high byte */
+    FP_Wait_Rx_len_L, /* Waiting for packet length low byte */
+    FP_Wait_Rx_Data, /* Receiving payload + checksum bytes */
+    FP_Wait_Rx_Frame_Complete, /* Full valid frame received */
 }FP_Rx_St_t;
 
 
@@ -175,32 +185,32 @@ typedef enum FP_Rx_St_e
  ******************************************************************************************/
 typedef enum FP_Enroll_St_e
 {
-	FP_E_Idle,                  /* Enrollment inactive */
-	FP_E_Start,                 /* Enrollment start point */
+    FP_E_Idle, /* Enrollment inactive */
+    FP_E_Start, /* Enrollment start point */
 
-	FP_E_SEND_GET_IMG_1_CMD,    /* Send first image capture command */
-	FP_E_WAIT_GET_IMG_1_CMD,    /* Wait for first image capture response */
+    FP_E_SEND_GET_IMG_1_CMD, /* Send first image capture command */
+    FP_E_WAIT_GET_IMG_1_CMD, /* Wait for first image capture response */
 
-	FP_E_SEND_GEN_CHAR_1_CMD,   /* Send first character generation command */
-	FP_E_WAIT_GEN_CHAR_1_CMD,   /* Wait for first character generation response */
+    FP_E_SEND_GEN_CHAR_1_CMD, /* Send first character generation command */
+    FP_E_WAIT_GEN_CHAR_1_CMD, /* Wait for first character generation response */
 
-	FP_E_SEND_GET_IMG_2_CMD,    /* Send second image capture command */
-	FP_E_WAIT_GET_IMG_2_CMD,    /* Wait for second image capture response */
+    FP_E_SEND_GET_IMG_2_CMD, /* Send second image capture command */
+    FP_E_WAIT_GET_IMG_2_CMD, /* Wait for second image capture response */
 
-	FP_E_SEND_GEN_CHAR_2_CMD,   /* Send second character generation command */
-	FP_E_WAIT_GEN_CHAR_2_CMD,   /* Wait for second character generation response */
+    FP_E_SEND_GEN_CHAR_2_CMD, /* Send second character generation command */
+    FP_E_WAIT_GEN_CHAR_2_CMD, /* Wait for second character generation response */
 
-	FP_E_SEND_LIFT_CHECK_CMD,   /* Send finger-lift check command */
-	FP_E_WAIT_LIFT_CHECK_CMD,   /* Wait for finger-lift check response */
+    FP_E_SEND_LIFT_CHECK_CMD, /* Send finger-lift check command */
+    FP_E_WAIT_LIFT_CHECK_CMD, /* Wait for finger-lift check response */
 
-	FP_E_SEND_MERGE_CMD,        /* Send merge command */
-	FP_E_WAIT_MERGE_CMD,        /* Wait for merge response */
+    FP_E_SEND_MERGE_CMD, /* Send merge command */
+    FP_E_WAIT_MERGE_CMD, /* Wait for merge response */
 
-	FP_E_SEND_STORE_CMD,        /* Send store template command */
-	FP_E_WAIT_STORE_CMD,        /* Wait for store response */
+    FP_E_SEND_STORE_CMD, /* Send store template command */
+    FP_E_WAIT_STORE_CMD, /* Wait for store response */
 
-	FP_E_Success,               /* Enrollment completed successfully */
-	FP_E_Failed,                /* Enrollment failed */
+    FP_E_Success, /* Enrollment completed successfully */
+    FP_E_Failed, /* Enrollment failed */
 }FP_Enroll_St_t;
 
 
@@ -219,17 +229,17 @@ typedef enum FP_Enroll_St_e
  ******************************************************************************************/
 typedef enum FP_Search_St_e
 {
-	FP_S_SEND_GET_IMG_CMD,      /* Send image capture command */
-	FP_S_WAIT_GET_IMG_CMD,      /* Wait for image capture response */
+    FP_S_SEND_GET_IMG_CMD, /* Send image capture command */
+    FP_S_WAIT_GET_IMG_CMD, /* Wait for image capture response */
 
-	FP_S_SEND_GEN_CHAR_1_CMD,   /* Send character generation command */
-	FP_S_WAIT_GEN_CHAR_1_CMD,   /* Wait for character generation response */
+    FP_S_SEND_GEN_CHAR_1_CMD, /* Send character generation command */
+    FP_S_WAIT_GEN_CHAR_1_CMD, /* Wait for character generation response */
 
-	FP_S_SEND_SEARCH_CMD,       /* Send search command */
-	FP_S_WAIT_SEARCH_CMD,       /* Wait for search response */
+    FP_S_SEND_SEARCH_CMD, /* Send search command */
+    FP_S_WAIT_SEARCH_CMD, /* Wait for search response */
 
-	FP_S_MATCH,                 /* Search result: match found */
-	FP_S_NOT_MATCH,             /* Search result: no match found */
+    FP_S_MATCH, /* Search result: match found */
+    FP_S_NOT_MATCH, /* Search result: no match found */
 }FP_Search_St_t;
 
 
@@ -251,7 +261,6 @@ typedef enum FP_Search_St_e
  *  FP_CheckPacket():
  *      Check whether a full valid response packet is available.
  ******************************************************************************************/
-
 
 
 /******************************************************************************************
@@ -291,8 +300,7 @@ typedef enum FP_Search_St_e
  *    This function does not wait for a response.
  *    Response handling is performed separately by the RX state machine.
  ******************************************************************************************/
-FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payload_len);
-
+FP_Err_St_t FP_SendCommand(uint8_t inst_code, uint8_t *payload, uint8_t payload_len);
 
 
 /******************************************************************************************
@@ -327,7 +335,6 @@ FP_Err_St_t FP_SendCommand(uint8_t inst_code , uint8_t *payload , uint8_t payloa
 void FP_Enroll_SM(void);
 
 
-
 /******************************************************************************************
  *                                  FP_SEARCH_SM()
  *
@@ -360,7 +367,6 @@ void FP_Enroll_SM(void);
  *    - It does not block while waiting for responses
  ******************************************************************************************/
 void FP_SEARCH_SM(void);
-
 
 
 /******************************************************************************************

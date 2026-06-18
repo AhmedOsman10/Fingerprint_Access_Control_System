@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    RTC_Prv.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public/private interface and configuration declarations for External RTC Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * RTC_Prv.h
  *
@@ -99,8 +109,6 @@
  ******************************************************************************************/
 #define DecToBCD(val)    ((((val) / 10) << 4) | ((val) % 10))
 #define BCDToDec(val)    ((((val) >> 4) * 10) + ((val) & 0x0F))
-
-
 
 
 #endif /* RTC_RTC_PRV_H_ */
