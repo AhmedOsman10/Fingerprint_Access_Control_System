@@ -1,0 +1,5 @@
+../MCAL/I2C/I2C.c:44:6:I2C_Init	8	static
+../MCAL/I2C/I2C.c:75:19:I2C_IsDeviceReady	24	static
+../MCAL/I2C/I2C.c:95:19:I2C_Mem_Write	40	static
+../MCAL/I2C/I2C.c:115:19:I2C_Mem_Read	40	static
+../MCAL/I2C/I2C.c:133:6:HAL_I2C_MspInit	48	static
