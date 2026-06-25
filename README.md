@@ -365,10 +365,10 @@ The STM32 and desktop GUI communicate using a custom-designed packet-based UART 
 - DS1307 RTC Module
 - I²C EEPROM
 - ULN2003 Driver
-- Relay Module
 - Solenoid Lock
 - Push Button connected through EXTI
-- UART interface to desktop GUI
+- TTL 232 UART interface to desktop GUI
+- 24 V-DC Power Supply
 
 ---
 
@@ -406,7 +406,7 @@ The capture demonstrates:
   <em>Logic analyzer capture showing Sleep Mode operation and automatic RTC wake-up.</em>
 </p>
 
-During Sleep Mode, application tasks are suspended and peripheral activity is minimized to reduce power consumption. The external DS1307 RTC continues maintaining accurate time independently of MCU operation. The STM32 internal RTC is synchronized with the external RTC and is used to generate scheduled wake-up alarms.
+During Sleep Mode, application tasks are suspended, and peripheral activity is minimized to reduce power consumption. The external DS1307 RTC continues to maintain accurate time independently of MCU operation. The STM32 internal RTC is synchronized with the external RTC and is used to generate scheduled wake-up alarms.
 
 This verifies:
 
