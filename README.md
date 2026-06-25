@@ -226,12 +226,6 @@ The MCAL layer provides low-level STM32 peripheral drivers.
 
 Implemented drivers include:
 
-### MCAL Layer
-
-The MCAL layer provides low-level, register-level drivers for the STM32F407 microcontroller. It abstracts the hardware peripherals and serves as the foundation for the upper software layers.
-
-Implemented drivers include:
-
 - GPIO
 - RCC
 - UART
