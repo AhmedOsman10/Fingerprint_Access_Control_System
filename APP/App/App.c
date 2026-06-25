@@ -273,7 +273,7 @@ void APP_HandleSleepMode(RTC_Time_t *time)
     /* If the system was temporarily awakened by EXTI7, keep it awake for 10 s. */
     if (exti_awake_mode)
     {
-        if ((xTaskGetTickCount() - exti_start_tick) >= pdMS_TO_TICKS(10UL * 1000UL))
+        if ((xTaskGetTickCount() - exti_start_tick) >= pdMS_TO_TICKS(20UL * 1000UL))
         {
             exti_awake_mode = 0;
 
@@ -285,14 +285,14 @@ void APP_HandleSleepMode(RTC_Time_t *time)
     }
 
     /* Scheduled sleep window 1. */
-    if (time->hours == 0 && time->minutes == 25)
+    if (time->hours == 9 && time->minutes == 00)
     {
         if (has_slept_today == 0)
         {
             APP_SendSleepStatus(APP_SYSTEM_SLEEP);
             vTaskDelay(pdMS_TO_TICKS(100));
 
-            INTERNAL_RTC_EnterSleepMode(0, 26);
+            INTERNAL_RTC_EnterSleepMode(16, 00);
 
             APP_SendSleepStatus(APP_SYSTEM_AWAKE);
 
@@ -301,14 +301,14 @@ void APP_HandleSleepMode(RTC_Time_t *time)
     }
 
     /* Scheduled sleep window 2. */
-    else if (time->hours == 3 && time->minutes == 33)
+    else if (time->hours == 18 && time->minutes == 00)
     {
         if (has_slept_today == 0)
         {
             APP_SendSleepStatus(APP_SYSTEM_SLEEP);
             vTaskDelay(pdMS_TO_TICKS(100));
 
-            INTERNAL_RTC_EnterSleepMode(3, 34);
+            INTERNAL_RTC_EnterSleepMode(7, 00);
 
             APP_SendSleepStatus(APP_SYSTEM_AWAKE);
 
