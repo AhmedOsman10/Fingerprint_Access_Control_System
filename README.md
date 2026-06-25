@@ -144,7 +144,7 @@ When the system is outside these windows:
 - Access requests are rejected
 - Fingerprint processing is suspended
 - CPU activity is reduced
-- The MCU enters Stop Mode
+- The MCU enters Sleep Mode
 - RTC-based timekeeping continues
 
 When access becomes available again:
@@ -216,7 +216,7 @@ Implemented modules include:
 
 - **EEPROM Driver** – Stores enrolled fingerprints and system configuration in non-volatile memory.
 - **Fingerprint Sensor Driver** – Handles fingerprint enrollment, identification, and communication with the sensor.
-- **Internal RTC Driver** – Manages timekeeping and scheduled wake-up events from Stop Mode.
+- **Internal RTC Driver** – Manages timekeeping and scheduled wake-up events from Sleep Mode.
 - **Relay Driver** – Controls the door lock relay through GPIO.
 - **External RTC Driver** – Maintains accurate date and time via an external I²C RTC module.
 
@@ -362,7 +362,7 @@ The STM32 and desktop GUI communicate using a custom-designed packet-based UART 
 ### Peripherals
 
 - Fingerprint Sensor
-- DS3231 RTC Module
+- DS1307 RTC Module
 - I²C EEPROM
 - ULN2003 Driver
 - Relay Module
@@ -392,7 +392,7 @@ Power efficiency was verified using a logic analyzer capture.
 The capture demonstrates:
 
 - Normal system operation
-- Transition into Stop Mode
+- Transition into Sleep Mode
 - Approximately 125 seconds of low-power inactivity
 - Internal RTC alarm wake-up event
 - Automatic restoration of system operation
@@ -406,11 +406,11 @@ The capture demonstrates:
   <em>Logic analyzer capture showing Sleep Mode operation and automatic RTC wake-up.</em>
 </p>
 
-During Stop Mode, application tasks are suspended and peripheral activity is minimized to reduce power consumption. The external DS3231 RTC continues maintaining accurate time independently of MCU operation. The STM32 internal RTC is synchronized with the external RTC and is used to generate scheduled wake-up alarms.
+During Sleep Mode, application tasks are suspended and peripheral activity is minimized to reduce power consumption. The external DS1307 RTC continues maintaining accurate time independently of MCU operation. The STM32 internal RTC is synchronized with the external RTC and is used to generate scheduled wake-up alarms.
 
 This verifies:
 
-- Correct entry into Stop Mode
+- Correct entry into Sleep Mode
 - RTC alarm-based wake-up
 - Reliable recovery from low-power operation
 - Autonomous time-based access control
@@ -435,7 +435,7 @@ This verifies:
 ### Demo 3 – Automatic Sleep Entry
 
 - ✅ Access period expires
-- ✅ System enters Stop Mode
+- ✅ System enters Sleep Mode
 
 ### Demo 4 – Scheduled System Resume
 
@@ -456,29 +456,19 @@ This verifies:
 - ✅ Fully functional fingerprint authentication
 - ✅ FreeRTOS multitasking implementation
 - ✅ Custom asynchronous UART driver
-- ✅ Stop Mode integration
+- ✅ Sleep Mode integration
 - ✅ RTC scheduling implementation
 - ✅ EXTI activation support
 - ✅ Desktop GUI integration
 - ✅ Layered firmware architecture
 - ✅ Event-driven system behavior
 
----
-
-## 🚀 Future Improvements
-
-- Configurable access schedules through the GUI
-- Secure storage of user metadata
-- Encrypted UART communication
-- SD card event logging
-- BLE or Wi-Fi monitoring
-- OTA firmware update support
 
 ---
 
 ## 👨‍💻 Author
 
-**Ahmed Abdelrhman**
+**Ahmed Osman**
 
 Embedded Systems Engineer
 
