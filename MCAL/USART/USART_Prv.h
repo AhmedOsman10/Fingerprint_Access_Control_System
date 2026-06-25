@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    USART_Prv.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public/private interface and configuration declarations for USART Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * =========================================================================================
  *  File      : USART_Prv.h

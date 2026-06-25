@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    USART_Cfg.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public/private interface and configuration declarations for USART Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * =========================================================================================
  *  File      : USART_Cfg.h
@@ -71,14 +81,14 @@
  *
  * These aliases map to STM32 GPIO port base addresses (GPIOA..GPIOH).
  */
-#define USART_PORT_A	GPIOA
-#define USART_PORT_B	GPIOB
-#define USART_PORT_C	GPIOC
-#define USART_PORT_D	GPIOD
-#define USART_PORT_E	GPIOE
-#define USART_PORT_F	GPIOF
-#define USART_PORT_G	GPIOG
-#define USART_PORT_H	GPIOH
+#define USART_PORT_A    GPIOA
+#define USART_PORT_B    GPIOB
+#define USART_PORT_C    GPIOC
+#define USART_PORT_D    GPIOD
+#define USART_PORT_E    GPIOE
+#define USART_PORT_F    GPIOF
+#define USART_PORT_G    GPIOG
+#define USART_PORT_H    GPIOH
 
 /* =========================================================================================
  *                                Common UART Parameter Macros
@@ -142,10 +152,10 @@
  */
 typedef struct USART_Pin_Config_s
 {
-	GPIO_TypeDef *Tx_Port;
-	GPIO_TypeDef *Rx_Port;
-	uint16_t       Tx_Pin;
-	uint16_t       Rx_Pin;
+    GPIO_TypeDef *Tx_Port;
+    GPIO_TypeDef *Rx_Port;
+    uint16_t       Tx_Pin;
+    uint16_t       Rx_Pin;
 } USART_Pin_Config_t;
 
 /**
@@ -168,11 +178,11 @@ typedef struct USART_Pin_Config_s
  */
 typedef struct USART_Config_s
 {
-	uint8_t  stop_bit;
-	uint8_t  Parity;
-	uint8_t  WordLength;
-	uint32_t BaudRate;
-	uint32_t OverSampling;
+    uint8_t  stop_bit;
+    uint8_t  Parity;
+    uint8_t  WordLength;
+    uint32_t BaudRate;
+    uint32_t OverSampling;
 } USART_Config_t;
 
 /* =========================================================================================
@@ -211,7 +221,7 @@ extern const USART_Config_t     USART_Config[USART_MAX_NUM];
  *  - RX_INT = ENABLE,  TX_INT = ENABLE:
  *      Fully interrupt-driven. Cyclic functions are not required.
  */
-#define USART_RX_INT ENABLE
+#define USART_RX_INT  ENABLE
 #define USART_TX_INT  ENABLE
 
 #endif /* USART_USART_CFG_H_ */

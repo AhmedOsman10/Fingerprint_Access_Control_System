@@ -1,0 +1,5 @@
+../HAL/RELAY/RELAY.c:58:16:RELAY_Init	40	static
+../HAL/RELAY/RELAY.c:101:16:RELAY_On	16	static
+../HAL/RELAY/RELAY.c:127:16:RELAY_Off	16	static
+../HAL/RELAY/RELAY.c:162:16:RELAY_On_With_Time	24	static
+../HAL/RELAY/RELAY.c:203:6:RELAY_Time_Manager_Cyclic	24	static

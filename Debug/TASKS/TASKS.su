@@ -1,0 +1,4 @@
+../TASKS/TASKS.c:39:6:TASKS_Init	8	static
+../TASKS/TASKS.c:56:6:FP_Main_Cyclic	24	static
+../TASKS/TASKS.c:81:6:TASKS_APP_Cyclic	24	static
+../TASKS/TASKS.c:105:6:TASKS_RELAY_Cyclic	24	static

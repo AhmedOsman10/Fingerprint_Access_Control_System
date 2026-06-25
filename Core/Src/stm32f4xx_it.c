@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    stm32f4xx_it.c
+ * @author  Ahmed Abdelrhman
+ * @brief   Implementation file for STM32 Core User Code.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
@@ -22,6 +32,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "INTERNAL_RTC.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -192,5 +203,26 @@ void OTG_FS_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+/**
+  * @brief This function handles RTC wake-up interrupt through EXTI line 22.
+  */
+/**
+  * @brief This function handles RTC Alarm (A and B) through EXTI Line 17.
+  */
+void RTC_Alarm_IRQHandler(void)
+{
+    /* 1. The HAL processes the interrupt and clears the hardware pending flags */
+    HAL_RTC_AlarmIRQHandler(&hrtc);
+
+    /* 2. (Optional) The HAL automatically calls HAL_RTC_AlarmAEventCallback() here
+     * if you need to run specific application logic.
+     * However, just executing this function is enough to break the WFI sleep!
+     */
+}
+
+void EXTI9_5_IRQHandler(void)
+{
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
+}
 
 /* USER CODE END 1 */

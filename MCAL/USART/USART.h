@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    USART.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public/private interface and configuration declarations for USART Driver.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /*
  * =========================================================================================
  *  File      : USART.h
@@ -65,15 +75,15 @@
  */
 typedef enum USART_Err_St_e
 {
-	USART_Not_Init = 0,
-	USART_InitFailed,
-	USART_InitSuccess,
-	USART_Invalid_Arg,
-	USART_CreateBuff_Failed,
-	USART_Rx_Ok,
-	USART_Rx_NoData,
-	USART_Tx_Busy,
-	USART_Tx_Ok,
+    USART_Not_Init = 0,
+    USART_InitFailed,
+    USART_InitSuccess,
+    USART_Invalid_Arg,
+    USART_CreateBuff_Failed,
+    USART_Rx_Ok,
+    USART_Rx_NoData,
+    USART_Tx_Busy,
+    USART_Tx_Ok,
 } USART_Err_St_t;
 
 /* =========================================================================================
@@ -118,7 +128,7 @@ USART_Err_St_t USART_Init(USART_Num_t USART_Num);
  * @return USART_Rx_Ok if a byte was read, USART_Rx_NoData if queue empty,
  *         or error codes for invalid args/not init.
  */
-USART_Err_St_t USART_ReceiveByte(USART_Num_t USART_Num , uint8_t *Rx_data);
+USART_Err_St_t USART_ReceiveByte(USART_Num_t USART_Num, uint8_t *Rx_data);
 
 /**
  * @brief  Non-blocking send of one byte.
@@ -129,7 +139,7 @@ USART_Err_St_t USART_ReceiveByte(USART_Num_t USART_Num , uint8_t *Rx_data);
  * @return USART_Tx_Ok if accepted, USART_Tx_Busy if TX queue full,
  *         or error codes for invalid args/not init.
  */
-USART_Err_St_t USART_SendByte(USART_Num_t USART_Num , uint8_t Tx_data);
+USART_Err_St_t USART_SendByte(USART_Num_t USART_Num, uint8_t Tx_data);
 
 /**
  * @brief  Polling RX service routine (only used when RX interrupts are disabled).

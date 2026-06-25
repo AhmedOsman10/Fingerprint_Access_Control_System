@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    stm32f4xx_hal_msp.c
+ * @author  Ahmed Abdelrhman
+ * @brief   Implementation file for STM32 Core User Code.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************

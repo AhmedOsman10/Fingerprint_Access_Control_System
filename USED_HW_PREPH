@@ -1,0 +1,19 @@
+=========================================================== Used USART  ===========================
+USART_1 ======> FP   ====> 115200 ===> PA0,PA1
+USART_2 ======> GUI ======> 9600
+
+
+
+================================================ USAED GPIOS ===============================
+PB1 ===> LED 
+PB2 ===> Buzzer
+
+
+ToDo:
+
+1- Semphore between Search and Enrollment.
+2- Another way to suspend one task like Search and let the Enorllment runs.
+3- Error Hanlder for Logging the Error. Not stacking in one state.
+4- EEPROM Error Log
+5- Watch Dog Timer
+6- Test

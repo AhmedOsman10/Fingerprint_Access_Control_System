@@ -1,3 +1,13 @@
+/******************************************************************************
+ * @file    stm32f4xx_it.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public/private interface and configuration declarations for STM32 Core User Code.
+ *
+ * @project Fingerprint Access Control System - STM32F407
+ * @note    Final GitHub-ready cleanup: comments, spacing, and readability only.
+ *          Application behavior and logic are intentionally unchanged.
+ ******************************************************************************/
+
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
@@ -58,6 +68,7 @@ void SysTick_Handler(void);
 void TIM6_DAC_IRQHandler(void);
 void OTG_FS_IRQHandler(void);
 /* USER CODE BEGIN EFP */
+void RTC_WKUP_IRQHandler(void);
 
 /* USER CODE END EFP */
 

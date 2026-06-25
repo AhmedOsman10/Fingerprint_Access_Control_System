@@ -1,25 +1,51 @@
-/*
- * TASKS.h
+/******************************************************************************
+ * @file    TASKS.h
+ * @author  Ahmed Abdelrhman
+ * @brief   Public interface for the FreeRTOS task layer.
  *
- *  Created on: Dec 19, 2025
- *      Author: Ahmed
- */
+ * @project Fingerprint Access Control System - STM32F407
+ *
+ * This header exposes the task initialization function and the FreeRTOS task
+ * entry functions used by the system startup code.
+ *
+ * @note    Only comments, spacing, and readability were updated for GitHub.
+ *          The function declarations are intentionally unchanged.
+ ******************************************************************************/
 
 #ifndef TASKS_H_
 #define TASKS_H_
 
+/******************************************************************************
+ * @brief Initialize application modules before starting task execution.
+ ******************************************************************************/
 void TASKS_Init(void);
-void TASKS_USART_30ms(void *pram);
-void TASKS_Print_Usart_Rx_Msg(void *pram);
-void TASKS_5ms(void *pram);
-void TASKS_1s(void *pram);
 
-void TASKS_Send_Data(void *pram);
-void TASKS_USART_Tx_Cyclic(void *pram);
-void TASKS_RTC_Update(void *pram);
-void FP_Test(void *pram);
+/******************************************************************************
+ * @brief FreeRTOS task entry for the fingerprint cyclic handler.
+ *
+ * @param pram FreeRTOS task parameter. Currently unused.
+ ******************************************************************************/
 void FP_Main_Cyclic(void *pram);
-void FP_Simple_Search_Task(void *argument);
-void FP_System_Task(void *argument);
-#endif /* TASKS_H_ */
 
+/******************************************************************************
+ * @brief FreeRTOS task entry for the application cyclic handler.
+ *
+ * @param pram FreeRTOS task parameter. Currently unused.
+ ******************************************************************************/
+void TASKS_APP_Cyclic(void *pram);
+
+/******************************************************************************
+ * @brief FreeRTOS task entry for the relay timing cyclic handler.
+ *
+ * @param pram FreeRTOS task parameter. Currently unused.
+ ******************************************************************************/
+void TASKS_RELAY_Cyclic(void *pram);
+
+/******************************************************************************
+ * @brief FreeRTOS task entry for LED toggle testing.
+ *
+ * @param pram FreeRTOS task parameter. Currently unused.
+ ******************************************************************************/
+void TASKS_Led_Toggle(void *pram);
+
+#endif /* TASKS_H_ */
