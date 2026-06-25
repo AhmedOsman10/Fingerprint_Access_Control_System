@@ -214,11 +214,11 @@ The ECUAL layer abstracts external hardware modules.
 
 Implemented modules include:
 
-- EEPROM driver
-- Fingerprint sensor driver
-- Internal RTC Driver
-- Relay driver
-- External RTC driver
+- **EEPROM Driver** – Stores enrolled fingerprints and system configuration in non-volatile memory.
+- **Fingerprint Sensor Driver** – Handles fingerprint enrollment, identification, and communication with the sensor.
+- **Internal RTC Driver** – Manages timekeeping and scheduled wake-up events from Stop Mode.
+- **Relay Driver** – Controls the door lock relay through GPIO.
+- **External RTC Driver** – Maintains accurate date and time via an external I²C RTC module.
 
 ### MCAL Layer
 
@@ -226,11 +226,20 @@ The MCAL layer provides low-level STM32 peripheral drivers.
 
 Implemented drivers include:
 
-- **EEPROM Driver** – Stores enrolled fingerprints and system configuration in non-volatile memory.
-- **Fingerprint Sensor Driver** – Handles fingerprint enrollment, identification, and communication with the sensor.
-- **Internal RTC Driver** – Manages timekeeping and scheduled wake-up events from Stop Mode.
-- **Relay Driver** – Controls the door lock relay through GPIO.
-- **External RTC Driver** – Maintains accurate date and time via an external I²C RTC module.
+### MCAL Layer
+
+The MCAL layer provides low-level, register-level drivers for the STM32F407 microcontroller. It abstracts the hardware peripherals and serves as the foundation for the upper software layers.
+
+Implemented drivers include:
+
+- GPIO
+- RCC
+- UART
+- I²C
+- EXTI
+- NVIC
+- SysTick
+- Timer
 
 ---
 
