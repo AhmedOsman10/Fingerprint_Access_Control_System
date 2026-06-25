@@ -731,13 +731,13 @@ void APP_HandleSleepMode(RTC_Time_t *time)
  80006e4:	2b00      	cmp	r3, #0
  80006e6:	d014      	beq.n	8000712 <APP_HandleSleepMode+0x5a>
     {
-        if ((xTaskGetTickCount() - exti_start_tick) >= pdMS_TO_TICKS(10UL * 1000UL))
+        if ((xTaskGetTickCount() - exti_start_tick) >= pdMS_TO_TICKS(20UL * 1000UL))
  80006e8:	f00d f980 	bl	800d9ec <xTaskGetTickCount>
  80006ec:	4602      	mov	r2, r0
  80006ee:	4b2b      	ldr	r3, [pc, #172]	@ (800079c <APP_HandleSleepMode+0xe4>)
  80006f0:	681b      	ldr	r3, [r3, #0]
  80006f2:	1ad3      	subs	r3, r2, r3
- 80006f4:	f242 720f 	movw	r2, #9999	@ 0x270f
+ 80006f4:	f644 621f 	movw	r2, #19999	@ 0x4e1f
  80006f8:	4293      	cmp	r3, r2
  80006fa:	d90a      	bls.n	8000712 <APP_HandleSleepMode+0x5a>
         {
@@ -759,14 +759,14 @@ void APP_HandleSleepMode(RTC_Time_t *time)
     }
 
     /* Scheduled sleep window 1. */
-    if (time->hours == 0 && time->minutes == 25)
+    if (time->hours == 9 && time->minutes == 00)
  8000712:	687b      	ldr	r3, [r7, #4]
  8000714:	789b      	ldrb	r3, [r3, #2]
- 8000716:	2b00      	cmp	r3, #0
+ 8000716:	2b09      	cmp	r3, #9
  8000718:	d118      	bne.n	800074c <APP_HandleSleepMode+0x94>
  800071a:	687b      	ldr	r3, [r7, #4]
  800071c:	785b      	ldrb	r3, [r3, #1]
- 800071e:	2b19      	cmp	r3, #25
+ 800071e:	2b00      	cmp	r3, #0
  8000720:	d114      	bne.n	800074c <APP_HandleSleepMode+0x94>
     {
         if (has_slept_today == 0)
@@ -782,9 +782,9 @@ void APP_HandleSleepMode(RTC_Time_t *time)
  8000730:	2064      	movs	r0, #100	@ 0x64
  8000732:	f00c ffd7 	bl	800d6e4 <vTaskDelay>
 
-            INTERNAL_RTC_EnterSleepMode(0, 26);
- 8000736:	211a      	movs	r1, #26
- 8000738:	2000      	movs	r0, #0
+            INTERNAL_RTC_EnterSleepMode(16, 00);
+ 8000736:	2100      	movs	r1, #0
+ 8000738:	2010      	movs	r0, #16
  800073a:	f008 fd97 	bl	800926c <INTERNAL_RTC_EnterSleepMode>
 
             APP_SendSleepStatus(APP_SYSTEM_AWAKE);
@@ -801,14 +801,14 @@ void APP_HandleSleepMode(RTC_Time_t *time)
     }
 
     /* Scheduled sleep window 2. */
-    else if (time->hours == 3 && time->minutes == 33)
+    else if (time->hours == 18 && time->minutes == 00)
  800074c:	687b      	ldr	r3, [r7, #4]
  800074e:	789b      	ldrb	r3, [r3, #2]
- 8000750:	2b03      	cmp	r3, #3
+ 8000750:	2b12      	cmp	r3, #18
  8000752:	d118      	bne.n	8000786 <APP_HandleSleepMode+0xce>
  8000754:	687b      	ldr	r3, [r7, #4]
  8000756:	785b      	ldrb	r3, [r3, #1]
- 8000758:	2b21      	cmp	r3, #33	@ 0x21
+ 8000758:	2b00      	cmp	r3, #0
  800075a:	d114      	bne.n	8000786 <APP_HandleSleepMode+0xce>
     {
         if (has_slept_today == 0)
@@ -824,9 +824,9 @@ void APP_HandleSleepMode(RTC_Time_t *time)
  800076a:	2064      	movs	r0, #100	@ 0x64
  800076c:	f00c ffba 	bl	800d6e4 <vTaskDelay>
 
-            INTERNAL_RTC_EnterSleepMode(3, 34);
- 8000770:	2122      	movs	r1, #34	@ 0x22
- 8000772:	2003      	movs	r0, #3
+            INTERNAL_RTC_EnterSleepMode(7, 00);
+ 8000770:	2100      	movs	r1, #0
+ 8000772:	2007      	movs	r0, #7
  8000774:	f008 fd7a 	bl	800926c <INTERNAL_RTC_EnterSleepMode>
 
             APP_SendSleepStatus(APP_SYSTEM_AWAKE);
