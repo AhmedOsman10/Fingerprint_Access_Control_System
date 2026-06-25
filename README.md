@@ -85,18 +85,6 @@ An external push button connected through **EXTI** can temporarily activate the 
 
 ---
 
-## 🏗️ High-Level System Architecture
-
-<p align="center">
-  <img src="images/Architecture.png" width="900">
-</p>
-
-<p align="center">
-  <em>High-level system architecture showing the GUI, STM32 firmware layers, FreeRTOS tasks, and external hardware modules.</em>
-</p>
-
----
-
 ## 🎯 Engineering Objectives
 
 ### ⚡ Non-Blocking Execution
